@@ -9,7 +9,7 @@ All command here can work as stand alone. That's why there are ungrouped.
 # Soin - Healing system :
 **Trigger** : Command
 
-**Usage** : Command `-soin`
+**Usage** : `-soin`
 > The bot send, in french, a message indicate the HP healed.
 
 # Instruction :
@@ -17,6 +17,12 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 **Usage** : `-instruction`
 > Send a big message, in french, by an admin, to an user, indicate what he must do after the validation of his character.
+
+# Bloc :
+**Trigger** : Command 
+
+**Usage** : `-bloc`
+> Send a message for resume a characters. It's just the code party from the instruction. 
 
 # Delete HRP message :
 **Trigger** : Regex `\((.*?)\)`
