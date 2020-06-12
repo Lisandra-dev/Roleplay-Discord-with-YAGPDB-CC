@@ -9,9 +9,9 @@ Also, the count is only for "one person" : it recharges the weapon of the guy wh
 
 # Recharge : 
 
-**Trigger : ** Command
+**Trigger :** Command
 
-**Usage : ** `-recharge <fusil|Pistolet|Canon>`
+**Usage :** `-recharge <fusil|Pistolet|Canon>`
 
 > The bot start a "counter" for the recharge of a db key link to a word.
 
@@ -41,7 +41,7 @@ If you change for one command, you must change all. You can add more weapon, jus
 
 **Trigger** : countains `:fusil:`
 
-**Usage : ** The user send a message with the trigger.
+**Usage :** The user send a message with the trigger.
 
 > The bot count the number of bullets used by the user.
 
@@ -49,7 +49,7 @@ If you change for one command, you must change all. You can add more weapon, jus
 
 **Trigger** : countains `:pistol:`
 
-**Usage : ** The user send a message with the trigger.
+**Usage :** The user send a message with the trigger.
 
 > The bot count the number of bullets used by the user.
 
@@ -57,7 +57,7 @@ If you change for one command, you must change all. You can add more weapon, jus
 
 **Trigger** : countains `:canon:`
 
-**Usage : ** The user send a message with the trigger.
+**Usage :** The user send a message with the trigger.
 
 > The bot count the number of bullets used by the user.
 
