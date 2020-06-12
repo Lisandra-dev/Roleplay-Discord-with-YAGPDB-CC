@@ -49,8 +49,9 @@ All command here can work as stand alone. That's why there are ungrouped.
 **Usage** : `-edit <channel ID> <Message ID> <new message>`
 > Edit a message send by the bot.
 
-#Google :
+# Google :
 *Source : The Yagpdb github CC*
+
 **Trigger** : Command
 
 **Usage** : `-google <things to search>`
