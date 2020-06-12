@@ -1,3 +1,5 @@
+All command here can work as stand alone. That's why there are ungrouped. 
+
 # Pins :
 **Trigger** : Command
 **Usage** : `-pins`
