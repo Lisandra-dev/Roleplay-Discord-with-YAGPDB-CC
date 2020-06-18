@@ -56,3 +56,16 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 **Usage** : `-google <things to search>`
 > Yag will send a google link to search the things in parameters.
+
+# UCC :
+**Trigger : ** Command
+
+**Usage**: `-ucc <value>`
+> Yagg multiply a value by 1.8 and convert it to an int.
+
+# CC :
+**Trigger**: Command
+
+**Usage:** `-cc <value>`
+> Yag multiply a value by 1.4 and convert it to an int. 
+
