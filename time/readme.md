@@ -24,3 +24,21 @@
 **Usage** : /
 
 > Don't change the time, because discord block the bot changing a channel name under 5 min : it changes change each 5 min.
+
+# Changing number for cycle :
+**Trigger** : command
+
+**Usage** : `-settm <cycle|msg|speed|day>`
+
+> Here you can change all number in the timer without change the code.
+
+# Settings of timer :
+**Trigger** : Command
+
+**Usage** : `-settings`
+
+> Allows you to see the parameters set by the previous command, but also :
+- The number of messages in the cycle
+- The current cycle
+- The current day
+Even if they have not been modified by the command, but by the simple activity of the server. 

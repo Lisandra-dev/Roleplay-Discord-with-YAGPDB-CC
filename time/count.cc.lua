@@ -10,6 +10,9 @@
 {{/*All message database counter*/}}
 {{$count := "count"}}
 
+{{/*Timer message */}}
+{{$msgc := (toFloat (dbGet 0 "mgsc").Value)}}
+
 {{/*Message counter*/}}
 {{$message:= "message"}}
 
@@ -30,7 +33,7 @@
   {{$jour:= (toString (toInt (dbGet 0 "jour").Value))}}
 
  {{/*Amount of messages needed for cycle, starts from 0*/}}
-    	{{if eq $x (toFloat 100) }} {{/*Change here for the amount of message */}}
+    	{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
        		{{$silent := dbIncr 0 $time 1}}
 
 {{/*reset count for new cycle*/}}
