@@ -23,7 +23,7 @@
 {{$number:= (dbGet 0 $time).Value}}
 
 {{/*Check if massage sent is in (brackets)*/}}
-{{ $matches := (index (reFindAllSubmatches `\((.*?)\)` .Message.Content)) }}
+{{ $matches := (index (reFindAllSubmatches `\((.*)\)|(^\$(.*))|(^\!\!(.+))` .Message.Content)) }} {{/* exclude my bot bracket from the count */}}
 
 {{/*If not*/}}
 {{if not $matches}}
