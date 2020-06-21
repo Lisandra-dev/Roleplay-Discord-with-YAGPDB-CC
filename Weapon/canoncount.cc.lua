@@ -6,30 +6,31 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 
 {{if not (dbGet .User.ID "canon")}}
-{{dbSet .User.ID "canon" 0}}
- {{$incr := dbIncr .User.ID "canon" 1}}
-{{$y := (dbGet .User.ID "canon").Value}}
-{{$x := sub 20 $y}}
-{{if lt $y (toFloat 20)}}
-{{ $embed := cembed
-"description" (joinStr "" "Il vous reste " (toString (toInt $x)) " charges de canon !")}}
-{{ sendMessage nil $embed }}
+  {{dbSet .User.ID "canon" 0}}
+  {{$incr := dbIncr .User.ID "canon" 1}}
+  {{$y := (dbGet .User.ID "canon").Value}}
+  {{$x := sub 20 $y}}
+  {{if lt $y (toFloat 20)}}
+    {{ $embed := cembed
+    "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de canon !")}}
+    {{ sendMessage nil $embed }}
+  {{else}}
+    {{ $embed := cembed
+    "description" "Votre canon est vide..."}}
+    {{ sendMessage nil $embed }}
+  {{end}}
 {{else}}
-{{ $embed := cembed
-"description" "Votre canon est vide..."}}
-{{ sendMessage nil $embed }}
+  {{$incr := dbIncr .User.ID "canon" 1}}
+  {{$y := (dbGet .User.ID "canon").Value}}
+  {{$x := sub 20 $y}}
+  {{if lt $y (toFloat 20)}}
+    {{ $embed := cembed
+    "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de canon !")}}
+    {{ sendMessage nil $embed }}
+  {{else}}
+    {{ $embed := cembed
+    "description" (joinStr "" .User.Mention ", votre canon est vide.")}}
+    {{ sendMessage nil $embed }}
+  {{end}}
 {{end}}
-{{else}}
- {{$incr := dbIncr .User.ID "canon" 1}}
-{{$y := (dbGet .User.ID "canon").Value}}
-{{$x := sub 20 $y}}
-{{if lt $y (toFloat 20)}}
-{{ $embed := cembed
-"description" (joinStr "" "Il vous reste " (toString (toInt $x)) " charges de canon !")}}
-{{ sendMessage nil $embed }}
-{{else}}
-{{ $embed := cembed
-"description" "Votre canon est vide."}}
-{{ sendMessage nil $embed }}
-{{end}}
-{{end}}
+{{deleteResponse 10}}

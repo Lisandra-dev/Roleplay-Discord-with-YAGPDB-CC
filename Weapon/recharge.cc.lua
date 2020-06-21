@@ -3,8 +3,6 @@ Float are for the number of bullet, you can change it.  */}}
 
 {{if not (dbGet .User.ID "recharge")}}
 {{if .CmdArgs}}
-
-{{/* Fist weapon : FUSIL [French word for shotgun]*/}}
   {{if eq (index .CmdArgs 0) "fusil"}}
     {{if gt (toFloat (dbGet .User.ID "fusil").Value) (toFloat 11)}}
       {{dbSet .User.ID "cf" 1}}
@@ -14,12 +12,9 @@ Float are for the number of bullet, you can change it.  */}}
 	{{ sendMessage nil $embed }}
     {{else}}
 	{{ $embed := cembed
-	"description" "Votre fusil est chargé"}}
+	"description" (joinStr "" "Le fusil de " .User.Mention " est chargé")}}
 	{{ sendMessage nil $embed }}
     {{end}}
-
-
-{{/* Second Weapon : PISTOLET*/}}
 
   {{else if eq (index .CmdArgs 0) "pistolet"}}
     {{if gt (toFloat (dbGet .User.ID "pistol").Value) (toFloat 7)}}
@@ -29,11 +24,9 @@ Float are for the number of bullet, you can change it.  */}}
 	"description" (joinStr "" "Début du rechargement du pistolet de " $.User.Mention)}}
 	{{ sendMessage nil $embed }}    {{else}}
       {{ $embed := cembed
-	"description" "Votre pistolet est chargé"}}
+	"description" (joinStr "" "Le pistolet de " .User.Mention " est chargé")}}
 	{{ sendMessage nil $embed }}
     {{end}}
-
-    {{/* CANON */}}
 
   {{else if eq (index .CmdArgs 0) "canon"}}
     {{if gt (toFloat (dbGet .User.ID "canon").Value) (toFloat 19)}}
@@ -44,30 +37,28 @@ Float are for the number of bullet, you can change it.  */}}
 	{{ sendMessage nil $embed }}
     {{else}}
 	{{ $embed := cembed
-	"description" "Votre canon est chargé"}}
+	"description" (joinStr "" "Le canon de" .User.Mention "est chargé")}}
 	{{ sendMessage nil $embed }}
 {{end}}
 
 
-{{/* EMBED FOR SOME ERRORS */}}
-
 {{else}}
 {{ $embed := cembed
 	"titre" "ERREUR"
-	"description" "Erreur dans l'arme indiquée"}}
+	"description" (joinStr "" "Erreur dans l'arme indiquée par " .User.Mention)}}
 	{{ sendMessage nil $embed }}
   {{end}}
 
   {{else}}
     {{ $embed := cembed
 	"titre" "ERREUR"
-	"description" "Merci d'indiquer l'arme que vous rechargez."}}
+	"description" (joinStr "" "Merci d'indiquer l'arme que vous rechargez, " .User.Mention)}}
 	{{ sendMessage nil $embed }}
   {{end}}
 
 {{else}}
     {{ $embed := cembed
 	"titre" "ERREUR"
-	"description" "Vous êtes déjà en cours de rechargement."}}
+	"description" (joinStr "" .User.Mention ", vous êtes déjà en cours de rechargement.")}}
 	{{ sendMessage nil $embed }}
 {{end}}
