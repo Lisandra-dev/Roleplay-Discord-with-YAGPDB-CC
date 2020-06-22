@@ -5,45 +5,46 @@
 
 {{if (dbGet .User.ID "cf")}}
   {{if and (lt (dbGet .User.ID "cf").Value (toFloat 6)) (gt (len .Message.Content) 15)}} {{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
-        {{$incr := dbIncr .User.ID "recharge" 1}}
-	{{$incr := dbIncr .User.ID "cf" 1}}
-    {{else if and (eq (dbGet .User.ID "cf").Value (toFloat 6))}}{{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
-	{{ $embed := cembed
-	"description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")}}
-	{{ sendMessage nil $embed }}
-        {{dbDel .User.ID "recharge"}}
-	{{dbDel .User.ID "cf"}}
-	{{dbSet .User.ID "fusil" 0}}
-    {{end}}
+    {{$incr := dbIncr .User.ID "recharge" 1}}
+	  {{$incr := dbIncr .User.ID "cf" 1}}
+  {{else if and (eq (dbGet .User.ID "cf").Value (toFloat 6))}}{{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
+	  {{ $embed := cembed
+	      "description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")}}
+	  {{ $id := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $id 30}}
+    {{dbDel .User.ID "recharge"}}
+	  {{dbDel .User.ID "cf"}}
+	  {{dbSet .User.ID "fusil" 0}}
+  {{end}}
 
-    {{/* CANON : "ca" key and "canon" key : 11 messages of 15 characters */}}
-
+  {{/* CANON : "ca" key and "canon" key : 11 messages of 15 characters */}}
 {{else if (dbGet .User.ID "ca")}}
   {{if and (lt (dbGet .User.ID "ca").Value (toFloat 11)) (gt (len .Message.Content) 15) }} {{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
- {{$incr := dbIncr .User.ID "recharge" 1}}
-	{{$incr := dbIncr .User.ID "ca" 1}}
+    {{$incr := dbIncr .User.ID "recharge" 1}}
+	  {{$incr := dbIncr .User.ID "ca" 1}}
   {{else if and (eq (dbGet .User.ID "ca").Value (toFloat 11))}} {{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
-	{{ $embed := cembed
-	"description" (joinStr "" "Canon de " $.User.Mention " rechargé.")}}
-	{{ sendMessage nil $embed }}
-        {{dbDel .User.ID "recharge"}}
-	{{dbDel .User.ID "ca"}}
-	{{dbSet .User.ID "canon" 0}}
-    {{end}}
+	  {{ $embed := cembed
+	     "description" (joinStr "" "Canon de " $.User.Mention " rechargé.")}}
+	  {{ $id := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $id 30}}
+    {{dbDel .User.ID "recharge"}}
+	  {{dbDel .User.ID "ca"}}
+	  {{dbSet .User.ID "canon" 0}}
+  {{end}}
 
-    {{/* PISTOLET : "cp" key and "pistol" key : 4 messages of 15 characters */}}
+  {{/* PISTOLET : "cp" key and "pistol" key : 4 messages of 15 characters */}}
 
 {{else if (dbGet .User.ID "cp")}}
- {{if and (lt (dbGet .User.ID "cp").Value (toFloat 4)) (gt (len .Message.Content) 15)}}{{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
-        {{$incr := dbIncr .User.ID "recharge" 1}}
-	{{$incr := dbIncr .User.ID "cp" 1}}
-
-    {{else if and (eq (dbGet .User.ID "cp").Value (toFloat 4))}} {{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
-        {{ $embed := cembed
-	"description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")}}
-	{{ sendMessage nil $embed }}
-        {{dbDel .User.ID "recharge"}}
-	{{dbDel .User.ID "cp"}}
-	{{dbSet .User.ID "pistol" 0}}
-    {{end}}
+  {{if and (lt (dbGet .User.ID "cp").Value (toFloat 4)) (gt (len .Message.Content) 15)}}{{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
+    {{$incr := dbIncr .User.ID "recharge" 1}}
+	  {{$incr := dbIncr .User.ID "cp" 1}}
+  {{else if and (eq (dbGet .User.ID "cp").Value (toFloat 4))}} {{/* Lock à un channel : (eq (toString .Channel.ID) (dbGet 0 "run").Value)*/}}
+    {{ $embed := cembed
+	     "description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")}}
+	  {{ $id := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $id 30}}
+    {{dbDel .User.ID "recharge"}}
+	  {{dbDel .User.ID "cp"}}
+	  {{dbSet .User.ID "pistol" 0}}
+  {{end}}
 {{end}}

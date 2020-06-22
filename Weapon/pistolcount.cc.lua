@@ -12,15 +12,17 @@ If you change the value of the if, you must change the value in the "$x := sub".
   {{$y := (dbGet .User.ID "pistol").Value}}
   {{$x := sub 8 $y}}
     {{if lt $y (toFloat 7)}}
-    {{ $embed := cembed
-    "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de pistolet !")
-    }}
-    {{ sendMessage nil $embed }}
+      {{ $embed := cembed
+        "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de pistolet !")
+      }}
+      {{ $id := sendMessageRetID nil $embed }}
+  		{{deleteMessage nil $id 30}}
   {{else}}
     {{ $embed := cembed
     "description" "Votre pistolet est vide."
     }}
-    {{ sendMessage nil $embed }}
+    {{ $id := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $id 30}}
   {{end}}
 {{else}}
   {{$incr := dbIncr .User.ID "pistol" 1}}
@@ -28,14 +30,15 @@ If you change the value of the if, you must change the value in the "$x := sub".
   {{$x := sub 8 $y}}
   {{if lt $y (toFloat 8)}}
     {{ $embed := cembed
-    "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de pistolet !")
+      "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de pistolet !")
     }}
-    {{ sendMessage nil $embed }}
+    {{ $id := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $id 30}}
   {{else}}
     {{ $embed := cembed
     "description" (joinStr "" .User.Mention ", votre pistolet est vide. ")
     }}
-    {{ sendMessage nil $embed }}
+    {{ $id := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $id 30}}
   {{end}}
 {{end}}
-{{deleteResponse 10}}
