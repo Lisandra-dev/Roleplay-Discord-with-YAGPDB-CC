@@ -3,11 +3,11 @@
 
 
 
-Also, the count is only for "one person" : it recharges the weapon of the guy who start the command. 
+Also, the count is only for "one person" : it recharges the weapon of the guy who start the command.
 
 
 
-# Recharge : 
+# Recharge :
 
 **Trigger :** Command
 
@@ -15,17 +15,17 @@ Also, the count is only for "one person" : it recharges the weapon of the guy wh
 
 > The bot start a "counter" for the recharge of a db key link to a word.
 
-Here, there are three weapon : Fusil, pistolet and canon. The DBkey are : 
+Here, there are three weapon : Fusil, pistolet and canon. The DBkey are :
 
 - Fusil : `cf`and `fusil`
 - Canon : `ca`and `canon`
 - Pistolet : `cp`and `pistol`
 
-If you change for one command, you must change all. You can add more weapon, just C/C one of things in recharge and create a count with a C/C. Don't forget to create your key. 
+If you change for one command, you must change all. You can add more weapon, just C/C one of things in recharge and create a count with a C/C. Don't forget to create your key.
 
 # Increment message :
 
-**Trigger :** Regex `.*` 
+**Trigger :** Regex `.*`
 
 **Usage :** /
 
@@ -35,7 +35,7 @@ If you change for one command, you must change all. You can add more weapon, jus
 > - Canon : 11 messages
 > - Pistolet : 4 messages
 >
-> The increment work only for message with 15 characters length. 
+> The increment work only for message with 15 characters length.
 
 # Fusil count :
 
@@ -61,3 +61,10 @@ If you change for one command, you must change all. You can add more weapon, jus
 
 > The bot count the number of bullets used by the user.
 
+# Bullet stock
+
+**Trigger** : Command
+
+**Usage :** `-stock <pistolet|fusil|canon>`
+
+> The bot send the number of bullet for the person who send it.
