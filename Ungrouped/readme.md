@@ -19,10 +19,10 @@ All command here can work as stand alone. That's why there are ungrouped.
 > Send a big message, in french, by an admin, to an user, indicate what he must do after the validation of his character.
 
 # Bloc :
-**Trigger** : Command 
+**Trigger** : Command
 
 **Usage** : `-bloc`
-> Send a message for resume a characters. It's just the code party from the instruction. 
+> Send a message for resume a characters. It's just the code party from the instruction.
 
 # Delete HRP message :
 **Trigger** : Regex `\((.*?)\)`
@@ -57,15 +57,18 @@ All command here can work as stand alone. That's why there are ungrouped.
 **Usage** : `-google <things to search>`
 > Yag will send a google link to search the things in parameters.
 
-# UCC :
-**Trigger : ** Command
+# URC/RC :
 
-**Usage**: `-ucc <value>`
-> Yagg multiply a value by 1.8 and convert it to an int.
+**Trigger** : Regex `^\-(rc|urc)`
 
-# CC :
-**Trigger**: Command
+**Usage** : `-rc|rcc <value>`
 
-**Usage:** `-cc <value>`
-> Yag multiply a value by 1.4 and convert it to an int. 
+> Calculate the RC / URCC of a value.
 
+# dice info :
+
+**Trigger** : Regex `^\-(malus|poison|soin)`
+
+**Usage** : `-malus|poison|soin <value>`
+
+> Give the information about the result for some dice.
