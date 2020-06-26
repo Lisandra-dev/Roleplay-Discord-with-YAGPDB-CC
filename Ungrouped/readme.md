@@ -56,19 +56,3 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 **Usage** : `-google <things to search>`
 > Yag will send a google link to search the things in parameters.
-
-# URC/RC :
-
-**Trigger** : Regex `^\-(rc|urc)`
-
-**Usage** : `-rc|rcc <value>`
-
-> Calculate the RC / URCC of a value.
-
-# dice info :
-
-**Trigger** : Regex `^\-(malus|poison|soin)`
-
-**Usage** : `-malus|poison|soin <value>`
-
-> Give the information about the result for some dice.
