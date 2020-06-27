@@ -132,13 +132,13 @@
 **{{$user}}** ▬ {{$comm}}**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).
 	*[{{$res}}]*
 {{else if or (eq $d (toInt 3)) (eq $d (toInt 4))}}
-**{{$user}}** ▬ {{$comm}}Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).
 	*[{{$res}}]*
 {{else if or (eq $d (toInt 5)) (eq $d (toInt 6))}}
-**{{$user}}** ▬ {{$comm}}Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).
 	*[{{$res}}]*
 {{else if or (eq $d (toInt 7)) (eq $d (toInt 8))}}
-**{{$user}}** ▬ {{$comm}}Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).
 	*[{{$res}}]*
 {{else if eq $d (toInt 9)}}
 **{{$user}}** ▬ {{$comm}}**Echec du poison**...

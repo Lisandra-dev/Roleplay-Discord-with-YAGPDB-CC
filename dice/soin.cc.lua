@@ -132,22 +132,22 @@
 **{{$user}}** ▬ {{$comm}}Votre cible regagne 7 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 3)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 6 PV *(+1 si module/PSI)*
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 6 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 4)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 5 PV *(+1 si module/PSI)*
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 5 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 5)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 4 PV *(+1 si module/PSI)*
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 4 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 6)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 3 PV *(+1 si module/PSI)*
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 3 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 7)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 2 PV *(+1 si module/PSI)*
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 2 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 8)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 1 PV *(+1 si module/PSI)*
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 1 PV *(+1 si module/PSI)*
 	*[{{$res}}]*
 	{{else if eq $d (toInt 9)}}
 **{{$user}}** ▬ {{$comm}}**Echec du soin ...**
@@ -156,4 +156,5 @@
 **{{$user}}** ▬ {{$comm}}**Echec critique du soin :** Votre cible gagne une altération.
 		*[{{$res}}]*
 	{{end}}
+
 {{deleteTrigger 1}}

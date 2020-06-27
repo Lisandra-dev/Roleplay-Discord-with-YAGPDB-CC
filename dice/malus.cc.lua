@@ -134,13 +134,13 @@
 **{{$user}}** ▬ {{$comm}}**Réussite critique :** Votre cible a une pénalité de +3 à son dé.
 		*[{{$res}}]*
     {{else if eq $d (toInt 2)}}
-**{{$user}}** ▬ {{$comm}}Votre cible a une pénalité de +3 à son dé.
+**{{$user}}** ▬ {{$comm}}**Réussite critique :** Votre cible a une pénalité de +3 à son dé.
 	*[{{$res}}]*
 	{{else if and (le $d (toInt 5)) (ge $d (toInt 3))}}
-**{{$user}}** ▬ {{$comm}}Votre cible a une pénalité de +2 à son dé.
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a une pénalité de +2 à son dé.
 	*[{{$res}}]*
 	{{else if  and (le $d (toInt 8)) (ge $d (toInt 6))}}
-**{{$user}}** ▬ {{$comm}}Votre cible a une pénalité de +1 à son dé.
+**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a une pénalité de +1 à son dé.
 	*[{{$res}}]*
 	{{else if eq $d (toInt 9)}}
 **{{$user}}** ▬ {{$comm}}**Echec de l'altération**...
@@ -149,4 +149,5 @@
 **{{$user}}** ▬ {{$comm}}**Echec critique de l'altération : ** Votre cible a un bonus de -2 à son dé.
 		*[{{$res}}]*
 	{{end}}
+
 {{deleteTrigger 1}}

@@ -20,15 +20,15 @@
 			{{$d = (toInt 0)}}
 		{{end}}
 		{{if eq $d (toInt 0)}}
-			{{$msg ="**Ultra critique !**"}}
+			{{$msg =" ▬ **Ultra critique !** "}}
 		{{else if eq $d (toInt 1)}}
-			{{$msg = "**Réussite critique !**"}}
+			{{$msg = " ▬ **Réussite critique !** "}}
 		{{else if eq $d (toInt 10)}}
-			{{$msg = "**Echec critique !**"}}
+			{{$msg = " ▬ **Echec critique !** "}}
 		{{else if eq $d (toInt 9)}}
-			{{$msg = "**Echec...**"}}
+			{{$msg = " ▬ **Echec...** "}}
 		{{else}}
-			{{$msg = ""}}
+			{{$msg = " "}}
 		{{end}}
 
 		{{if gt (toInt (index .CmdArgs 0)) (toInt 0)}}
@@ -47,25 +47,25 @@
 		{{end}}
 
 			{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
-**{{$user}}** : {{$msg}}
-	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}]
+**{{$user}}**{{$msg}}
+	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}*]
 			{{else}}
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
-**{{$user}}** ▬ {{joinStr " " (slice .CmdArgs 1)}} : {{$msg}}
-	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}]
+**{{$user}}** : {{joinStr " " (slice .CmdArgs 1)}}{{$msg}}
+	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}*]
 				{{else if ne (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$m:=(toInt (index .CmdArgs 1)) }}
 					{{$d = add $d $m}}
 					{{if eq $d (toInt 0)}}
-						{{$msg ="**Ultra critique !**"}}
+						{{$msg =" ▬ **Ultra critique !** "}}
 					{{else if eq $d (toInt 1)}}
-						{{$msg = "**Réussite critique !**"}}
+						{{$msg = " ▬ **Réussite critique !** "}}
 					{{else if eq $d (toInt 10)}}
-						{{$msg = "**Echec critique !**"}}
+						{{$msg = " ▬ **Echec critique !** "}}
 					{{else if eq $d (toInt 9)}}
-						{{$msg = "**Echec...**"}}
+						{{$msg = " ▬ **Echec...** "}}
 					{{else}}
-						{{$msg = ""}}
+						{{$msg = " "}}
 					{{end}}
 					{{if gt $d (toInt 10)}}
 						{{$d = toInt 10}}
@@ -89,11 +89,11 @@
 					{{end}}
 
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
-**{{$user}}** : {{$msg}}
-	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}]
+**{{$user}}**{{$msg}}
+	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}*]
 					{{else}}
-**{{$user}}** ▬ {{joinStr " " (slice .CmdArgs 2)}} : {{$msg}}
-	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}]
+**{{$user}}** : {{joinStr " " (slice .CmdArgs 2)}}{{$msg}}
+	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}*]
 				{{end}}
 			{{end}}
 		{{end}}
@@ -101,34 +101,35 @@
 	{{else}}
 		{{$v := $d}}
 		{{if eq $v (toInt 0)}}
-			{{$msg = "**Ultra critique !**"}}
+			{{$msg = " ▬ **Ultra critique !** "}}
 		{{else if eq $v (toInt 1)}}
-			{{$msg = "**Réussite critique !**"}}
+			{{$msg = " ▬ **Réussite critique !** "}}
 		{{else if eq $v (toInt 10)}}
-			{{$msg = "**Echec critique !**"}}
+			{{$msg = " ▬ **Echec critique !** "}}
 		{{else if eq $v (toInt 9)}}
-			{{$msg = "**Echec...*"}}
+			{{$msg = " ▬ **Echec...** "}}
 		{{else}}
-			{{$msg = ""}}
+			{{$msg = " "}}
 		{{end}}
-**{{$user}}** ▬ {{joinStr " " .CmdArgs }} : {{$msg}}
-[Dé : {{$v}}]
+**{{$user}}** : {{joinStr " " .CmdArgs}}{{$msg}}
+[*Dé : {{$v}}*]
 	{{end}}
 
 {{else}}
 	{{$v := $d}}
 	{{if eq $v (toInt 0)}}
-		{{$msg = "**Ultra critique !**"}}
+		{{$msg = " ▬ **Ultra critique !**"}}
 	{{else if eq $v (toInt 1)}}
-		{{$msg = "**Réussite critique !**"}}
+		{{$msg = " ▬ **Réussite critique !**"}}
 	{{else if eq $v (toInt 10)}}
-		{{$msg = "**Echec critique !**"}}
+		{{$msg = " ▬ **Echec critique !**"}}
 	{{else if eq $v (toInt 9)}}
-		{{$msg = "**Echec...**"}}
+		{{$msg = " ▬ **Echec...**"}}
 	{{else}}
-		{{$msg = ""}}
+		{{$msg = " : "}}
 	{{end}}
-**{{$user}}** : {{$msg}}
-	[Dé : {{$v}}]
+**{{$user}}**{{$msg}}
+	[*Dé : {{$v}}*]
 {{end}}
+
 {{deleteTrigger 1}}
