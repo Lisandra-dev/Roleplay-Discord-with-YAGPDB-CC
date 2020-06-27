@@ -1,4 +1,4 @@
-The bouclier work exactly as the weapon. Unless, here, we cannot count the bullet used. 
+The bouclier work exactly as the weapon. Unless, here, we cannot count the bullet used.
 
 
 
@@ -6,7 +6,7 @@ The bouclier work exactly as the weapon. Unless, here, we cannot count the bulle
 
 **Trigger** : Command
 
-**Usage : ** `-bouclier`
+**Usage :** `-bouclier`
 
 > The bot starts a count.
 
@@ -16,6 +16,6 @@ The bouclier work exactly as the weapon. Unless, here, we cannot count the bulle
 
 **Usage : /**
 
-> Count message for ALL people who send it. 
+> Count message for ALL people who send it.
 >
-> Need 11 message to be fully recharged. 
+> Need 11 message to be fully recharged.

@@ -1,100 +1,134 @@
-{{$col := 0xD2D1F5}}
 {{$user:=.Member.Nick}}
 {{if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
 {{$d:= (randInt 1 10)}}
-{{$implant:= "implant"}}
-{{$msg:= ""}}
+
+{{$arg1:=""}}
+{{$arg2:= ""}}
+{{$v:=$d}}
+
+{{$msg := ""}}
+
 {{ if .CmdArgs}}
 	{{if ne (toFloat (index .CmdArgs 0)) (toFloat 0)}}
 		{{$i:=(toInt (index .CmdArgs 0)) }}
-		{{if ge (toFloat $i) (toFloat 2)}}
-			{{$implant = "implants"}}
+		{{$d =add $d $i}}
+		{{if gt $d (toInt 10)}}
+			{{$d = toInt 10}}
+		{{else if lt $d (toInt 0)}}
+			{{$d = (toInt 0)}}
 		{{end}}
-		{{$v :=sub $d $i}}
-		{{if eq $v (toInt 0)}}
-			{{$msg ="**Ultra réussite critique !**"}}
-			{{$col = 0x716DE9}}
-		{{else if eq $v (toInt 1)}}
+		{{if eq $d (toInt 0)}}
+			{{$msg ="**Ultra critique !**"}}
+		{{else if eq $d (toInt 1)}}
 			{{$msg = "**Réussite critique !**"}}
-			{{$col = 0x538DAD}}
-		{{else if eq $v (toInt 10)}}
+		{{else if eq $d (toInt 10)}}
 			{{$msg = "**Echec critique !**"}}
-			{{$col = 0x951414}}
-		{{else if eq $v (toInt 9)}}
+		{{else if eq $d (toInt 9)}}
 			{{$msg = "**Echec...**"}}
-			{{$col = 0x895A5A}}
 		{{else}}
-			{{$msg = (joinStr "" "Résultat : " (toString (toInt $d)))}}
-			{{$col = 0xD2D1F5}}
+			{{$msg = ""}}
 		{{end}}
-		{{$real:=(toString $d)}}
-		{{$d := (joinStr "" "Valeur du dé : " (toString (toInt $d))) }}
-		{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
-			{{$embed := cembed
-				"author" (sdict "name" $user "icon_url" (.User.AvatarURL "256"))
-				"description" (joinStr " " $msg "*(avec " $i " " $implant ")*" )
-				"footer" (sdict "text" $d)
-				"color" $col}}
-			{{sendMessage nil $embed}}
+
+		{{if gt (toInt (index .CmdArgs 0)) (toInt 0)}}
+			{{if eq (toInt (index .CmdArgs 0)) (toInt 1)}}
+				{{$arg1 = "pénalité"}}
+			{{else}}
+				{{$arg1 = "pénalités"}}
+			{{end}}
 		{{else}}
-			{{$embed := cembed
-				"author" (sdict "name" $user "icon_url" (.User.AvatarURL "256"))
-				"description" (joinStr " " "**" (slice .CmdArgs 1) "** \n" $msg "*(avec " $i " " $implant ")*" )
-				"footer" (sdict "text" (joinStr " " "Valeur du dé :" $v "|" $real))
-				"color" $col}}
-			{{sendMessage nil $embed}}
+			{{$i = mult $i (toInt -1)}}
+			{{if ge $i (toInt 2)}}
+				{{$arg1 = "implants"}}
+			{{else}}
+				{{$arg1 = "implant"}}
+			{{end}}
 		{{end}}
+
+			{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
+**{{$user}}** : {{$msg}}
+	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}]
+			{{else}}
+				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
+**{{$user}}** ▬ {{joinStr " " (slice .CmdArgs 1)}} : {{$msg}}
+	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}]
+				{{else if ne (toFloat (index .CmdArgs 1)) (toFloat 0)}}
+					{{$m:=(toInt (index .CmdArgs 1)) }}
+					{{$d = add $d $m}}
+					{{if eq $d (toInt 0)}}
+						{{$msg ="**Ultra critique !**"}}
+					{{else if eq $d (toInt 1)}}
+						{{$msg = "**Réussite critique !**"}}
+					{{else if eq $d (toInt 10)}}
+						{{$msg = "**Echec critique !**"}}
+					{{else if eq $d (toInt 9)}}
+						{{$msg = "**Echec...**"}}
+					{{else}}
+						{{$msg = ""}}
+					{{end}}
+					{{if gt $d (toInt 10)}}
+						{{$d = toInt 10}}
+					{{else if lt $d (toInt 0)}}
+						{{$d = (toInt 0)}}
+					{{end}}
+
+					{{if gt $m (toInt 0)}}
+						{{if eq $m (toInt 1)}}
+							{{$arg2 = "pénalité"}}
+						{{else}}
+							{{$arg2 = "pénalités"}}
+						{{end}}
+					{{else}}
+						{{$m = mult $m (toInt -1)}}
+						{{if ge $m (toInt 2)}}
+							{{$arg2 = "implants"}}
+						{{else}}
+							{{$arg2 = "implant"}}
+						{{end}}
+					{{end}}
+
+				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
+**{{$user}}** : {{$msg}}
+	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}]
+					{{else}}
+**{{$user}}** ▬ {{joinStr " " (slice .CmdArgs 2)}} : {{$msg}}
+	[Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}]
+				{{end}}
+			{{end}}
+		{{end}}
+
 	{{else}}
 		{{$v := $d}}
 		{{if eq $v (toInt 0)}}
-			{{$msg = "**Ultra réussite critique !**"}}
-			{{$col = 0x716DE9}}
+			{{$msg = "**Ultra critique !**"}}
 		{{else if eq $v (toInt 1)}}
 			{{$msg = "**Réussite critique !**"}}
-			{{$col = 0x538DAD}}
 		{{else if eq $v (toInt 10)}}
 			{{$msg = "**Echec critique !**"}}
-			{{$col = 0x951414}}
 		{{else if eq $v (toInt 9)}}
 			{{$msg = "**Echec...*"}}
-			{{$col = 0x895A5A}}
 		{{else}}
-			{{$msg = (joinStr "" "Résultat : " (toString (toInt $d)))}}
-			{{$col = 0xD2D1F5}}
+			{{$msg = ""}}
 		{{end}}
-		{{$d := (joinStr "" (toString $d)) }}
-		{{$embed := cembed
-			"author" (sdict "name" $user "icon_url" (.User.AvatarURL "256"))
-			"description" (joinStr " " "**" .CmdArgs "**" "\n" $msg)
-			"footer" (sdict "text" (joinStr " " "Valeur du dé :" $d ))
-			"color" $col}}
-		{{sendMessage nil $embed}}
+**{{$user}}** ▬ {{joinStr " " .CmdArgs }} : {{$msg}}
+[Dé : {{$v}}]
 	{{end}}
+
 {{else}}
 	{{$v := $d}}
 	{{if eq $v (toInt 0)}}
-		{{$msg = "**Ultra réussite critique !**"}}
-		{{$col = 0x716DE9}}
+		{{$msg = "**Ultra critique !**"}}
 	{{else if eq $v (toInt 1)}}
 		{{$msg = "**Réussite critique !**"}}
-		{{$col = 0x538DAD}}
 	{{else if eq $v (toInt 10)}}
 		{{$msg = "**Echec critique !**"}}
-		{{$col = 0x951414}}
 	{{else if eq $v (toInt 9)}}
-		{{$msg = "**Echec...*"}}
-		{{$col = 0x895A5A}}
+		{{$msg = "**Echec...**"}}
 	{{else}}
-		{{$msg = (joinStr "" "Résultat : " $d) }}
-		{{$col = 0xD2D1F5}}
+		{{$msg = ""}}
 	{{end}}
-	{{$embed := cembed
-		"author" (sdict "name" $user "icon_url"  (.User.AvatarURL "256"))
-		"description" (joinStr " " $msg)
-		"footer" (sdict  "text" (joinStr " " "Valeur du dé :" (toString $d)))
-		"color" $col}}
-	{{sendMessage nil $embed}}
+**{{$user}}** : {{$msg}}
+	[Dé : {{$v}}]
 {{end}}
 {{deleteTrigger 1}}

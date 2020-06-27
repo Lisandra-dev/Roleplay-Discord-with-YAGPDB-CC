@@ -4,7 +4,7 @@
 
 **Usage** : `-rc|rcc <value>`
 
-> Calculate the RC / URCC of a value.
+> Calculate the RC / URC of a value.
 
 # dice info :
 
@@ -14,29 +14,14 @@
 
 > Give the information about the result for some dice.
 
-# D :
+# d :
 
 **Trigger** : command
 
-**Usage** : `-d (implant) (commentaire)`
-
-> Roll a dice and display an embed with some color and information about the dice.
-
-# d2 :
-
-**Trigger** : command
-
-**Usage** : `-d (implant) (commentaire)`
+**Usage** : `-d (implant|malus) (implant|malus) (commentaire)`
 
 > Same as above, but the message is a simple markdown.
-
-# poison malus soin :
-
-**Trigger** : Regex `^\-(malus|poison|soin)`
-
-**Usage** : `-malus|poison|soin <value>`
-
-> Roll a dice and display information about it for poison/malus/heal
+> Argument are optional.
 
 # choose
 
@@ -53,3 +38,32 @@
 **Usage** : `-carac`
 
 > Same as above, but the list is "Force", "Endurance", "Agilité", "Précision", "Intelligence", "Karma"
+
+# Malus :
+
+**Trigger** : Command
+
+**Usage** `-malus (implant|malus) (implant|malus) (commentaire)`
+
+> Arg are optional.
+> Same as "dice info" but in simpler markdown and roll the dice directly.
+
+# Soin :
+
+**Trigger** : Command
+
+**Usage** `-soin (implant|malus) (implant|malus) (commentaire)`
+
+> Arg are optional.
+> Same as "dice info" but in simpler markdown and roll the dice directly.
+
+# Poison :
+
+# Soin :
+
+**Trigger** : Command
+
+**Usage** `-poison (implant|malus) (implant|malus) (commentaire)`
+
+> Arg are optional.
+> Same as "dice info" but in simpler markdown and roll the dice directly.
