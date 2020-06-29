@@ -23,6 +23,8 @@
 			{{$msg =" ▬ **Ultra critique !** "}}
 		{{else if eq $d (toInt 1)}}
 			{{$msg = " ▬ **Réussite critique !** "}}
+		{{else if eq $d (toInt 2)}}
+				{{$msg = " ▬ **Réussite !** "}}
 		{{else if eq $d (toInt 10)}}
 			{{$msg = " ▬ **Echec critique !** "}}
 		{{else if eq $d (toInt 9)}}
@@ -47,12 +49,18 @@
 		{{end}}
 
 			{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
-**{{$user}}**{{$msg}}
-	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}*]
+				{{$embed := cembed
+				"description" (joinStr "" "**" $user "**" $msg "\n"
+				"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $i " " $arg1 "* ]")
+				"color" 0x63AFE1}}
+				{{sendMessage nil $embed}}
 			{{else}}
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
-**{{$user}}** : {{joinStr " " (slice .CmdArgs 1)}}{{$msg}}
-	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}}*]
+					{{$embed := cembed
+					"description" (joinStr "" "**" $user "** : " (joinStr " " (slice .CmdArgs 1)) $msg "\n"
+					"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $i " " $arg1 "* ]")
+					"color" 0x63AFE1}}
+					{{sendMessage nil $embed}}
 				{{else if ne (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$m:=(toInt (index .CmdArgs 1)) }}
 					{{$d = add $d $m}}
@@ -60,6 +68,8 @@
 						{{$msg =" ▬ **Ultra critique !** "}}
 					{{else if eq $d (toInt 1)}}
 						{{$msg = " ▬ **Réussite critique !** "}}
+					{{else if eq $d (toInt 2)}}
+						{{$msg = " ▬ **Réussite !** "}}
 					{{else if eq $d (toInt 10)}}
 						{{$msg = " ▬ **Echec critique !** "}}
 					{{else if eq $d (toInt 9)}}
@@ -89,11 +99,20 @@
 					{{end}}
 
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
-**{{$user}}**{{$msg}}
-	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}*]
+				{{$embed := cembed
+				"description" (joinStr "" "**" $user "**" $msg "\n"
+				"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $i " " $arg1 " et " $m " " $arg2 "*]")
+				"color" 0x63AFE1}}
+				{{sendMessage nil $embed}}
+
 					{{else}}
-**{{$user}}** : {{joinStr " " (slice .CmdArgs 2)}}{{$msg}}
-	[*Dé : {{$d}} ({{$v}}) | {{$i}} {{$arg1}} et {{$m}} {{$arg2}}*]
+						{{$embed := cembed
+						"description" (joinStr "" "**" $user "** : " (joinStr " " (slice .CmdArgs 2)) $msg "\n"
+						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $i " " $arg1 " et " $m " " $arg2 "*]")
+						"color" 0x63AFE1}}
+						{{sendMessage nil $embed}}
+
+
 				{{end}}
 			{{end}}
 		{{end}}
@@ -104,6 +123,8 @@
 			{{$msg = " ▬ **Ultra critique !** "}}
 		{{else if eq $v (toInt 1)}}
 			{{$msg = " ▬ **Réussite critique !** "}}
+		{{else if eq $d (toInt 2)}}
+			{{$msg = " ▬ **Réussite !** "}}
 		{{else if eq $v (toInt 10)}}
 			{{$msg = " ▬ **Echec critique !** "}}
 		{{else if eq $v (toInt 9)}}
@@ -111,8 +132,11 @@
 		{{else}}
 			{{$msg = " "}}
 		{{end}}
-**{{$user}}** : {{joinStr " " .CmdArgs}}{{$msg}}
-[*Dé : {{$v}}*]
+		{{$embed := cembed
+		"description" (joinStr "" "**" $user "** : " (joinStr " " .CmdArgs) $msg "\n"
+		"<:next:723131844643651655>[*Dé : " $v "* ]" )
+		"color" 0x63AFE1}}
+		{{sendMessage nil $embed}}
 	{{end}}
 
 {{else}}
@@ -121,6 +145,8 @@
 		{{$msg = " ▬ **Ultra critique !**"}}
 	{{else if eq $v (toInt 1)}}
 		{{$msg = " ▬ **Réussite critique !**"}}
+	{{else if eq $d (toInt 2)}}
+		{{$msg = " ▬ **Réussite !** "}}
 	{{else if eq $v (toInt 10)}}
 		{{$msg = " ▬ **Echec critique !**"}}
 	{{else if eq $v (toInt 9)}}
@@ -128,8 +154,11 @@
 	{{else}}
 		{{$msg = " : "}}
 	{{end}}
-**{{$user}}**{{$msg}}
-	[*Dé : {{$v}}*]
+	{{$embed := cembed
+	"description" (joinStr "" "**" $user "**" $msg "\n"
+	"<:next:723131844643651655>[*Dé : " $v "* ]")
+	"color" 0x63AFE1}}
+	{{sendMessage nil $embed}}
 {{end}}
 
 {{deleteTrigger 1}}

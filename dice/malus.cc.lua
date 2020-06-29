@@ -43,7 +43,7 @@
 					{{$arg1 = "implant"}}
 				{{end}}
 			{{end}}
-		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | En ayant " (toString $i) " " $arg1 "." )}}
+		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $i) " " $arg1 "." )}}
   	{{else}}
 		{{$res = (joinStr " " "Dé :" (toString $d))}}
 	{{end}}
@@ -88,9 +88,9 @@
 				{{end}}
 			{{end}}
 
-			{{$res = (joinStr "" "Dé : " (toString $d) " " $v  " | En ayant " (toString $i) " " $arg1 " et " (toString $m) " " $arg2 "." )}}
+			{{$res = (joinStr "" "Dé : " (toString $d) " " $v  " |  " (toString $i) " " $arg1 " et " (toString $m) " " $arg2 )}}
 		{{else}}
-		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | En ayant " (toString $i) " " $arg1 "." )}}
+		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $i) " " $arg1)}}
 		{{end}}
 		{{else}}
 			{{$res = (joinStr " " "Dé :" (toString $d)) }}
@@ -128,26 +128,48 @@
 
 
 	{{if le $d (toInt 0)}}
-**{{$user}}** ▬ {{$comm}}**Ultra critique : ** Votre cible a une pénalité de +4 à son dé.
-		*[{{$res}}]*
+		{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique : ** Votre cible a une pénalité de +4 à son dé.\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x7E2257 }}
+	{{sendMessage nil $embed}}
+
 	{{else if eq $d (toInt 1) }}
-**{{$user}}** ▬ {{$comm}}**Réussite critique :** Votre cible a une pénalité de +3 à son dé.
-		*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique :** Votre cible a une pénalité de +3 à son dé.\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0x7E2257 }}
+		{{sendMessage nil $embed}}
     {{else if eq $d (toInt 2)}}
-**{{$user}}** ▬ {{$comm}}**Réussite critique :** Votre cible a une pénalité de +3 à son dé.
-	*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +3 à son dé.\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0x7E2257 }}
+		{{sendMessage nil $embed}}
 	{{else if and (le $d (toInt 5)) (ge $d (toInt 3))}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a une pénalité de +2 à son dé.
-	*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet :* Votre cible a une pénalité de +2 à son dé.\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0x7E2257 }}
+		{{sendMessage nil $embed}}
 	{{else if  and (le $d (toInt 8)) (ge $d (toInt 6))}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a une pénalité de +1 à son dé.
-	*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet :* Votre cible a une pénalité de +1 à son dé.\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0x7E2257 }}
+		{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 9)}}
-**{{$user}}** ▬ {{$comm}}**Echec de l'altération**...
-	*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec de l'altération...**\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0x7E2257 }}
+		{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 10)}}
-**{{$user}}** ▬ {{$comm}}**Echec critique de l'altération : ** Votre cible a un bonus de -2 à son dé.
-		*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec critique de l'altération** Votre cible a un bonus de -2 à son dé.\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0x7E2257 }}
+		{{sendMessage nil $embed}}
 	{{end}}
 
 {{deleteTrigger 1}}

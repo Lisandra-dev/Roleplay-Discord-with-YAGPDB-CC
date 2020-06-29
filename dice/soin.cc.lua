@@ -40,7 +40,7 @@
 					{{$arg1 = "implant"}}
 				{{end}}
 			{{end}}
-		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | En ayant " (toString $i) " " $arg1 "." )}}
+		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $i) " " $arg1)}}
   	{{else}}
 		{{$res = (joinStr " " "Dé :" (toString $d))}}
 	{{end}}
@@ -85,9 +85,9 @@
 				{{end}}
 			{{end}}
 
-			{{$res = (joinStr "" "Dé : " (toString $d) " " $v  " | En ayant " (toString $i) " " $arg1 " et " (toString $m) " " $arg2 "." )}}
+			{{$res = (joinStr "" "Dé : " (toString $d) " " $v  " |  " (toString $i) " " $arg1 " et " (toString $m) " " $arg2)}}
 		{{else}}
-		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | En ayant " (toString $i) " " $arg1 "." )}}
+		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $i) " " $arg1)}}
 		{{end}}
 		{{else}}
 			{{$res = (joinStr " " "Dé :" (toString $d)) }}
@@ -123,38 +123,71 @@
 {{end}}
 
 {{if le $d (toInt 0)}}
-**{{$user}}** ▬ {{$comm}}**Ultra critique :** Votre cible regagne 8 PV *(+1 si module/PSI)* et obtient un bonus de votre choix.
-		*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique :** Votre cible regagne 8 PV *(+1 si module/PSI)* et obtient un bonus de votre choix.\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+	{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 1)}}
-**{{$user}}** ▬ {{$comm}}**Réussite critique: ** Votre cible regagne 8 PV *(+1 si module/PSI).*
-		*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique: ** Votre cible regagne 8 PV *(+1 si module/PSI).*\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0xEFA3EA }}
+		{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 2)}}
-**{{$user}}** ▬ {{$comm}}Votre cible regagne 7 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+		{{$embed := cembed
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : Votre cible regagne 7 PV *(+1 si module/PSI).*\n"
+			"<:next:723131844643651655> *[" $res "]*" )
+			"color" 0xEFA3EA }}
+		{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 3)}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 6 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible regagne 6 PV *(+1 si module/PSI)*\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 4)}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 5 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible regagne 5 PV *(+1 si module/PSI)*\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 5)}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 4 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible regagne 4 PV *(+1 si module/PSI)*\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 6)}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 3 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible regagne 3 PV *(+1 si module/PSI)*\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 7)}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 2 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible regagne 2 PV *(+1 si module/PSI)*\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+	{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 8)}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible regagne 1 PV *(+1 si module/PSI)*
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible regagne 1 PV *(+1 si module/PSI)*\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 9)}}
-**{{$user}}** ▬ {{$comm}}**Echec du soin ...**
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec du soin ...**\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{else if eq $d (toInt 10)}}
-**{{$user}}** ▬ {{$comm}}**Echec critique du soin :** Votre cible gagne une altération.
-		*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec critique du soin :** Votre cible gagne une altération.\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0xEFA3EA }}
+			{{sendMessage nil $embed}}
 	{{end}}
 
 {{deleteTrigger 1}}

@@ -40,7 +40,7 @@
 					{{$arg1 = "implant"}}
 				{{end}}
 			{{end}}
-		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | En ayant " (toString $i) " " $arg1 "." )}}
+		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $i) " " $arg1)}}
   	{{else}}
 		{{$res = (joinStr " " "Dé :" (toString $d))}}
 	{{end}}
@@ -85,9 +85,9 @@
 				{{end}}
 			{{end}}
 
-			{{$res = (joinStr "" "Dé : " (toString $d) " " $v  " | En ayant " (toString $i) " " $arg1 " et " (toString $m) " " $arg2 "." )}}
+			{{$res = (joinStr "" "Dé : " (toString $d) " " $v  " |  " (toString $i) " " $arg1 " et " (toString $m) " " $arg2)}}
 		{{else}}
-		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | En ayant " (toString $i) " " $arg1 "." )}}
+		{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $i) " " $arg1)}}
 		{{end}}
 		{{else}}
 			{{$res = (joinStr " " "Dé :" (toString $d)) }}
@@ -123,29 +123,54 @@
 {{end}}
 
 {{if le $d (toInt 0)}}
-**{{$user}}** ▬ {{$comm}}**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{else if eq $d (toInt 1)}}
-**{{$user}}** ▬ {{$comm}}**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{else if eq $d (toInt 2)}}
-**{{$user}}** ▬ {{$comm}}**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{else if or (eq $d (toInt 3)) (eq $d (toInt 4))}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{else if or (eq $d (toInt 5)) (eq $d (toInt 6))}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{else if or (eq $d (toInt 7)) (eq $d (toInt 8))}}
-**{{$user}}** ▬ {{$comm}}*Si votre seuil le permet* : Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "*Si votre seuil le permet* : Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
+
 {{else if eq $d (toInt 9)}}
-**{{$user}}** ▬ {{$comm}}**Echec du poison**...
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec du poison**...\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{else if eq $d (toInt 10)}}
-**{{$user}}** ▬ {{$comm}}**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).
-	*[{{$res}}]*
+	{{$embed := cembed
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).\n"
+		"<:next:723131844643651655> *[" $res "]*" )
+		"color" 0x4D399E }}
+	{{sendMessage nil $embed}}
 {{end}}
 
 {{deleteTrigger 1}}
