@@ -39,7 +39,7 @@
 
 > Same as above, but the list is "Force", "Endurance", "Agilité", "Précision", "Intelligence", "Karma"
 
-# Malus :
+# Malus | Poison | Soin
 
 **Trigger** : Command
 
@@ -48,22 +48,18 @@
 > Arg are optional.
 > Same as "dice info" but in simpler markdown and roll the dice directly.
 
-# Soin :
+# Set :
 
-**Trigger** : Command
+**Trigger** : command
 
-**Usage** `-soin (implant|malus) (implant|malus) (commentaire)`
+**Usage** : `-set (id) Force Endurance Agilité Précision Karma`
 
-> Arg are optional.
-> Same as "dice info" but in simpler markdown and roll the dice directly.
+> Set in the YAGPDB database the char value for a User ID (can be set by another people by it's ID or just using USER.ID if there are no ID set)
 
-# Poison :
+# Get :
 
-# Soin :
+**Trigger** : command
 
-**Trigger** : Command
+**Usage** : `-get characteristics`
 
-**Usage** `-poison (implant|malus) (implant|malus) (commentaire)`
-
-> Arg are optional.
-> Same as "dice info" but in simpler markdown and roll the dice directly.
+> Get the char value (debugging only)
