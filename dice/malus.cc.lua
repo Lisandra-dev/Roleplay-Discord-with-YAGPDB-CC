@@ -215,10 +215,26 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm = (joinStr " " (slice $c 2) ": ") }}
+					{{if $manuel}}
+							{{$comm =  joinStr "" (slice .CmdArgs 2)}}
+							{{$comm = joinStr " " (split $comm $manuel)}}
+							{{if ne $comm " "}}
+								{{$comm = joinStr " " (split $comm $manuel) ": " }}
+							{{end}}
+					{{else}}
+						{{$comm = joinStr " " (slice .CmdArgs 2) ": "}}
+					{{end}}
 				{{end}}
 			{{else}}
-				{{$comm = (joinStr " " (slice $c 1) ": ") }}
+				{{if $manuel}}
+						{{$comm =  joinStr "" (slice .CmdArgs 1)}}
+						{{$comm = joinStr " " (split $comm $manuel)}}
+						{{if ne $comm " "}}
+							{{$comm = joinStr " " (split $comm $manuel) ": "}}
+						{{end}}
+					{{else}}
+						{{$comm = joinStr " " (slice .CmdArgs 1) ": " }}
+					{{end}}
 			{{end}}
 		{{else}}
 			{{$comm = (joinStr " " $c ": ") }}

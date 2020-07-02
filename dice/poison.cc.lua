@@ -215,10 +215,26 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm = (joinStr " " (slice $c 2) ": ") }}
+					{{if $manuel}}
+							{{$comm =  joinStr "" (slice .CmdArgs 2)}}
+							{{$comm = joinStr " " (split $comm $manuel)}}
+							{{if ne $comm " "}}
+								{{$comm = joinStr " " (split $comm $manuel) ": " }}
+							{{end}}
+					{{else}}
+						{{$comm = joinStr " " (slice .CmdArgs 2) ": "}}
+					{{end}}
 				{{end}}
 			{{else}}
-				{{$comm = (joinStr " " (slice $c 1) ": ") }}
+				{{if $manuel}}
+						{{$comm =  joinStr "" (slice .CmdArgs 1)}}
+						{{$comm = joinStr " " (split $comm $manuel)}}
+						{{if ne $comm " "}}
+							{{$comm = joinStr " " (split $comm $manuel) ": "}}
+						{{end}}
+					{{else}}
+						{{$comm = joinStr " " (slice .CmdArgs 1) ": " }}
+					{{end}}
 			{{end}}
 		{{else}}
 			{{$comm = (joinStr " " $c ": ") }}
@@ -227,7 +243,6 @@
 {{else}}
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
-
 
 {{$urc := cembed
 	"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
@@ -254,13 +269,13 @@
 		"color" 0x4D399E }}
 
 {{else if or (eq $seuil (toInt 5)) (eq $seuil (toInt 6))}}
-	{{$r:= cembed
+	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
 
 {{else if or (eq $seuil (toInt 7)) (eq $seuil (toInt 8))}}
-	{{$embed := cembed
+	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}

@@ -62,10 +62,9 @@
 
 
 {{ if .CmdArgs}}
+	{{$c = joinStr " " .CmdArgs}}
 	{{if $manuel}}
-		{{$c = split (joinStr " " .CmdArgs) $manuel}}
-	{{else}}
-		{{$c = (joinStr " " .CmdArgs)}}
+		{{$c = joinStr " " (split $c $manuel) }}
 	{{end}}
 
 	{{if ne (toFloat (index .CmdArgs 0)) (toFloat 0)}}
@@ -137,9 +136,19 @@
 				"color" 0x63AFE1}}
 				{{sendMessage nil $embed}}
 			{{else}}
+				{{if $manuel}}
+					{{$c =  joinStr "" (slice .CmdArgs 1)}}
+					{{$c = joinStr " " (split $c $manuel)}}
+					{{if ne $c " "}}
+						{{$c = joinStr " " ":" (split $c $manuel)}}
+					{{end}}
+				{{else}}
+					{{$c = joinStr " " ":" (slice .CmdArgs 1) }}
+				{{end}}
+
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$embed := cembed
-					"description" (joinStr "" "**" $user "** : " (joinStr " " (slice $c 1)) $msg "\n"
+					"description" (joinStr "" "**" $user "** " $c $msg "\n"
 					"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 					"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
@@ -218,8 +227,17 @@
 					{{sendMessage nil $embed}}
 
 					{{else}}
+						{{if $manuel}}
+							{{$c =  joinStr "" (slice .CmdArgs 2)}}
+							{{$c = joinStr " " (split $c $manuel)}}
+							{{if ne $c " "}}
+								{{$c = joinStr " " ":" (split $c $manuel)}}
+							{{end}}
+						{{else}}
+							{{$c = joinStr " " ":" (slice .CmdArgs 2) }}
+						{{end}}
 						{{$embed := cembed
-						"description" (joinStr "" "**" $user "** : " (joinStr " " (slice $c 2)) $msg "\n"
+						"description" (joinStr "" "**" $user "** " $c $msg "\n"
 						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil "*]")
 						"color" 0x63AFE1}}
 						{{sendMessage nil $embed}}
@@ -305,3 +323,5 @@
 	"color" 0x63AFE1}}
 	{{sendMessage nil $embed}}
 {{end}}
+
+{{deleteTrigger 1}}
