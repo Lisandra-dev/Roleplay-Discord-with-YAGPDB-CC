@@ -17,7 +17,7 @@
             "author" (sdict
                 "name" (print $msg.Author.String)
                 "icon_url" ($msg.Author.AvatarURL "1024"))
-            "color" 3553599
+            "color" 0x5A91A7
             "footer" (sdict
                 "text" (print "Cité par : " .Message.Author.String ))
             "timestamp" $msg.Timestamp}}
@@ -28,7 +28,7 @@
                 {{$e.Del "footer"}}
                 {{$e.Del "timestamp"}}
                 {{if eq $c 0}}
-                    {{$e.Set "description" (print $mc "\n\n [➥ Original] (" (index (index $m 0) 0) "/)")}}
+                    {{$e.Set "description" (print $mc "\n\n [➥ Original](" (index (index $m 0) 0) "/)")}}
                 {{end}}
                 {{if eq (len $msg.Attachments) (add $c 1)}}
                     {{$e.Set "footer" $fo}}
@@ -50,7 +50,7 @@
             {{end}}
         {{else}}
             {{if $msg.Content}}
-							{{$e.Set "description" (print $mc "\n\n [➥ Original] (" (index (index $m 0) 0) "/)")}}
+							{{$e.Set "description" (print $mc "\n\n [➥ Original](" (index (index $m 0) 0) "/)")}}
               {{sendMessage nil (cembed $e)}}
             {{end}}
         {{end}}
