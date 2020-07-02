@@ -13,7 +13,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{$x := sub 8 $y}}
  	{{if lt $y (toFloat 7)}}
       		{{ $embed := cembed
-       			"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges dans votre pistolet n°2 !")
+       			"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges dans votre deuxième pistolet !")
 		}}
       		{{ $id := sendMessageRetID nil $embed }}
   		{{deleteMessage nil $id 30}}
@@ -31,13 +31,13 @@ If you change the value of the if, you must change the value in the "$x := sub".
   	{{$x := sub 8 $y}}
   	{{if lt $y (toFloat 8)}}
     		{{ $embed := cembed
-      			"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de pistolet n°2 !")
+      			"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges dans votre deuxième pistolet !")
     		}}
     		{{ $id := sendMessageRetID nil $embed }}
     		{{deleteMessage nil $id 30}}
   	{{else}}
    		 {{ $embed := cembed
-    			"description" (joinStr "" .User.Mention ", votre pistolet n°2 est vide. ")
+    			"description" (joinStr "" .User.Mention ", votre deuxième pistolet est vide. ")
    	 	}}
     		{{ $id := sendMessageRetID nil $embed }}
     		{{deleteMessage nil $id 30}}

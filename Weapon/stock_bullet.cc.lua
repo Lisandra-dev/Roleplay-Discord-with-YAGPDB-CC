@@ -4,23 +4,44 @@
 		{{$y := (dbGet .User.ID "fusil").Value}}
 		{{$x := sub 12 $y}}
 		{{if lt $y (toFloat 12)}}
-        		{{ $embed := cembed
-         	 	"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de fusil !")}}
-        		{{ $id := sendMessageRetID nil $embed }}
-      			{{deleteMessage nil $id 30}}
+      {{ $embed := cembed
+      "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de fusil !")}}
+      {{ $id := sendMessageRetID nil $embed }}
+      {{deleteMessage nil $id 30}}
 		{{else}}
-        		{{ $embed := cembed
-          			"description" (joinStr "" .User.Mention ", votre fusil est vide.")}}
-        		{{ $id := sendMessageRetID nil $embed }}
+      {{ $embed := cembed
+        "description" (joinStr "" .User.Mention ", votre fusil est vide.")}}
+      {{ $id := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $id 30}}
 		{{end}}
 	{{else}}
 		{{ $embed := cembed
-        		"description" (joinStr "" .User.Mention ", il vous reste 12 charges de fusil !")}}
+      "description" (joinStr "" .User.Mention ", il vous reste 12 charges de fusil !")}}
 		{{ $id := sendMessageRetID nil $embed }}
 		{{deleteMessage nil $id 30}}
 	{{end}}
 
+	{{else if (dbGet .User.ID "fusil2")}}
+		{{if (dbGet .User.ID "fusil2")}}
+			{{$y := (dbGet .User.ID "fusil2").Value}}
+			{{$x := sub 12 $y}}
+			{{if lt $y (toFloat 12)}}
+				{{ $embed := cembed
+					"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges dans votre deuxième fusil !")}}
+				{{ $id := sendMessageRetID nil $embed }}
+				{{deleteMessage nil $id 30}}
+			{{else}}
+				{{ $embed := cembed
+					"description" (joinStr "" .User.Mention ", votre deuxième fusil est vide.")}}
+				{{ $id := sendMessageRetID nil $embed }}
+				{{deleteMessage nil $id 30}}
+			{{end}}
+		{{else}}
+			{{ $embed := cembed
+				"description" (joinStr "" .User.Mention ", il vous reste 12 charges dans votre deuxième fusil !")}}
+			{{ $id := sendMessageRetID nil $embed }}
+			{{deleteMessage nil $id 30}}
+{{end}}
 
 	{{else if eq (index .CmdArgs 0) "pistolet"}}
 		{{if (dbGet .User.ID "pistol")}}
@@ -44,24 +65,24 @@
 		{{deleteMessage nil $id 30}}
 	{{end}}
 
-{{else if eq (index .CmdArgs 0) "pistolet2"}}
+	{{else if eq (index .CmdArgs 0) "pistolet2"}}
 		{{if (dbGet .User.ID "pistol2")}}
 			{{$a := (dbGet .User.ID "pistol2").Value}}
 			{{$b := sub 8 $a}}
 			{{if lt $a (toFloat 7)}}
 				{{ $embed := cembed
-					"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $b)) " charges de votre pistolet n°2!")}}
+					"description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $b)) " charges dans votre deuxième pistolet !")}}
 				{{ $id := sendMessageRetID nil $embed }}
 				{{deleteMessage nil $id 30}}
 			{{else}}
 				{{ $embed := cembed
-					"description" (joinStr "" .User.Mention ", votre pistolet n°2 est vide.")}}
+					"description" (joinStr "" .User.Mention ", votre deuxième pistolet est vide.")}}
 				{{ $id := sendMessageRetID nil $embed }}
 				{{deleteMessage nil $id 30}}
 			{{end}}
 		{{else}}
 			{{$embed := cembed
-				"description" (joinStr "" .User.Mention ", il vous reste 8 charges de pistolet n°2 !")}}
+				"description" (joinStr "" .User.Mention ", il vous reste 8 charges dans votre deuxième pistolet !")}}
 			{{ $id := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $id 30}}
 		{{end}}

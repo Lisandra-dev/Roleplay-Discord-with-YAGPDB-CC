@@ -17,6 +17,22 @@ Float are for the number of bullet, you can change it.  */}}
   	  {{ $id := sendMessageRetID nil $embed }}
       {{deleteMessage nil $id 30}}
       {{end}}
+
+			{{else if eq (index .CmdArgs 0) "fusil2"}}
+	      {{if gt (toFloat (dbGet .User.ID "fusil2").Value) (toFloat 11)}}
+	        {{dbSet .User.ID "cf2" 1}}
+	        {{dbSet 0 "run" (toString .Channel.ID)}}
+	  	     {{ $embed := cembed
+	  	        "description" (joinStr "" "Début du rechargement du deuxième fusil de " $.User.Mention)}}
+	  	      {{ $id := sendMessageRetID nil $embed }}
+	          {{deleteMessage nil $id 30}}
+	      {{else}}
+		  	  {{ $embed := cembed
+		  	     "description" (joinStr "" "Le deuxième fusil de " .User.Mention " est chargé")}}
+		  	  {{ $id := sendMessageRetID nil $embed }}
+		      {{deleteMessage nil $id 30}}
+	      {{end}}
+
     {{else if eq (index .CmdArgs 0) "pistolet"}}
       {{if gt (toFloat (dbGet .User.ID "pistol").Value) (toFloat 7)}}
         {{dbSet .User.ID "cp" 1}}
@@ -50,12 +66,12 @@ Float are for the number of bullet, you can change it.  */}}
         {{dbSet .User.ID "cp2" 1}}
         {{dbSet 0 "run" (toString .Channel.ID)}}
   	    {{ $embed := cembed
-  	       "description" (joinStr "" "Début du rechargement du pistolet  n°2 de " $.User.Mention)}}
+  	       "description" (joinStr "" "Début du rechargement du deuxième pistolet de " $.User.Mention)}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{else}}
         {{ $embed := cembed
-  	       "description" (joinStr "" "Le pistolet N°2 de " .User.Mention " est chargé")}}
+  	       "description" (joinStr "" "Le deuxième pistolet de " .User.Mention " est chargé")}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{end}}
