@@ -45,6 +45,20 @@ Float are for the number of bullet, you can change it.  */}}
     	  {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{end}}
+    {{else if eq (index .CmdArgs 0) "pistolet2"}}
+      {{if gt (toFloat (dbGet .User.ID "pistol2").Value) (toFloat 7)}}
+        {{dbSet .User.ID "cp2" 1}}
+        {{dbSet 0 "run" (toString .Channel.ID)}}
+  	    {{ $embed := cembed
+  	       "description" (joinStr "" "Début du rechargement du pistolet  n°2 de " $.User.Mention)}}
+  	    {{ $id := sendMessageRetID nil $embed }}
+        {{deleteMessage nil $id 30}}
+      {{else}}
+        {{ $embed := cembed
+  	       "description" (joinStr "" "Le pistolet N°2 de " .User.Mention " est chargé")}}
+  	    {{ $id := sendMessageRetID nil $embed }}
+        {{deleteMessage nil $id 30}}
+      {{end}}
     {{else}}
       {{ $embed := cembed
   	     "titre" "ERREUR"
@@ -66,3 +80,4 @@ Float are for the number of bullet, you can change it.  */}}
 	{{ $id := sendMessageRetID nil $embed }}
   {{deleteMessage nil $id 30}}
 {{end}}
+{{deleteTrigger 1}}
