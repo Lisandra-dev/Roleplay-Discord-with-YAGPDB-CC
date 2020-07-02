@@ -20,7 +20,9 @@
 
 {{$arg := 0}}
 {{$argm := 0}}
+{{$c := ""}}
 
+{{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
 {{$agi := reFindAllSubmatches `(agilité|Agilité|agi|Agi)` .Message.Content}}
 {{$endu := reFindAllSubmatches `(Endurance|endurance|endu|Endu)` .Message.Content}}
@@ -28,7 +30,10 @@
 {{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
 {{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
 
-{{if $force}}
+{{if $manuel}}
+	{{$seuil = (toInt (joinStr "" (split $manuel "s")))}}
+	{{$idb = (toInt 0)}}
+{{else if $force}}
 	{{$seuil = (toInt (dbGet .User.ID "force").Value)}}
 	{{$idb = (toInt (dbGet .User.ID "i_force").Value)}}
 {{else if $agi}}
@@ -63,6 +68,12 @@
 
 
 {{if .CmdArgs}}
+	{{if $manuel}}
+		{{$c = split (joinStr " " .CmdArgs) $manuel}}
+	{{else}}
+		{{$c = (joinStr " " .CmdArgs)}}
+	{{end}}
+
 	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
 	  {{if ne (toInt (index .CmdArgs 0)) (toInt 0)}}
 	    {{$i := (toInt  (index .CmdArgs 0))}}
@@ -196,7 +207,7 @@
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
 			{{$comm = ""}}
 		{{else}}
-			{{$comm = (joinStr " " .CmdArgs ": ")}}
+			{{$comm = (joinStr " " $c ": ")}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
@@ -204,13 +215,13 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm = (joinStr " " (slice .CmdArgs 2) ": ") }}
+					{{$comm = (joinStr " " (slice $c 2) ": ") }}
 				{{end}}
 			{{else}}
-				{{$comm = (joinStr " " (slice .CmdArgs 1) ": ") }}
+				{{$comm = (joinStr " " (slice $c 1) ": ") }}
 			{{end}}
 		{{else}}
-			{{$comm = (joinStr " " .CmdArgs ": ") }}
+			{{$comm = (joinStr " " $c ": ") }}
 		{{end}}
 	{{end}}
 {{else}}
@@ -248,7 +259,7 @@
 {{end}}
 
 {{$echec := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec...**\n"
+	"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec de l'altération...**\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x7E2257 }}
 

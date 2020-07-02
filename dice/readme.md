@@ -48,18 +48,25 @@
 > Arg are optional.
 > Same as "dice info" but in simpler markdown and roll the dice directly.
 
-# Set :
+# Setchar :
 
 **Trigger** : command
 
-**Usage** : `-set (id) Force Endurance Agilité Précision Karma`
+**Usage** : `-set -(all|stats|implant) (-ID <id>) Force Endurance Agilité Précision Karma`
 
 > Set in the YAGPDB database the char value for a User ID (can be set by another people by it's ID or just using USER.ID if there are no ID set)
 
-# Get :
+# Getchar :
 
 **Trigger** : command
 
-**Usage** : `-get characteristics`
+**Usage** : `-getchar -(all|stats|implant) (-ID <id>) characteristics`
 
-> Get the char value (debugging only)
+> Get characteristics from user or an user.id
+
+# Delchar :
+
+**Trigger** : command
+**Usage** : `$delchar <id>`
+
+> If someone quit the roleplay, it can be used for deleting the DB values. 

@@ -5,6 +5,7 @@ Félicitation {{($args.Get 0).Mention}}  ! Ton personnage est validé.
 
 Maintenant, tu dois :
 :white_small_square: Te rajouter sur le recensement, dont tu retrouveras ici le lien : <https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing>.
+:white_small_square: Lancer la commande `-setchar force implant endurance implant agilité implant précision implant intelligence implant karma implant`
 :white_small_square: Envoyer un MP à <@189390243676422144> avec ceci rempli entre 3 quotes (altgr+7)  :
 
 ```md

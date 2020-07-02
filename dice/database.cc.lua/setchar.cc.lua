@@ -1,5 +1,19 @@
 {{$user:= .User.ID}}
 
+{{$force:= (dbGet $user "force").Value}}
+{{$endurance := (dbGet $user "endurance").Value}}
+{{$agi:=(dbGet $user "agi").Value}}
+{{$preci:=(dbGet $user "preci").Value}}
+{{$intel:=(dbGet $user "intelligence").Value}}
+{{$karma:=(dbGet $user "karma").Value}}
+
+{{$iforce:=(dbGet  $user "i_force").Value}}
+{{$iendu:=(dbGet $user "i_endu").Value}}
+{{$iagi:=(dbGet $user "i_agi").Value}}
+{{$ipreci:=(dbGet $user "i_preci").Value}}
+{{$iintel:=(dbGet $user "i_intel").Value}}
+{{$ikarma:=(dbGet $user "i_karma").Value}}
+
 
 {{if .CmdArgs}}
 	{{if and (eq (index .CmdArgs 0) "-all") (eq (index .CmdArgs 1) "-ID") }}
@@ -18,21 +32,21 @@
 			{{dbSet $user "karma" (toInt (index .CmdArgs 13))}}
 			{{dbSet $user "i_karma" (toInt (index .CmdArgs 14))}}
 
-<@{{$user}}> a :
-	:white_small_square: Force : {{(dbGet $user "force").Value}}
-	:white_small_square: Endurance : {{(dbGet $user "endurance").Value}}
-	:white_small_square: Agilité : {{(dbGet $user "agi").Value}}
-	:white_small_square: Précision : {{(dbGet $user "preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet $user "intelligence").Value}}
-	:white_small_square: Karma : {{(dbGet $user "karma").Value}}
+**Statistiques de <@{{$user}}>**
+	:white_small_square: Force : {{$force}}
+	:white_small_square: Endurance : {{$endurance}}
+	:white_small_square: Agilité : {{$agi}}
+	:white_small_square: Précision : {{$preci}}
+	:white_small_square: Intelligence : {{$intel}}
+	:white_small_square: Karma : {{$karma}}
 
-Avec, comme implants :
-:white_small_square: Force : {{(dbGet  $user "i_force").Value}}
-:white_small_square: Endurance : {{(dbGet $user "i_endu").Value}}
-:white_small_square: Agilité : {{(dbGet $user "i_agi").Value}}
-:white_small_square: Précision : {{(dbGet $user "i_preci").Value}}
-:white_small_square: Intelligence : {{(dbGet $user "i_intel").Value}}
-:white_small_square: Karma : {{(dbGet $user "i_karma").Value}}
+**Implant de <@{{$user}}>** :
+	:white_small_square: Force : {{$iforce}}
+	:white_small_square: Endurance : {{$iendu}}
+	:white_small_square: Agilité : {{$iagi}}
+	:white_small_square: Précision : {{$ipreci}}
+	:white_small_square: Intelligence : {{$iintel}}
+	:white_small_square: Karma : {{$ikarma}}
 
 			{{else}}
 				**Bad User ID**
@@ -46,13 +60,13 @@ Avec, comme implants :
 		{{dbSet $user "i_intel" (toInt (index .CmdArgs 5))}}
 		{{dbSet $user "i_karma" (toInt (index .CmdArgs 6))}}
 
-Vous avez, comme implants :
-	:white_small_square: Force : {{(dbGet $user "i_force").Value}}
-	:white_small_square: Endurance : {{(dbGet  $user "i_endu").Value}}
-	:white_small_square: Agilité : {{(dbGet $user  "i_agi").Value}}
-	:white_small_square: Précision : {{(dbGet  $user "i_preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet  $user "i_intel").Value}}
-	:white_small_square: Karma : {{(dbGet  $user "i_karma").Value}}
+**Implant de <@{{$user}}>** :
+	:white_small_square: Force : {{$iforce}}
+	:white_small_square: Endurance : {{$iendu}}
+	:white_small_square: Agilité : {{$iagi}}
+	:white_small_square: Précision : {{$ipreci}}
+	:white_small_square: Intelligence : {{$iintel}}
+	:white_small_square: Karma : {{$ikarma}}
 
 	{{else if and (eq (index .CmdArgs 0) "-stats") (ne (toFloat (index .CmdArgs 1)) (toFloat 0))}}
 		{{dbSet .User.ID "force" (toInt (index .CmdArgs 1)) }}
@@ -62,13 +76,13 @@ Vous avez, comme implants :
 		{{dbSet .User.ID "intelligence" (toInt (index .CmdArgs 5))}}
 		{{dbSet .User.ID "karma" (toInt (index .CmdArgs 6))}}
 
-Vous avez :
-	:white_small_square: Force : {{(dbGet $user "force").Value}}
-	:white_small_square: Endurance : {{(dbGet $user "endurance").Value}}
-	:white_small_square: Agilité : {{(dbGet $user "agi").Value}}
-	:white_small_square: Précision : {{(dbGet $user "preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet $user "intelligence").Value}}
-	:white_small_square: Karma : {{(dbGet $user "karma").Value}}
+	**Statistiques de <@{{$user}}>**
+		:white_small_square: Force : {{$force}}
+		:white_small_square: Endurance : {{$endurance}}
+		:white_small_square: Agilité : {{$agi}}
+		:white_small_square: Précision : {{$preci}}
+		:white_small_square: Intelligence : {{$intel}}
+		:white_small_square: Karma : {{$karma}}
 
 	{{else if and (eq (index .CmdArgs 0) "-stats") (eq (index .CmdArgs 1) "-ID") }}
 	{{if gt (toFloat (index .CmdArgs 2)) (toFloat 11)}}
@@ -80,13 +94,14 @@ Vous avez :
 		{{dbSet $user "intelligence" (toInt (index .CmdArgs 7))}}
 		{{dbSet $user "karma" (toInt (index .CmdArgs 8))}}
 
-<@{{$user}}> a :
-	:white_small_square: Force : {{(dbGet $user "force").Value}}
-	:white_small_square: Endurance : {{(dbGet $user "endurance").Value}}
-	:white_small_square: Agilité : {{(dbGet $user "agi").Value}}
-	:white_small_square: Précision : {{(dbGet $user "preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet $user "intelligence").Value}}
-	:white_small_square: Karma : {{(dbGet $user "karma").Value}}
+**Statistiques de <@{{$user}}>**
+	:white_small_square: Force : {{$force}}
+	:white_small_square: Endurance : {{$endurance}}
+	:white_small_square: Agilité : {{$agi}}
+	:white_small_square: Précision : {{$preci}}
+	:white_small_square: Intelligence : {{$intel}}
+	:white_small_square: Karma : {{$karma}}
+
 
 	{{else}}
 		**BAD USER ID**
@@ -106,21 +121,21 @@ Vous avez :
 		{{dbSet $user "karma" (toInt (index .CmdArgs 11))}}
 		{{dbSet $user "i_karma" (toInt (index .CmdArgs 12))}}
 
-Vous avez :
-	:white_small_square: Force : {{(dbGet $user "force").Value}}
-	:white_small_square: Endurance : {{(dbGet $user "endurance").Value}}
-	:white_small_square: Agilité : {{(dbGet $user "agi").Value}}
-	:white_small_square: Précision : {{(dbGet $user "preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet $user "intelligence").Value}}
-	:white_small_square: Karma : {{(dbGet $user "karma").Value}}
+**Statistiques de <@{{$user}}>**
+	:white_small_square: Force : {{$force}}
+	:white_small_square: Endurance : {{$endurance}}
+	:white_small_square: Agilité : {{$agi}}
+	:white_small_square: Précision : {{$preci}}
+	:white_small_square: Intelligence : {{$intel}}
+	:white_small_square: Karma : {{$karma}}
 
-Avec, comme implants :
-	:white_small_square: Force : {{(dbGet  $user "i_force").Value}}
-	:white_small_square: Endurance : {{(dbGet $user "i_endu").Value}}
-	:white_small_square: Agilité : {{(dbGet $user "i_agi").Value}}
-	:white_small_square: Précision : {{(dbGet $user "i_preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet $user "i_intel").Value}}
-	:white_small_square: Karma : {{(dbGet $user "i_karma").Value}}
+**Implant de <@{{$user}}>** :
+	:white_small_square: Force : {{$iforce}}
+	:white_small_square: Endurance : {{$iendu}}
+	:white_small_square: Agilité : {{$iagi}}
+	:white_small_square: Précision : {{$ipreci}}
+	:white_small_square: Intelligence : {{$iintel}}
+	:white_small_square: Karma : {{$ikarma}}
 
 
 	{{else if and (eq (index .CmdArgs 1) "-ID") (eq (index .CmdArgs 0) "-implant" )}}
@@ -136,19 +151,18 @@ Avec, comme implants :
 		**BAD USER ID**
 	{{end}}
 
-	<@{{$user}}> a, en implants :
-	:white_small_square: Force : {{(dbGet  $user "i_force").Value}}
-	:white_small_square: Endurance : {{(dbGet $user "i_endu").Value}}
-	:white_small_square: Agilité : {{(dbGet $user "i_agi").Value}}
-	:white_small_square: Précision : {{(dbGet $user "i_preci").Value}}
-	:white_small_square: Intelligence : {{(dbGet $user "i_intel").Value}}
-	:white_small_square: Karma : {{(dbGet $user "i_karma").Value}}
-
+**Implant de <@{{$user}}>** :
+	:white_small_square: Force : {{$iforce}}
+	:white_small_square: Endurance : {{$iendu}}
+	:white_small_square: Agilité : {{$iagi}}
+	:white_small_square: Précision : {{$ipreci}}
+	:white_small_square: Intelligence : {{$iintel}}
+	:white_small_square: Karma : {{$ikarma}}
 
 	{{else}}
-	**Usage** : `$set -(all|stats|implant) (-ID) Force Endurance Agilité Précision Intelligence Karma`
+	**Usage** : `$setchar -(all|stats|implant) (-ID <id>) Force Endurance Agilité Précision Intelligence Karma`
 	{{end}}
 {{else}}
-**Usage** : `$set -(all|stats|implant) (-ID) Force Endurance Agilité Précision Intelligence Karma`
+**Usage** : `$set -(all|stats|implant) (-ID <id>) Force Endurance Agilité Précision Intelligence Karma`
 
 {{end}}

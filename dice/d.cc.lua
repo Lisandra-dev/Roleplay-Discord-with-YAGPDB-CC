@@ -9,6 +9,7 @@
 {{$v:=$d}}
 {{$arg := 0}}
 {{$argm := 0}}
+{{$c:=""}}
 
 
 {{$msg := ""}}
@@ -16,6 +17,7 @@
 {{$seuil := (toInt 8)}}
 {{$idb := (toInt 0)}}
 
+{{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
 {{$agi := reFindAllSubmatches `(agilité|Agilité|agi|Agi)` .Message.Content}}
 {{$endu := reFindAllSubmatches `(Endurance|endurance|endu|Endu)` .Message.Content}}
@@ -23,7 +25,10 @@
 {{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
 {{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
 
-{{if $force}}
+{{if $manuel}}
+	{{$seuil = (toInt (joinStr "" (split $manuel "s")))}}
+	{{$idb = (toInt 0)}}
+{{else if $force}}
 	{{$seuil = (toInt (dbGet .User.ID "force").Value)}}
 	{{$idb = (toInt (dbGet .User.ID "i_force").Value)}}
 {{else if $agi}}
@@ -57,6 +62,12 @@
 
 
 {{ if .CmdArgs}}
+	{{if $manuel}}
+		{{$c = split (joinStr " " .CmdArgs) $manuel}}
+	{{else}}
+		{{$c = (joinStr " " .CmdArgs)}}
+	{{end}}
+
 	{{if ne (toFloat (index .CmdArgs 0)) (toFloat 0)}}
 		{{$i:=(toInt (index .CmdArgs 0)) }}
 		{{$x := $i}}
@@ -128,7 +139,7 @@
 			{{else}}
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$embed := cembed
-					"description" (joinStr "" "**" $user "** : " (joinStr " " (slice .CmdArgs 1)) $msg "\n"
+					"description" (joinStr "" "**" $user "** : " (joinStr " " (slice $c 1)) $msg "\n"
 					"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 					"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
@@ -208,7 +219,7 @@
 
 					{{else}}
 						{{$embed := cembed
-						"description" (joinStr "" "**" $user "** : " (joinStr " " (slice .CmdArgs 2)) $msg "\n"
+						"description" (joinStr "" "**" $user "** : " (joinStr " " (slice $c 2)) $msg "\n"
 						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil "*]")
 						"color" 0x63AFE1}}
 						{{sendMessage nil $embed}}
@@ -252,7 +263,7 @@
 		{{end}}
 
 		{{$embed := cembed
-		"description" (joinStr "" "**" $user "** : " (joinStr " " .CmdArgs) $msg "\n"
+		"description" (joinStr "" "**" $user "** : " (joinStr " " $c) $msg "\n"
 	"<:next:723131844643651655>[*Dé : " $d  " (" $v ") "  " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 		"color" 0x63AFE1}}
 		{{sendMessage nil $embed}}
