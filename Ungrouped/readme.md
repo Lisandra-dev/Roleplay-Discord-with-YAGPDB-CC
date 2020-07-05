@@ -56,3 +56,19 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 **Usage** : `-google <things to search>`
 > Yag will send a google link to search the things in parameters.
+
+# AFK :
+
+**Trigger** : command
+
+**Usage** : `-afk -d duration (in second) <reason>`
+
+> Set an role AFK in the user who trigger it, for a certain time. Send an embed in the channel for afk with the reason and duration. 
+
+# Viewafk
+
+**Trigger** : Command
+
+**Usage** : Regex : `^\$(viewafk <@!?\d+>)`
+
+> View the afk duration for an user and the reason behind it.
