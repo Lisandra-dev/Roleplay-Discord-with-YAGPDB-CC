@@ -1,7 +1,13 @@
-{{$user:= .Member.Nick}}
-  {{if eq (len $user) 0}}
-    {{$user = .User.Username}}
-  {{end}}
+
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
 
 {{$d:= (randInt 1 10)}}
 {{$real:= $d}}
@@ -68,10 +74,14 @@
 
 
 {{if .CmdArgs}}
+	{{$c = joinStr " " .CmdArgs}}
+	{{if $name}}
+		{{$c = joinStr " " (split $c $name) }}
+		{{$c = joinStr " " (split $c "#")}}
+	{{end}}
+
 	{{if $manuel}}
-		{{$c = split (joinStr " " .CmdArgs) $manuel}}
-	{{else}}
-		{{$c = (joinStr " " .CmdArgs)}}
+		{{$c = joinStr " " (split $c $manuel) }}
 	{{end}}
 
 	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
@@ -215,26 +225,34 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
+					{{$comm =  joinStr "" (slice .CmdArgs 2)}}
 					{{if $manuel}}
-							{{$comm =  joinStr "" (slice .CmdArgs 2)}}
 							{{$comm = joinStr " " (split $comm $manuel)}}
-							{{if ne $comm " "}}
-								{{$comm = joinStr " " (split $comm $manuel) ": " }}
-							{{end}}
+					{{end}}
+					{{if $name}}
+						{{$comm = joinStr " " (split $comm $name)}}
+						{{$comm = joinStr " " (split $comm "#")}}
+					{{end}}
+					{{if ne $comm " "}}
+						{{$comm = joinStr " " $comm ": "}}
 					{{else}}
-						{{$comm = joinStr " " (slice .CmdArgs 2) ": "}}
+						{{$comm = joinStr "" $comm ""}}
 					{{end}}
 				{{end}}
 			{{else}}
+				{{$comm =  joinStr "" (slice .CmdArgs 1)}}
 				{{if $manuel}}
-						{{$comm =  joinStr "" (slice .CmdArgs 1)}}
-						{{$comm = joinStr " " (split $comm $manuel)}}
-						{{if ne $comm " "}}
-							{{$comm = joinStr " " (split $comm $manuel) ": "}}
-						{{end}}
-					{{else}}
-						{{$comm = joinStr " " (slice .CmdArgs 1) ": " }}
-					{{end}}
+					{{$comm = joinStr " " (split $comm $manuel)}}
+				{{end}}
+				{{if $name}}
+					{{$comm = joinStr " " (split $comm $name)}}
+					{{$comm = joinStr " " (split $comm "#")}}
+				{{end}}
+				{{if ne $comm " "}}
+					{{$comm = joinStr " " $comm ": "}}
+				{{else}}
+					{{$comm = joinStr "" $comm ""}}
+				{{end}}
 			{{end}}
 		{{else}}
 			{{$comm = (joinStr " " $c ": ") }}
@@ -243,66 +261,63 @@
 {{else}}
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
-
 {{$r := ""}}
 
 {{$urc := cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique :** Votre cible regagne 8 PV *(+1 si module/PSI)* et obtient un bonus de votre choix.\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique :** *+8 PV + Bonus (+1 si capacité) \n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 	{{$rc := cembed
-			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique: ** Votre cible regagne 8 PV *(+1 si module/PSI).*\n"
+			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique: ** *+8 PV (+1 si capacité).*\n"
 			"<:next:723131844643651655> *[" $res "]*" )
 			"color" 0xEFA3EA }}
 
-{{$r := ""}}
-
 {{if eq $seuil (toInt 2)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : Votre cible regagne 7 PV *(+1 si module/PSI).*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+7 PV (+1 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{else if eq $seuil (toInt 3)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible regagne 6 PV *(+1 si module/PSI)*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+6 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{else if eq $seuil (toInt 4)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible regagne 5 PV *(+1 si module/PSI)*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+5 (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{else if eq $d (toInt 5)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible regagne 4 PV *(+1 si module/PSI)*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+4 (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{else if eq $seuil (toInt 6)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible regagne 3 PV *(+1 si module/PSI)*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+3 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{else if eq $seuil (toInt 7)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible regagne 2 PV *(+1 si module/PSI)*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+2 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{else if eq $seuil (toInt 8)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible regagne 1 PV *(+1 si module/PSI)*\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+1 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 {{end}}
 
 {{$echec := cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec du soin ...**\n"
+		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec du soin...**\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 

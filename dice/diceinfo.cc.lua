@@ -1,6 +1,6 @@
-{{$malus:=reFindAllSubmatches `^\$malus` .Message.Content}}
-{{$soin:= reFindAllSubmatches `^\$soin` .Message.Content}}
-{{$poison:= reFindAllSubmatches `^\$poison` .Message.Content}}
+{{$malus:=reFindAllSubmatches `^\;malus` .Message.Content}}
+{{$soin:= reFindAllSubmatches `^\;soin` .Message.Content}}
+{{$poison:= reFindAllSubmatches `^\;poison` .Message.Content}}
 {{$soinimg := "https://www.sphanalytics.com/wp-content/uploads/2018/01/Health-Icon334.png"}}
 {{$malusimg:="https://www.pixenli.com/image/xsms14QB"}}
 {{$poisonimg:="https://www.pixenli.com/image/eJlppGzy"}}
@@ -17,13 +17,13 @@
 				"description" "Ultra critique : Votre cible a un malus de +4 à tous ses dé."
 				"color" $maluscol
 				"author" (sdict "name" "Malus" "icon_url" $malusimg)}}
-			{{$id = sendMessageRetID nil $embed}} nil $embed}}
+			{{$id = sendMessageRetID nil $embed}}
 		{{else if or (eq $d (toFloat 1)) (eq $d (toFloat 2) ) }}
 			{{$embed:=cembed
 				"description" "Réussite critique : Votre cible a un malus de +3 à son dé."
 				"color" $maluscol
 				"author" (sdict "name" "Malus" "icon_url" $malusimg)}}
-			{{$id = sendMessageRetID nil $embed}}}}
+			{{$id = sendMessageRetID nil $embed}}
 		{{else if and (le $d (toFloat 5)) (ge $d (toFloat 3))}}
 			{{$embed:=cembed
 				"description" "Votre cible a un malus de +2 à son dé."

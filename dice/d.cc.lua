@@ -1,5 +1,10 @@
-{{$user:=.Member.Nick}}
-{{if eq (len $user) 0}}
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
 {{$d:= (randInt 1 10)}}
@@ -63,6 +68,11 @@
 
 {{ if .CmdArgs}}
 	{{$c = joinStr " " .CmdArgs}}
+	{{if $name}}
+		{{$c = joinStr " " (split $c $name) }}
+		{{$c = joinStr " " (split $c "#")}}
+	{{end}}
+
 	{{if $manuel}}
 		{{$c = joinStr " " (split $c $manuel) }}
 	{{end}}
@@ -136,15 +146,18 @@
 				"color" 0x63AFE1}}
 				{{sendMessage nil $embed}}
 			{{else}}
+				{{$c =  joinStr "" (slice .CmdArgs 1)}}
+
 				{{if $manuel}}
-					{{$c =  joinStr "" (slice .CmdArgs 1)}}
 					{{$c = joinStr " " (split $c $manuel)}}
-					{{if ne $c " "}}
-						{{$c = joinStr " " (split $c $manuel) ": "}}
-					{{end}}
-				{{else}}
-					{{$c = joinStr " " (slice .CmdArgs 1) ": " }}
 				{{end}}
+
+				{{if $name}}
+					{{$c = joinStr " " (split $c $name)}}
+					{{$c = joinStr " " (split $c "#")}}
+				{{end}}
+
+				{{$c = joinStr " " $c ": "}}
 
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$embed := cembed
@@ -227,15 +240,18 @@
 					{{sendMessage nil $embed}}
 
 					{{else}}
-						{{if $manuel}}
-							{{$c =  joinStr "" (slice .CmdArgs 2)}}
-							{{$c = joinStr " " (split $c $manuel)}}
-							{{if ne $c " "}}
-								{{$c = joinStr " " (split $c $manuel) ": " }}
-							{{end}}
-						{{else}}
-							{{$c = joinStr " " (slice .CmdArgs 2) ": "  }}
-						{{end}}
+					{{$c =  joinStr "" (slice .CmdArgs 2)}}
+					{{if $manuel}}
+						{{$c = joinStr " " (split $c $manuel)}}
+					{{end}}
+
+					{{if $name}}
+						{{$c = joinStr " " (split $c $name)}}
+						{{$c = joinStr " " (split $c "#")}}
+					{{end}}
+
+					{{$c = joinStr " " $c ": "}}
+
 						{{$embed := cembed
 						"description" (joinStr "" "**" $user "**  ▬ " $c " " $msg "\n"
 						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil "*]")

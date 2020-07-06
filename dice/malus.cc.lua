@@ -1,7 +1,13 @@
-{{$user:= .Member.Nick}}
-  {{if eq (len $user) 0}}
-    {{$user = .User.Username}}
-  {{end}}
+
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
 
 {{$d:= (randInt 1 10)}}
 {{$real:= $d}}
@@ -68,10 +74,14 @@
 
 
 {{if .CmdArgs}}
+	{{$c = joinStr " " .CmdArgs}}
+	{{if $name}}
+		{{$c = joinStr " " (split $c $name) }}
+		{{$c = joinStr " " (split $c "#")}}
+	{{end}}
+
 	{{if $manuel}}
-		{{$c = split (joinStr " " .CmdArgs) $manuel}}
-	{{else}}
-		{{$c = (joinStr " " .CmdArgs)}}
+		{{$c = joinStr " " (split $c $manuel) }}
 	{{end}}
 
 	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
@@ -215,26 +225,34 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
+					{{$comm =  joinStr "" (slice .CmdArgs 2)}}
 					{{if $manuel}}
-							{{$comm =  joinStr "" (slice .CmdArgs 2)}}
 							{{$comm = joinStr " " (split $comm $manuel)}}
-							{{if ne $comm " "}}
-								{{$comm = joinStr " " (split $comm $manuel) ": " }}
-							{{end}}
+					{{end}}
+					{{if $name}}
+						{{$comm = joinStr " " (split $comm $name)}}
+						{{$comm = joinStr " " (split $comm "#")}}
+					{{end}}
+					{{if ne $comm " "}}
+						{{$comm = joinStr " " $comm ": "}}
 					{{else}}
-						{{$comm = joinStr " " (slice .CmdArgs 2) ": "}}
+						{{$comm = joinStr "" $comm ""}}
 					{{end}}
 				{{end}}
 			{{else}}
+				{{$comm =  joinStr "" (slice .CmdArgs 1)}}
 				{{if $manuel}}
-						{{$comm =  joinStr "" (slice .CmdArgs 1)}}
-						{{$comm = joinStr " " (split $comm $manuel)}}
-						{{if ne $comm " "}}
-							{{$comm = joinStr " " (split $comm $manuel) ": "}}
-						{{end}}
-					{{else}}
-						{{$comm = joinStr " " (slice .CmdArgs 1) ": " }}
-					{{end}}
+					{{$comm = joinStr " " (split $comm $manuel)}}
+				{{end}}
+				{{if $name}}
+					{{$comm = joinStr " " (split $comm $name)}}
+					{{$comm = joinStr " " (split $comm "#")}}
+				{{end}}
+				{{if ne $comm " "}}
+					{{$comm = joinStr " " $comm ": "}}
+				{{else}}
+					{{$comm = joinStr "" $comm ""}}
+				{{end}}
 			{{end}}
 		{{else}}
 			{{$comm = (joinStr " " $c ": ") }}
