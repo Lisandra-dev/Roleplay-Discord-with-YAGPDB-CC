@@ -275,17 +275,17 @@
 {{$r := ""}}
 
 
-{{if eq $seuil (toInt 2)}}
+{{if eq $d (toInt 2)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +3 à son dé.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x7E2257 }}
-{{else if and (le $seuil (toInt 3)) (ge $seuil (toInt 5))}}
+{{else if and (le $d (toInt 3)) (ge $d (toInt 5))}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +2 à son dé.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x7E2257 }}
-{{else if and (le $seuil (toInt 8)) (ge $seuil (toInt 6))}}
+{{else if and (le $d (toInt 8)) (ge $d (toInt 6))}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +1 à son dé.\n"
 		"<:next:723131844643651655> *[" $res "]*" )

@@ -273,19 +273,19 @@
 			"<:next:723131844643651655> *[" $res "]*" )
 			"color" 0xEFA3EA }}
 
-{{if eq $seuil (toInt 2)}}
+{{if eq $d (toInt 2)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+7 PV (+1 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $seuil (toInt 3)}}
+{{else if eq $d (toInt 3)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+6 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $seuil (toInt 4)}}
+{{else if eq $d (toInt 4)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+5 (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
@@ -297,19 +297,19 @@
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $seuil (toInt 6)}}
+{{else if eq $d (toInt 6)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+3 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $seuil (toInt 7)}}
+{{else if eq $d (toInt 7)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+2 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $seuil (toInt 8)}}
+{{else if eq $d (toInt 8)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+1 PV (+1 si capacité)*\n"
 		"<:next:723131844643651655> *[" $res "]*" )

@@ -274,25 +274,25 @@
 
 {{$r := ""}}
 
-{{if eq $seuil (toInt 2)}}
+{{if eq $d (toInt 2)}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
 
-{{else if or (eq $seuil (toInt 3)) (eq $seuil (toInt 4))}}
+{{else if or (eq $d (toInt 3)) (eq $d (toInt 4))}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
 
-{{else if or (eq $seuil (toInt 5)) (eq $seuil (toInt 6))}}
+{{else if or (eq $d (toInt 5)) (eq $d (toInt 6))}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
 
-{{else if or (eq $seuil (toInt 7)) (eq $seuil (toInt 8))}}
+{{else if or (eq $d (toInt 7)) (eq $d (toInt 8))}}
 	{{$r = cembed
 		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
