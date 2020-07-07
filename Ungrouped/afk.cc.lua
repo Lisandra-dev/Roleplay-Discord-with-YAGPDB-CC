@@ -10,8 +10,8 @@
 {{$duration := 0}}
 {{$msg := ""}}
 {{$id := ""}}
-{{$idrole := }}
-{{$chan := }}
+{{$idrole := 729351261576626229 }}
+{{$chan :=  "" }}
 
 
 {{ if .CmdArgs }}
@@ -24,7 +24,8 @@
 				{{if eq (toInt $duration) (toInt 0)}}
 					"Mauvaise durée d'absence."
 				{{end}}
-				{{dbSetExpire .User.ID "afk" "" (toInt $duration)}}
+				{{msg = "" }}
+				{{dbSetExpire .User.ID "afk" $msg (toInt $duration)}}
 			{{else}}
 				{{$msg = (joinStr " " "car :" .CmdArgs)}}
 			{{end}}
@@ -52,6 +53,9 @@
 {{if hasRoleID $idrole}}
 	{{removeRoleID $idrole}}
 	Vous n'êtes plus AFK
+	{{$embed := cembed
+	"author" (sdict "name" (printf "%s n'est plus AFK" .User.Username) "icon_url" (User.AvatarURL "256" ))}}
+	{{sendMessage $chan $embed}}
 	{{deleteMessage $chan $id $duration}}
 	{{dbDel .User.ID "afk"}}
 {{end}}
