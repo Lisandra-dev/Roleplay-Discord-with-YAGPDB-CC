@@ -217,7 +217,7 @@
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
 			{{$comm = ""}}
 		{{else}}
-			{{$comm = (joinStr " " $c ": ")}}
+			{{$comm = (joinStr " " $c "▬ ")}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
@@ -225,104 +225,77 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm =  joinStr "" (slice .CmdArgs 2)}}
+					{{$comm =  joinStr " " (slice .CmdArgs 2) "▬ "}}
 					{{if $manuel}}
-							{{$comm = joinStr " " (split $comm $manuel)}}
+							{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
 					{{end}}
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " (split $comm "#")}}
+						{{$comm = joinStr " " (split $comm "#") "▬ "}}
 					{{end}}
 					{{if ne $comm " "}}
-						{{$comm = joinStr " " $comm ": "}}
+						{{$comm = joinStr " " $comm "▬ "}}
 					{{else}}
-						{{$comm = joinStr "" $comm ""}}
+						{{$comm = joinStr " " $comm ""}}
 					{{end}}
 				{{end}}
 			{{else}}
-				{{$comm =  joinStr "" (slice .CmdArgs 1)}}
+				{{$comm =  joinStr " " (slice .CmdArgs 1) "▬ "}}
 				{{if $manuel}}
-					{{$comm = joinStr " " (split $comm $manuel)}}
+					{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
 				{{end}}
 				{{if $name}}
 					{{$comm = joinStr " " (split $comm $name)}}
-					{{$comm = joinStr " " (split $comm "#")}}
+					{{$comm = joinStr " " (split $comm "#") "▬ "}}
 				{{end}}
 				{{if ne $comm " "}}
-					{{$comm = joinStr " " $comm ": "}}
+					{{$comm = joinStr " " $comm "▬ "}}
 				{{else}}
-					{{$comm = joinStr "" $comm ""}}
+					{{$comm = joinStr " " $comm ""}}
 				{{end}}
 			{{end}}
 		{{else}}
-			{{$comm = (joinStr " " $c ": ") }}
+			{{$comm = (joinStr " " $c "▬ ") }}
 		{{end}}
 	{{end}}
 {{else}}
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
+
 {{$r := ""}}
 
+{{$soinimg := "https://www.sphanalytics.com/wp-content/uploads/2018/01/Health-Icon334.png"}}
+
 {{$urc := cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique :** *+8 PV + Bonus (+1 si capacité) \n"
+		"author" (sdict "name" $user "icon_url" $soinimg)
+		"description" (joinStr "" $comm "**Ultra critique :** *+8 PV + Bonus (+1 si capacité)* \n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-	{{$rc := cembed
-			"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique: ** *+8 PV (+1 si capacité).*\n"
-			"<:next:723131844643651655> *[" $res "]*" )
-			"color" 0xEFA3EA }}
-
-{{if eq $d (toInt 2)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+7 PV (+1 si capacité).*\n"
+{{$rc := cembed
+		"author" (sdict "name" $user "icon_url" $soinimg)
+		"description" (joinStr "" $comm "**Réussite critique : ** *+8 PV (+1 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $d (toInt 3)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+6 PV (+1 si capacité)*\n"
+{{$regen := sub 9 $d }}
+
+{{$r := cembed
+	"author" (sdict "name" $user "icon_url" $soinimg)
+		"description" (joinStr "" $comm "**Réussite : ** *+" $regen " PV (+1 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
-{{else if eq $d (toInt 4)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+5 (+1 si capacité)*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0xEFA3EA }}
-
-{{else if eq $d (toInt 5)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+4 (+1 si capacité)*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0xEFA3EA }}
-
-{{else if eq $d (toInt 6)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+3 PV (+1 si capacité)*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0xEFA3EA }}
-
-{{else if eq $d (toInt 7)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+2 PV (+1 si capacité)*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0xEFA3EA }}
-
-{{else if eq $d (toInt 8)}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : *+1 PV (+1 si capacité)*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0xEFA3EA }}
-{{end}}
 
 {{$echec := cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec du soin...**\n"
+		"author" (sdict "name" $user "icon_url" $soinimg)
+		"description" (joinStr "" $comm "**Echec du soin...**\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{$ec := cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec critique du soin :** Votre cible gagne une altération.\n"
+		"author" (sdict "name" $user "icon_url" $soinimg)
+		"description" (joinStr "" $comm "**Echec critique du soin :** Votre cible gagne une altération.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 

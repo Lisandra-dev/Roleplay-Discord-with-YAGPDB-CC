@@ -217,7 +217,7 @@
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
 			{{$comm = ""}}
 		{{else}}
-			{{$comm = (joinStr " " $c ": ")}}
+			{{$comm = (joinStr " " $c "▬ ")}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
@@ -225,50 +225,54 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm =  joinStr "" (slice .CmdArgs 2)}}
+					{{$comm =  joinStr " " (slice .CmdArgs 2) "▬ "}}
 					{{if $manuel}}
-							{{$comm = joinStr " " (split $comm $manuel)}}
+							{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
 					{{end}}
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " (split $comm "#")}}
+						{{$comm = joinStr " " (split $comm "#") "▬ "}}
 					{{end}}
 					{{if ne $comm " "}}
-						{{$comm = joinStr " " $comm ": "}}
+						{{$comm = joinStr " " $comm "▬ "}}
 					{{else}}
-						{{$comm = joinStr "" $comm ""}}
+						{{$comm = joinStr " " $comm ""}}
 					{{end}}
 				{{end}}
 			{{else}}
-				{{$comm =  joinStr "" (slice .CmdArgs 1)}}
+				{{$comm =  joinStr " " (slice .CmdArgs 1) "▬ "}}
 				{{if $manuel}}
-					{{$comm = joinStr " " (split $comm $manuel)}}
+					{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
 				{{end}}
 				{{if $name}}
 					{{$comm = joinStr " " (split $comm $name)}}
-					{{$comm = joinStr " " (split $comm "#")}}
+					{{$comm = joinStr " " (split $comm "#") "▬ "}}
 				{{end}}
 				{{if ne $comm " "}}
-					{{$comm = joinStr " " $comm ": "}}
+					{{$comm = joinStr " " $comm "▬ "}}
 				{{else}}
-					{{$comm = joinStr "" $comm ""}}
+					{{$comm = joinStr " " $comm ""}}
 				{{end}}
 			{{end}}
 		{{else}}
-			{{$comm = (joinStr " " $c ": ") }}
+			{{$comm = (joinStr " " $c "▬ ") }}
 		{{end}}
 	{{end}}
 {{else}}
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
 
+{{$img := "https://www.pixenli.com/image/xsms14QB"}}
+
 {{$urc := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique :** Votre cible a une pénalité de +4 à son dé.\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Ultra critique :** Votre cible a une pénalité de +4 à son dé.\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x7E2257 }}
 
 {{$rc := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique :** Votre cible a une pénalité de +3 à son dé.\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Réussite critique :** Votre cible a une pénalité de +3 à son dé.\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x7E2257 }}
 
@@ -277,28 +281,33 @@
 
 {{if eq $d (toInt 2)}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +3 à son dé.\n"
+		"author" (sdict "name" $user "icon_url" $img)
+		"description" (joinStr "" $comm "**Réussite :** Votre cible a une pénalité de +3 à son dé.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x7E2257 }}
 {{else if and (le $d (toInt 3)) (ge $d (toInt 5))}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +2 à son dé.\n"
+		"author" (sdict "name" $user "icon_url" $img)
+		"description" (joinStr "" $comm "**Réussite :** Votre cible a une pénalité de +2 à son dé.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x7E2257 }}
 {{else if and (le $d (toInt 8)) (ge $d (toInt 6))}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite :** Votre cible a une pénalité de +1 à son dé.\n"
+		"author" (sdict "name" $user "icon_url" $img)
+		"description" (joinStr "" $comm "**Réussite :** Votre cible a une pénalité de +1 à son dé.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x7E2257 }}
 {{end}}
 
 {{$echec := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec de l'altération...**\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Echec de l'altération...**\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x7E2257 }}
 
 {{$ec := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec critique de l'altération** Votre cible a un bonus de -2 à son dé.\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Echec critique de l'altération** Votre cible a un bonus de -2 à son dé.\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x7E2257}}
 

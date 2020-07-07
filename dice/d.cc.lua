@@ -1,6 +1,7 @@
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
+{{$img := "https://www.pixenli.com/image/YtG5gOEa"}}
 
 {{if $name}}
 	{{$user = $name}}
@@ -141,12 +142,13 @@
 
 			{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
 				{{$embed := cembed
-				"description" (joinStr "" "**" $user "** ▬ " $msg "\n"
+				"author" (sdict "name" $user "icon_url" $img)
+				"description" (joinStr "" $msg "\n"
 				"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 				"color" 0x63AFE1}}
 				{{sendMessage nil $embed}}
 			{{else}}
-				{{$c =  joinStr "" (slice .CmdArgs 1)}}
+				{{$c =  joinStr " " (slice .CmdArgs 1)}}
 
 				{{if $manuel}}
 					{{$c = joinStr " " (split $c $manuel)}}
@@ -157,11 +159,12 @@
 					{{$c = joinStr " " (split $c "#")}}
 				{{end}}
 
-				{{$c = joinStr " " $c ": "}}
+				{{$c = joinStr " " $c }}
 
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$embed := cembed
-					"description" (joinStr "" "**" $user "**  ▬ " $c $msg "\n"
+					"author" (sdict "name" $user "icon_url" $img)
+					"description" (joinStr "" $c " ▬ " $msg "\n"
 					"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 					"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
@@ -234,13 +237,14 @@
 
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$embed := cembed
-						"description" (joinStr "" "**" $user "** ▬ " $msg "\n"
+						"author" (sdict "name" $user "icon_url" $img)
+						"description" (joinStr "" $msg "\n"
 						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $x " : " $arg1 " | " $y " " $arg2 " | " $imp " : " $idb " | Seuil : " $seuil "*]")
 						"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
 
 					{{else}}
-					{{$c =  joinStr "" (slice .CmdArgs 2)}}
+					{{$c =  joinStr " " (slice .CmdArgs 2)}}
 					{{if $manuel}}
 						{{$c = joinStr " " (split $c $manuel)}}
 					{{end}}
@@ -250,10 +254,11 @@
 						{{$c = joinStr " " (split $c "#")}}
 					{{end}}
 
-					{{$c = joinStr " " $c ": "}}
+					{{$c = joinStr " " $c }}
 
 						{{$embed := cembed
-						"description" (joinStr "" "**" $user "**  ▬ " $c " " $msg "\n"
+							"author" (sdict "name" $user "icon_url" $img)
+						"description" (joinStr "" $c " ▬ " $msg "\n"
 						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil "*]")
 						"color" 0x63AFE1}}
 						{{sendMessage nil $embed}}
@@ -297,7 +302,8 @@
 		{{end}}
 
 		{{$embed := cembed
-		"description" (joinStr "" "**" $user "**  ▬  " (joinStr " " $c) " : " $msg "\n"
+			"author" (sdict "name" $user "icon_url" $img)
+		"description" (joinStr "" (joinStr " " $c) " ▬ " $msg "\n"
 	"<:next:723131844643651655>[*Dé : " $d  " (" $v ") "  " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 		"color" 0x63AFE1}}
 		{{sendMessage nil $embed}}
@@ -334,7 +340,8 @@
 	{{$msg = " "}}
 {{end}}
 	{{$embed := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $msg "\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $msg "\n"
 	"<:next:723131844643651655>[*Dé : " $d "* ]")
 	"color" 0x63AFE1}}
 	{{sendMessage nil $embed}}

@@ -217,7 +217,7 @@
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
 			{{$comm = ""}}
 		{{else}}
-			{{$comm = (joinStr " " $c ": ")}}
+			{{$comm = (joinStr " " $c "▬ ")}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
@@ -225,87 +225,75 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm =  joinStr "" (slice .CmdArgs 2)}}
+					{{$comm =  joinStr " " (slice .CmdArgs 2) "▬ "}}
 					{{if $manuel}}
-							{{$comm = joinStr " " (split $comm $manuel)}}
+							{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
 					{{end}}
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " (split $comm "#")}}
+						{{$comm = joinStr " " (split $comm "#") "▬ "}}
 					{{end}}
 					{{if ne $comm " "}}
-						{{$comm = joinStr " " $comm ": "}}
+						{{$comm = joinStr " " $comm "▬ "}}
 					{{else}}
-						{{$comm = joinStr "" $comm ""}}
+						{{$comm = joinStr " " $comm ""}}
 					{{end}}
 				{{end}}
 			{{else}}
-				{{$comm =  joinStr "" (slice .CmdArgs 1)}}
+				{{$comm =  joinStr " " (slice .CmdArgs 1) "▬ "}}
 				{{if $manuel}}
-					{{$comm = joinStr " " (split $comm $manuel)}}
+					{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
 				{{end}}
 				{{if $name}}
 					{{$comm = joinStr " " (split $comm $name)}}
-					{{$comm = joinStr " " (split $comm "#")}}
+					{{$comm = joinStr " " (split $comm "#") "▬ "}}
 				{{end}}
 				{{if ne $comm " "}}
-					{{$comm = joinStr " " $comm ": "}}
+					{{$comm = joinStr " " $comm "▬ "}}
 				{{else}}
-					{{$comm = joinStr "" $comm ""}}
+					{{$comm = joinStr " " $comm ""}}
 				{{end}}
 			{{end}}
 		{{else}}
-			{{$comm = (joinStr " " $c ": ") }}
+			{{$comm = (joinStr " " $c "▬ ") }}
 		{{end}}
 	{{end}}
 {{else}}
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
 
+{{$img:="https://www.pixenli.com/image/eJlppGzy"}}
+
 {{$urc := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
 {{$rc := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
 {{$r := ""}}
-
-{{if eq $d (toInt 2)}}
+{{$pv := sub 9 $d}}
+{{$pvall := mult $pv 3}}
 	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "**Réussite** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+		"author" (sdict "name" $user "icon_url" $img)
+		"description" (joinStr "" $comm "**Réussite** : Votre cible a un empoisonnement de " $pv " PV sur 3 tours (-" $pvall " PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
-
-{{else if or (eq $d (toInt 3)) (eq $d (toInt 4))}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x4D399E }}
-
-{{else if or (eq $d (toInt 5)) (eq $d (toInt 6))}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 4 PV sur 3 tours (-12 PV en tout).\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x4D399E }}
-
-{{else if or (eq $d (toInt 7)) (eq $d (toInt 8))}}
-	{{$r = cembed
-		"description" (joinStr "" "**" $user "** ▬ " $comm "*Réussite* : Votre cible a un empoisonnement de 2 PV sur 3 tours (-6 PV en tout).\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x4D399E }}
-{{end}}
 
 {{$echec := cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec de l'empoisonnement**...\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Echec de l'empoisonnement**...\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
 {{$ec:= cembed
-	"description" (joinStr "" "**" $user "** ▬ " $comm "**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).\n"
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
