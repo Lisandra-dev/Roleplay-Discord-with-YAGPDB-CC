@@ -281,13 +281,13 @@
 {{$pvall := mult $pv 3}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" $comm "**Réussite**" $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 3 tours (-" $pvall " PV en tout).\n"
+		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 3 tours (-" $pvall " PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
 
 {{$echec := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $comm "**Echec de l'empoisonnement** " $comm "\n"
+	"description" (joinStr "" "**Echec de l'empoisonnement** " $comm "\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
