@@ -3,6 +3,7 @@
 
 	Recommended trigger: Regex trigger with trigger `<@!?\d+>`
 */}}
+
 {{ $id := reFind `\d+` .Cmd | toInt64 }}
 {{ with (dbGet $id "afk") }}
 	{{ $user := userArg .UserID }}
@@ -15,4 +16,7 @@
 		"footer" (sdict "text" "Away since")
 		"timestamp" .UpdatedAt
 	) }}
+	{{else}}
+	{{$user.String}} "n'est pas AFK !"
 {{ end }}
+{{deleteTrigger 1}}
