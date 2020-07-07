@@ -217,7 +217,7 @@
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
 			{{$comm = ""}}
 		{{else}}
-			{{$comm = (joinStr " " $c "▬ ")}}
+			{{$comm = (joinStr " " " ▬" $c ": ")}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
@@ -225,37 +225,37 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$comm = ""}}
 				{{else}}
-					{{$comm =  joinStr " " (slice .CmdArgs 2) "▬ "}}
+					{{$comm =  joinStr " " (slice .CmdArgs 2) }}
 					{{if $manuel}}
-							{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
+							{{$comm = joinStr " " " ▬" (split $comm $manuel) ": "}}
 					{{end}}
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " (split $comm "#") "▬ "}}
+						{{$comm = joinStr " " " ▬" (split $comm "#") ": "}}
 					{{end}}
 					{{if ne $comm " "}}
-						{{$comm = joinStr " " $comm "▬ "}}
+						{{$comm = joinStr " " " ▬" $comm ": "}}
 					{{else}}
 						{{$comm = joinStr " " $comm ""}}
 					{{end}}
 				{{end}}
 			{{else}}
-				{{$comm =  joinStr " " (slice .CmdArgs 1) "▬ "}}
+				{{$comm =  joinStr " " (slice .CmdArgs 1)}}
 				{{if $manuel}}
-					{{$comm = joinStr " " (split $comm $manuel) "▬ "}}
+					{{$comm = joinStr " " " ▬" (split $comm $manuel) ": "}}
 				{{end}}
 				{{if $name}}
 					{{$comm = joinStr " " (split $comm $name)}}
-					{{$comm = joinStr " " (split $comm "#") "▬ "}}
+					{{$comm = joinStr " " " ▬" (split $comm "#") ": "}}
 				{{end}}
 				{{if ne $comm " "}}
-					{{$comm = joinStr " " $comm "▬ "}}
+					{{$comm = joinStr " " " ▬" $comm ": "}}
 				{{else}}
 					{{$comm = joinStr " " $comm ""}}
 				{{end}}
 			{{end}}
 		{{else}}
-			{{$comm = (joinStr " " $c "▬ ") }}
+			{{$comm = (joinStr " " " ▬" $c ": ") }}
 		{{end}}
 	{{end}}
 {{else}}
@@ -268,13 +268,13 @@
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" $comm "**Ultra critique :** *+8 PV + Bonus (+1 si capacité)* \n"
+		"description" (joinStr "" "**Ultra critique** " $comm " *+8 PV + Bonus (+1 si capacité)* \n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{$rc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" $comm "**Réussite critique : ** *+8 PV (+1 si capacité).*\n"
+		"description" (joinStr "" "**Réussite critique** " $comm " *+8 PV (+1 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
@@ -282,20 +282,20 @@
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" $comm "**Réussite : ** *+" $regen " PV (+1 si capacité).*\n"
+		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV (+1 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 
 {{$echec := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" $comm "**Echec du soin...**\n"
+		"description" (joinStr "" "**Echec du soin** " $comm "\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{$ec := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" $comm "**Echec critique du soin :** Votre cible gagne une altération.\n"
+		"description" (joinStr "" "**Echec critique du soin**" $comm "*Votre cible gagne une altération*.\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
