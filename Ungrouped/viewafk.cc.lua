@@ -9,14 +9,15 @@
 	{{ $user := userArg .UserID }}
 	{{ $eta := "" }}
 	{{ if gt .ExpiresAt.Unix 0 }} {{ $eta = humanizeDurationSeconds (.ExpiresAt.Sub currentTime) | printf "*%s sera de retour dans : %s.*" $user.Username }} {{ end }}
-	{{ sendMessage nil (cembed
-		"author" (sdict "name" (printf "%s est AFK" $user.String) "icon_url" ($user.AvatarURL "256"))
-		"description" (joinStr "\n\n" $eta .Value "\n" (dbGet $id "afk"))
-		"color" (randInt 0 16777216)
-		"footer" (sdict "text" "Away since")
-		"timestamp" .UpdatedAt
-	) }}
+		{{ sendMessage nil (cembed
+			"author" (sdict "name" (printf "%s est AFK" $user.String) "icon_url" ($user.AvatarURL "256"))
+			"description" (joinStr "\n\n" $eta .Value "\n" (dbGet $id "afk"))
+			"color" (randInt 0 16777216)
+			"footer" (sdict "text" "Away since")
+			"timestamp" .UpdatedAt
+		) }}
 	{{else}}
-	{{$user.String}} "n'est pas AFK !"
+	{{ $user := userArg $id }}
+	{{$user.Username}} n'est pas AFK !
 {{ end }}
 {{deleteTrigger 1}}
