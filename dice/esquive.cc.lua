@@ -281,7 +281,7 @@
 		"author" (sdict "name" $user "icon_url" $img)
 		"description" (joinStr "" "**Réussite**" $comm "\n Vous réussissez votre esquive !\n"
 		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x4D399E }}
+		"color" 0x8CCBD6  }}
 
 	{{$echec := cembed
 	"author" (sdict "name" $user "icon_url" $img)
