@@ -1,4 +1,3 @@
-
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
@@ -30,8 +29,8 @@
 
 {{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
-{{$agi := reFindAllSubmatches `(agilité|Agilité|agi|Agi)` .Message.Content}}
-{{$endu := reFindAllSubmatches `(Endurance|endurance|endu|Endu)` .Message.Content}}
+{{$agi := reFindAllSubmatches `(agilité|Agilité|\dagi|\dAgi)` .Message.Content}}
+{{$endu := reFindAllSubmatches `(Endurance|endurance|\dendu|\dEndu)` .Message.Content}}
 {{$preci := reFindAllSubmatches `(Précision|précision|préci|Préci)` .Message.Content}}
 {{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
 {{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
@@ -56,7 +55,7 @@
 	{{$idb = (toInt (dbGet .User.ID "i_intel").Value)}}
 {{else if $karma}}
 	{{$seuil = (toInt (dbGet .User.ID "karma").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_karma").Value)}}
+	{{$idb = (toInt 0)}}
 {{else}}
 	{{$seuil = (toInt 8)}}
 	{{$idb = (toInt 0)}}
@@ -227,31 +226,31 @@
 				{{else}}
 					{{$comm =  joinStr " " (slice .CmdArgs 2) }}
 					{{if $manuel}}
-							{{$comm = joinStr " " " ▬" (split $comm $manuel) ": "}}
+							{{$comm = joinStr " " (split $comm $manuel)}}
 					{{end}}
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " " ▬" (split $comm "#") ": "}}
+						{{$comm = joinStr " " (split $comm "#")}}
 					{{end}}
 					{{if ne $comm " "}}
 						{{$comm = joinStr " " " ▬" $comm ": "}}
 					{{else}}
-						{{$comm = joinStr " " $comm ""}}
+						{{$comm = joinStr " " $comm}}
 					{{end}}
 				{{end}}
 			{{else}}
 				{{$comm =  joinStr " " (slice .CmdArgs 1)}}
 				{{if $manuel}}
-					{{$comm = joinStr " " " ▬" (split $comm $manuel) ": "}}
+					{{$comm = joinStr " " (split $comm $manuel) }}
 				{{end}}
 				{{if $name}}
-					{{$comm = joinStr " " (split $comm $name)}}
-					{{$comm = joinStr " " " ▬" (split $comm "#") ": "}}
+					{{$comm = joinStr "" (split $comm $name)}}
+					{{$comm = joinStr " " (split $comm "#")}}
 				{{end}}
 				{{if ne $comm " "}}
 					{{$comm = joinStr " " " ▬" $comm ": "}}
 				{{else}}
-					{{$comm = joinStr " " $comm ""}}
+					{{$comm = joinStr " " $comm}}
 				{{end}}
 			{{end}}
 		{{else}}
@@ -263,22 +262,23 @@
 {{end}}
 
 {{$img:="https://www.pixenli.com/image/eJlppGzy"}}
+{{$pv := sub 9 $d }}
+{{$pvall := mult $pv 3}}
 
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
+	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a un empoisonnement de" $pv " PV sur 3 tours (" $pvall " PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
 {{$rc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Réussite critique** " $comm "\n Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+	"description" (joinStr "" "**Réussite critique** " $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 3 tours (" $pvall " PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
 {{$r := ""}}
-{{$pv := sub 9 $d}}
-{{$pvall := mult $pv 3}}
+
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
 		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 3 tours (-" $pvall " PV en tout).\n"
@@ -296,6 +296,7 @@
 	"description" (joinStr "" "**Echec critique de l'empoisonnement** " $comm "\n Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
+
 
 {{if eq $d (toInt 0)}}
 	{{sendMessage nil $urc}}

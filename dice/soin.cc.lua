@@ -1,4 +1,3 @@
-
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
@@ -30,8 +29,8 @@
 
 {{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
-{{$agi := reFindAllSubmatches `(agilité|Agilité|agi|Agi)` .Message.Content}}
-{{$endu := reFindAllSubmatches `(Endurance|endurance|endu|Endu)` .Message.Content}}
+{{$agi := reFindAllSubmatches `(agilité|Agilité|\dagi|\dAgi)` .Message.Content}}
+{{$endu := reFindAllSubmatches `(Endurance|endurance|\dendu|\dEndu)` .Message.Content}}
 {{$preci := reFindAllSubmatches `(Précision|précision|préci|Préci)` .Message.Content}}
 {{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
 {{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
@@ -56,7 +55,7 @@
 	{{$idb = (toInt (dbGet .User.ID "i_intel").Value)}}
 {{else if $karma}}
 	{{$seuil = (toInt (dbGet .User.ID "karma").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_karma").Value)}}
+	{{$idb = (toInt 0)}}
 {{else}}
 	{{$seuil = (toInt 8)}}
 	{{$idb = (toInt 0)}}
@@ -227,31 +226,31 @@
 				{{else}}
 					{{$comm =  joinStr " " (slice .CmdArgs 2) }}
 					{{if $manuel}}
-							{{$comm = joinStr " " " ▬" (split $comm $manuel) ": "}}
+							{{$comm = joinStr " " (split $comm $manuel)}}
 					{{end}}
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " " ▬" (split $comm "#") ": "}}
+						{{$comm = joinStr " " (split $comm "#")}}
 					{{end}}
 					{{if ne $comm " "}}
 						{{$comm = joinStr " " " ▬" $comm ": "}}
 					{{else}}
-						{{$comm = joinStr " " $comm ""}}
+						{{$comm = joinStr " " $comm}}
 					{{end}}
 				{{end}}
 			{{else}}
 				{{$comm =  joinStr " " (slice .CmdArgs 1)}}
 				{{if $manuel}}
-					{{$comm = joinStr " " " ▬" (split $comm $manuel) ": "}}
+					{{$comm = joinStr " " (split $comm $manuel) }}
 				{{end}}
 				{{if $name}}
-					{{$comm = joinStr " " (split $comm $name)}}
-					{{$comm = joinStr " " " ▬" (split $comm "#") ": "}}
+					{{$comm = joinStr "" (split $comm $name)}}
+					{{$comm = joinStr " " (split $comm "#")}}
 				{{end}}
 				{{if ne $comm " "}}
 					{{$comm = joinStr " " " ▬" $comm ": "}}
 				{{else}}
-					{{$comm = joinStr " " $comm ""}}
+					{{$comm = joinStr " " $comm}}
 				{{end}}
 			{{end}}
 		{{else}}

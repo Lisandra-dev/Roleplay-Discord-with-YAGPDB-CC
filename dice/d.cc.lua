@@ -25,8 +25,8 @@
 
 {{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
-{{$agi := reFindAllSubmatches `(agilité|Agilité|agi|Agi)` .Message.Content}}
-{{$endu := reFindAllSubmatches `(Endurance|endurance|endu|Endu)` .Message.Content}}
+{{$agi := reFindAllSubmatches `(agilité|Agilité|\dagi|\dAgi)` .Message.Content}}
+{{$endu := reFindAllSubmatches `(Endurance|endurance|\dendu|\dEndu)` .Message.Content}}
 {{$preci := reFindAllSubmatches `(Précision|précision|préci|Préci)` .Message.Content}}
 {{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
 {{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
@@ -51,7 +51,7 @@
 	{{$idb = (toInt (dbGet .User.ID "i_intel").Value)}}
 {{else if $karma}}
 	{{$seuil = (toInt (dbGet .User.ID "karma").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_karma").Value)}}
+	{{$idb = (toInt 0)}}
 {{else}}
 	{{$seuil = (toInt 8)}}
 	{{$idb = (toInt 0)}}
@@ -117,9 +117,9 @@
 		{{end}}
 
 		{{if eq $d (toInt 0)}}
-			{{$msg ="**Ultra critique !** "}}
+			{{$msg ="**Ultra critique** "}}
 		{{else if eq $d (toInt 1)}}
-			{{$msg = "**Réussite critique !** "}}
+			{{$msg = "**Réussite critique** "}}
 		{{else if le $d $seuil}}
 				{{if ge $mimp (toInt 1)}}
 					{{if eq $d $seuil}}
@@ -133,9 +133,9 @@
 		{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
 			{{$msg = "**Echec** "}}
 		{{else if eq $d (toInt 10)}}
-			{{$msg = "**Echec critique !** "}}
+			{{$msg = "**Echec critique** "}}
 		{{else if eq $d (toInt 9)}}
-			{{$msg = "**Echec...** "}}
+			{{$msg = "**Echec** "}}
 		{{else}}
 			{{$msg = " "}}
 		{{end}}
@@ -164,7 +164,7 @@
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$embed := cembed
 					"author" (sdict "name" $user "icon_url" $img)
-					"description" (joinStr "" $c " ▬ " $msg "\n"
+					"description" (joinStr "" $msg " ▬ " $c " : " "\n"
 					"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 					"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
@@ -212,9 +212,9 @@
 					{{end}}
 
 					{{if eq $d (toInt 0)}}
-						{{$msg ="**Ultra critique !** "}}
+						{{$msg ="**Ultra critique** "}}
 					{{else if eq $d (toInt 1)}}
-						{{$msg = "**Réussite critique !** "}}
+						{{$msg = "**Réussite critique** "}}
 					{{else if le $d $seuil}}
 							{{if ge $mimp (toInt 1)}}
 								{{if eq $d $seuil}}
@@ -228,9 +228,9 @@
 					{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
 						{{$msg = "**Echec** "}}
 					{{else if eq $d (toInt 10)}}
-						{{$msg = "**Echec critique !** "}}
+						{{$msg = "**Echec critique** "}}
 					{{else if eq $d (toInt 9)}}
-						{{$msg = "**Echec...** "}}
+						{{$msg = "**Echec** "}}
 					{{else}}
 						{{$msg = " "}}
 					{{end}}
@@ -258,7 +258,7 @@
 
 						{{$embed := cembed
 							"author" (sdict "name" $user "icon_url" $img)
-						"description" (joinStr "" $c " ▬ " $msg "\n"
+						"description" (joinStr "" $msg " ▬ " $c " : " "\n"
 						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil "*]")
 						"color" 0x63AFE1}}
 						{{sendMessage nil $embed}}
@@ -278,9 +278,9 @@
 		{{end}}
 
 		{{if eq $d (toInt 0)}}
-			{{$msg ="**Ultra critique !** "}}
+			{{$msg ="**Ultra critique** "}}
 		{{else if eq $d (toInt 1)}}
-			{{$msg = "**Réussite critique !** "}}
+			{{$msg = "**Réussite critique** "}}
 		{{else if le $d $seuil}}
 				{{if ge $idb (toInt 1)}}
 					{{if eq $d $seuil}}
@@ -294,16 +294,16 @@
 		{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
 			{{$msg = "**Echec** "}}
 		{{else if eq $d (toInt 10)}}
-			{{$msg = "**Echec critique !** "}}
+			{{$msg = "**Echec critique** "}}
 		{{else if eq $d (toInt 9)}}
-			{{$msg = "**Echec...** "}}
+			{{$msg = "**Echec** "}}
 		{{else}}
 			{{$msg = " "}}
 		{{end}}
 
 		{{$embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" (joinStr " " $c) " ▬ " $msg "\n"
+		"description" (joinStr "" $msg " ▬ " (joinStr " " $c) " : " "\n"
 	"<:next:723131844643651655>[*Dé : " $d  " (" $v ") "  " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
 		"color" 0x63AFE1}}
 		{{sendMessage nil $embed}}
@@ -317,9 +317,9 @@
 {{end}}
 
 {{if eq $d (toInt 0)}}
-	{{$msg ="**Ultra critique !** "}}
+	{{$msg ="**Ultra critique** "}}
 {{else if eq $d (toInt 1)}}
-	{{$msg = "**Réussite critique !** "}}
+	{{$msg = "**Réussite critique** "}}
 {{else if le $d $seuil}}
 		{{if ge $idb (toInt 1)}}
 			{{if eq $d $seuil}}
@@ -333,9 +333,9 @@
 {{else if or (gt $d $seuil) (lt $d (toInt 9))}}
 	{{$msg = "**Echec** "}}
 {{else if eq $d (toInt 10)}}
-	{{$msg = "**Echec critique !** "}}
+	{{$msg = "**Echec critique** "}}
 {{else if eq $d (toInt 9)}}
-	{{$msg = "**Echec...** "}}
+	{{$msg = "**Echec** "}}
 {{else}}
 	{{$msg = " "}}
 {{end}}

@@ -261,75 +261,63 @@
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
 
-{{$img := "https://www.pixenli.com/image/xsms14QB"}}
+{{$img := "https://www.pixenli.com/image/gLsV6A4F"}}
 
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a une pénalité de +4 à son dé.\n"
+	"description" (joinStr "" "**Ultra critique**" $comm "\nEsquive réussie ! Et vous avez droit à une contre-attaque avec un bonus de 5% d'attaque.\n"
 	"<:next:723131844643651655> *[" $res "]*" )
-	"color" 0x7E2257 }}
+	"color" 0x8CCBD6 }}
 
 {{$rc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Réussite critique**" $comm "\n Votre cible a une pénalité de +3 à son dé.\n"
+	"description" (joinStr "" "**Réussite critique**" $comm "\n Esquive réussie ! Vous avez droit à une contre-attaque.\n"
 	"<:next:723131844643651655> *[" $res "]*" )
-	"color" 0x7E2257 }}
+	"color" 0x8CCBD6 }}
 
 {{$r := ""}}
 
-{{if eq $d (toInt 2)}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a une pénalité de +3 à son dé.\n"
+		"description" (joinStr "" "**Réussite**" $comm "\n Vous réussissez votre esquive !\n"
 		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x7E2257 }}
-{{else if and (le $d (toInt 3)) (ge $d (toInt 5))}}
-	{{$r = cembed
-		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a une pénalité de +2 à son dé.\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x7E2257 }}
-{{else if and (le $d (toInt 8)) (ge $d (toInt 6))}}
-	{{$r = cembed
-		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a une pénalité de +1 à son dé.\n"
-		"<:next:723131844643651655> *[" $res "]*" )
-		"color" 0x7E2257 }}
-{{end}}
+		"color" 0x4D399E }}
 
-{{$echec := cembed
+	{{$echec := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Echec de l'altération**" $comm "\n"
+	"description" (joinStr "" "**Echec de l'esquive** " $comm "\n"
 	"<:next:723131844643651655> *[" $res "]*" )
-	"color" 0x7E2257 }}
+	"color" 0x8CCBD6 }}
 
-{{$ec := cembed
+	{{$ec:= cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $comm "**Echec critique de l'altération** " $comm " Votre cible a un bonus de -2 à son dé.\n"
+	"description" (joinStr "" "**Echec critique de l'esquive'** " $comm "\n"
 	"<:next:723131844643651655> *[" $res "]*" )
-	"color" 0x7E2257}}
+	"color" 0x8CCBD6 }}
 
-{{if eq $d (toInt 0)}}
-	{{sendMessage nil $urc}}
-{{else if eq $d (toInt 1)}}
-	{{sendMessage nil $rc}}
-{{else if le $d $seuil}}
-	{{if ge $mimp (toInt 1)}}
-		{{if eq $d $seuil}}
-			{{sendMessage nil $echec}}
+{{$reu:= div $seuil 2}}
+
+	{{if eq $d (toInt 0)}}
+		{{sendMessage nil $urc}}
+	{{else if eq $d (toInt 1)}}
+		{{sendMessage nil $rc}}
+	{{else if le $d $reu}}
+		{{if ge $mimp (toInt 1)}}
+			{{if eq $d $reu}}
+				{{sendMessage nil $echec}}
+			{{else}}
+				{{sendMessage nil $r}}
+			{{end}}
 		{{else}}
 			{{sendMessage nil $r}}
 		{{end}}
+	{{else if or (gt $d $reu) (lt $d (toInt 9)) }}
+		{{sendMessage nil $echec}}
+	{{else if eq $d (toInt 10)}}
+		{{sendMessage nil $ec}}
+	{{else if eq $d (toInt 9)}}
+		{{sendMessage nil $echec}}
 	{{else}}
-		{{sendMessage nil $r}}
 	{{end}}
-{{else if or (gt $d $seuil) (lt $d (toInt 9)) }}
-	{{sendMessage nil $echec}}
-{{else if eq $d (toInt 10)}}
-	{{sendMessage nil $ec}}
-{{else if eq $d (toInt 9)}}
-	{{sendMessage nil $echec}}
-{{else}}
-{{end}}
 
-{{deleteTrigger 1}}
+	{{deleteTrigger 1}}

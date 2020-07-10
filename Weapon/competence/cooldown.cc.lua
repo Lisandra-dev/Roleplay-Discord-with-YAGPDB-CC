@@ -5,7 +5,6 @@
 		{{$arg:= (dbGet .User.ID "comp").Value}}
 		{{if not (dbGet .User.ID $arg)}}
 			{{dbSet .User.ID $arg 1}}
-			{{dbSet .User.ID "run" (toString .Channel.ID)}}
 			{{ $embed := cembed
 				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)}}
 			{{ $id := sendMessageRetID nil $embed }}
@@ -23,7 +22,6 @@
 		{{$arg:= (dbGet .User.ID "aide").Value}}
 		{{if not (dbGet .User.ID $arg)}}
 			{{dbSet .User.ID $arg 1}}
-			{{dbSet .User.ID "run" (toString .Channel.ID)}}
 			{{ $embed := cembed
 				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)}}
 			{{ $id := sendMessageRetID nil $embed }}
