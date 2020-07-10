@@ -295,15 +295,14 @@
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x8CCBD6 }}
 
-{{$reu:= div $seuil 2}}
-
+{{$reu:= roundCeil (div (toFloat $seuil) 2)}}
 	{{if eq $d (toInt 0)}}
 		{{sendMessage nil $urc}}
 	{{else if eq $d (toInt 1)}}
 		{{sendMessage nil $rc}}
-	{{else if le $d $reu}}
+	{{else if le (roundCeil $d) $reu}}
 		{{if ge $mimp (toInt 1)}}
-			{{if eq $d $reu}}
+			{{if eq (toFloat $d) $reu}}
 				{{sendMessage nil $echec}}
 			{{else}}
 				{{sendMessage nil $r}}
@@ -311,7 +310,7 @@
 		{{else}}
 			{{sendMessage nil $r}}
 		{{end}}
-	{{else if or (gt $d $reu) (lt $d (toInt 9)) }}
+	{{else if or (gt (toFloat $d) $reu) (lt $d (toInt 9)) }}
 		{{sendMessage nil $echec}}
 	{{else if eq $d (toInt 10)}}
 		{{sendMessage nil $ec}}
