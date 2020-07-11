@@ -64,19 +64,19 @@
 	{{else if $soin}}
 		{{if eq $d (toFloat 0)}}
 			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible regagne 8 PV *(+1 si module/PSI)* et obtient un bonus de votre choix."
+				"description" "Ultra critique : Votre cible regagne 40 PV *(+1 si module/PSI)* et obtient un bonus de votre choix."
 				"color" $soincol
 				"author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 1)}}
 			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible regagne 8 PV *(+1 si module/PSI).*"
+				"description" "Réussite critique : Votre cible regagne 40 PV *(+1 si module/PSI).*"
 				"color" $soincol
         "author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 9)}}
     {{$embed:=cembed
-      "description" "Echec critique : Votre cible obtient un malus."
+      "description" "Echec..."
       "color" $soincol
       "author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
@@ -88,6 +88,7 @@
 			{{$id = sendMessageRetID nil $embed}}
 		{{else}}
 		{{$regen:= sub 9 $d}}
+		{{$regen := mult $regen 5}}
 		{{$r := cembed
 			"author" (sdict "name" $user "icon_url" $soinimg)
 				"description" (joinStr "" "**Réussite : ** *+" $regen " PV (+1 si capacité).*\n")
@@ -102,13 +103,13 @@
 		{{if eq $d (toFloat 0)}}
 			{{$urc := cembed
 				"author" (sdict "name" $user "icon_url" $poisonimg)
-				"description" "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
+				"description" "**Ultra critique** : Votre cible a un empoisonnement de 50 PV sur 3 tours (-30 PV en tout).\n"
 				"color" 0x4D399E}}
 				{{sendMessage nil $urc}}
 		{{else if eq $d (toFloat 1)}}
 		{{$rc := cembed
 			"author" (sdict "name" $user "icon_url" $poisonimg)
-			"description" "**Réussite critique** : Votre cible a un empoisonnement de 8 PV sur 3 tours (-24 PV en tout).\n"
+			"description" "**Réussite critique** : Votre cible a un empoisonnement de 40 PV sur 3 tours (-120 PV en tout).\n"
 			"color" 0x4D399E }}
 			{{sendMessage nil $rc}}
 		{{else if eq $d (toFloat 9)}}
@@ -120,11 +121,12 @@
 		{{else if eq $d (toFloat 10)}}
 		{{$ec:= cembed
 			"author" (sdict "name" $user "icon_url" $poisonimg)
-			"description" "**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).\n"
+			"description" "**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 15 PV sur 3 tours (+90 PV en tout).\n"
 			"color" 0x4D399E }}
 			{{sendMessage nil $ec}}
 		{{else}}
 			{{$p:= sub 9 $d}}
+			{{$p := mult $p 5}}
 			{{$pa:= mult $p 3}}
 			{{$r := cembed
 				"author" (sdict "name" $user "icon_url" $poisonimg)
@@ -143,4 +145,3 @@
 {{end}}
 
 {{deleteTrigger 1}}
-{{deleteMessage nil $id 30}}

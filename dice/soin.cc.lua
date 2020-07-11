@@ -278,6 +278,7 @@
 		"color" 0xEFA3EA }}
 
 {{$regen := sub 9 $d }}
+{{$regen := mult $regen 5}}
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
