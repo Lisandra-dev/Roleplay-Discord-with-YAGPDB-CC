@@ -1,18 +1,32 @@
 {{/* You can change the word between quote, beware : some are the database key, if you change it you must change ALL key
 Float are for the number of bullet, you can change it.  */}}
 
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$img := "https://www.pixenli.com/image/xDMop79G"}}
+
 {{if not (dbGet .User.ID "recharge")}}
   {{if .CmdArgs}}
     {{if eq (index .CmdArgs 0) "fusil"}}
       {{if gt (toFloat (dbGet .User.ID "fusil").Value) (toFloat 11)}}
         {{dbSet .User.ID "cf" 1}}
   	     {{ $embed := cembed
-  	        "description" (joinStr "" "Début du rechargement du fusil de " $.User.Mention)}}
+					 	"author" (sdict "name" $user "icon_url" $img)
+						"color" 0x6CAB8E
+						"description" "Début du rechargement de votre fusil"}}
   	      {{ $id := sendMessageRetID nil $embed }}
           {{deleteMessage nil $id 30}}
       {{else}}
-  	  {{ $embed := cembed
-  	     "description" (joinStr "" "Le fusil de " .User.Mention " est chargé")}}
+			{{ $embed := cembed
+				"author" (sdict "name" $user "icon_url" $img)
+				"color" 0x6CAB8E
+				"description" "Votre fusil est complètement rechargé. \n Vous avez 12 charges à disposition !"}}
   	  {{ $id := sendMessageRetID nil $embed }}
       {{deleteMessage nil $id 30}}
       {{end}}
@@ -21,12 +35,16 @@ Float are for the number of bullet, you can change it.  */}}
 	      {{if gt (toFloat (dbGet .User.ID "fusil2").Value) (toFloat 11)}}
 	        {{dbSet .User.ID "cf2" 1}}
 	  	     {{ $embed := cembed
-	  	        "description" (joinStr "" "Début du rechargement du deuxième fusil de " $.User.Mention)}}
+						 	"author" (sdict "name" $user "icon_url" $img)
+ 							"color" 0x6CAB8E
+							"description" "Début du rechargement de votre deuxième fusil"}}
 	  	      {{ $id := sendMessageRetID nil $embed }}
 	          {{deleteMessage nil $id 30}}
 	      {{else}}
-		  	  {{ $embed := cembed
-		  	     "description" (joinStr "" "Le deuxième fusil de " .User.Mention " est chargé")}}
+				{{ $embed := cembed
+					"author" (sdict "name" $user "icon_url" $img)
+					"color" 0x6CAB8E
+					"description" "Votre deuxième fusil est complètement rechargé.\n Vous avez 12 charges à disposition !"}}
 		  	  {{ $id := sendMessageRetID nil $embed }}
 		      {{deleteMessage nil $id 30}}
 	      {{end}}
@@ -35,12 +53,16 @@ Float are for the number of bullet, you can change it.  */}}
       {{if gt (toFloat (dbGet .User.ID "pistol").Value) (toFloat 7)}}
         {{dbSet .User.ID "cp" 1}}
   	    {{ $embed := cembed
-  	       "description" (joinStr "" "Début du rechargement du pistolet de " $.User.Mention)}}
+						"author" (sdict "name" $user "icon_url" $img)
+						"color" 0x6CAB8E
+  	       "description" "Début du rechargement de votre pistolet"}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{else}}
-        {{ $embed := cembed
-  	       "description" (joinStr "" "Le pistolet de " .User.Mention " est chargé")}}
+				{{$embed := cembed
+					"author" (sdict "name" $user "icon_url" $img)
+					"color" 0x6CAB8E
+					"description" "Votre pistolet est complètement rechargé.\n Vous avez 8 charge à disposition !"}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{end}}
@@ -48,25 +70,33 @@ Float are for the number of bullet, you can change it.  */}}
       {{if gt (toFloat (dbGet .User.ID "canon").Value) (toFloat 19)}}
         {{dbSet .User.ID "ca" 1}}
         	{{ $embed := cembed
-  	         "description" (joinStr "" "Début du rechargement du canon de " $.User.Mention)}}
+						"author" (sdict "name" $user "icon_url" $img)
+						"color" 0x6CAB8E
+  	        "description" "Début du rechargement de votre canon"}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{else}}
-    	  {{ $embed := cembed
-    	     "description" (joinStr "" "Le canon de" .User.Mention "est chargé")}}
+			{{ $embed := cembed
+				"author" (sdict "name" $user "icon_url" $img)
+				"color" 0x6CAB8E
+				"description" "Votre canon est complètement rechargé.\n Vous avez 20 charge à disposition !"}}
     	  {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{end}}
     {{else if eq (index .CmdArgs 0) "pistolet2"}}
       {{if gt (toFloat (dbGet .User.ID "pistol2").Value) (toFloat 7)}}
         {{dbSet .User.ID "cp2" 1}}
-  	    {{ $embed := cembed
-  	       "description" (joinStr "" "Début du rechargement du deuxième pistolet de " $.User.Mention)}}
+				{{ $embed := cembed
+ 					"author" (sdict "name" $user "icon_url" $img)
+ 					"color" 0x6CAB8E
+  	      "description" "Début du rechargement de votre deuxième pistolet"}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{else}}
-        {{ $embed := cembed
-  	       "description" (joinStr "" "Le deuxième pistolet de " .User.Mention " est chargé")}}
+			{{$embed := cembed
+				"author" (sdict "name" $user "icon_url" $img)
+				"color" 0x6CAB8E
+				"description" "Votre deuxième pistolet est complètement rechargé.\n Vous avez 8 charge à disposition !"}}
   	    {{ $id := sendMessageRetID nil $embed }}
         {{deleteMessage nil $id 30}}
       {{end}}

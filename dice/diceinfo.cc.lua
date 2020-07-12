@@ -103,7 +103,7 @@
 		{{if eq $d (toFloat 0)}}
 			{{$urc := cembed
 				"author" (sdict "name" $user "icon_url" $poisonimg)
-				"description" "**Ultra critique** : Votre cible a un empoisonnement de 50 PV sur 3 tours (-30 PV en tout).\n"
+				"description" "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
 				"color" 0x4D399E}}
 				{{sendMessage nil $urc}}
 		{{else if eq $d (toFloat 1)}}
@@ -125,8 +125,7 @@
 			"color" 0x4D399E }}
 			{{sendMessage nil $ec}}
 		{{else}}
-			{{$p:= sub 9 $d}}
-			{{$p := mult $p 5}}
+			{{$p:= sub 10 $d}}
 			{{$pa:= mult $p 3}}
 			{{$r := cembed
 				"author" (sdict "name" $user "icon_url" $poisonimg)

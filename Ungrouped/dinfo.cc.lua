@@ -19,7 +19,7 @@
 	{{else if eq (index .CmdArgs 0) "poison"}}
 		{{$embed := cembed
 			"title" "Empoisonnement"
-			"Description" "Attention, les poisons ne sont pas en pourcentages, et les dégâts sont multipliés, au final, par 3 car une altération dure trois tours. \n\n  **0** : -50 (-150 PV) → IMPLANT UNIQUEMENT \n**1** : -40 (-120PV)\n**2** : -35 (-105 PV)\n**3** : -30 (-90PV)\n**4**: -25 (-75PV)\n**5** : -20 (-60PV)\n**6** : -15 (-45PV) \n**7** : -10 (-30PV)\n**8** : -5 (-15PV)\n**9** : Echec\n**10** : +15 PV (+45PV)"
+			"Description" "Attention, les poisons ne sont pas en pourcentages, et les dégâts sont multipliés, au final, par 3 car une altération dure trois tours. \n\n  **0** : -10 (-30 PV) → IMPLANT UNIQUEMENT \n**1** : -9 (-27PV)\n**2** : -8 (-24 PV)\n**3** : -7 (-21PV)\n**4**: -6 (-18PV)\n**5** : -5 (-15PV)\n**6** : -4 (-12PV) \n**7** : -3 (-9PV)\n**8** : -2 (-6PV)\n**9** : Echec\n**10** : +15 PV (+45PV)"
 			"color" 0x370E6A
 			"thumbnail" (sdict "url" "https://www.pixenli.com/image/eJlppGzy")}}
       {{$id = sendMessageRetID nil $embed}}

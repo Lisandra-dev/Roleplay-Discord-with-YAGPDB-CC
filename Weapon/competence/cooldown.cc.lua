@@ -1,3 +1,18 @@
+
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+
+{{$user := .Member.Nick}}
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+
+{{$imga:="https://www.pixenli.com/image/_ODhDu_c"}}
+{{$imgs :="https://www.pixenli.com/image/LsAuceyE" }}
+{{$imgm := "https://www.pixenli.com/image/SwqOezUj"}}
+
 {{if .CmdArgs}}
 	{{if eq (index .CmdArgs 0) "attaque"}}
 		{{$nom:= (index .CmdArgs 1)}}
@@ -6,12 +21,16 @@
 		{{if not (dbGet .User.ID $arg)}}
 			{{dbSet .User.ID $arg 1}}
 			{{ $embed := cembed
-				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)}}
+				"author" (sdict "name" $user "icon_url" $imga)
+				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)
+				"color" 0xDFAA58}}
 			{{ $id := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $id 30}}
 		{{else}}
 			{{ $embed := cembed
-			"description" (joinStr "" "La compétence " $arg " a déjà été utilisée")}}
+			"author" (sdict "name" $user "icon_url" $imga)
+			"description" (joinStr "" "La compétence " $arg " a déjà été utilisée")
+			"color" 0xDFAA58}}
 			{{ $id := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $id 30}}
 		{{end}}
@@ -23,15 +42,48 @@
 		{{if not (dbGet .User.ID $arg)}}
 			{{dbSet .User.ID $arg 1}}
 			{{ $embed := cembed
-				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)}}
+				"author" (sdict "name" $user "icon_url" $imgs)
+				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)
+				"color" 0xB57CA3}}
 			{{ $id := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $id 30}}
 		{{else}}
 			{{ $embed := cembed
-				"description" (joinStr "" "La compétence " $arg " a déjà été utilisée")}}
+				"author" (sdict "name" $user "icon_url" $imgs)
+				"description" (joinStr "" "La compétence " $arg " a déjà été utilisée")
+			"color" 0xB57CA3}}
 			{{ $id := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $id 30}}
 		{{end}}
+
+	{{else if eq (index .CmdArgs 0) "manuel"}}
+		{{if lt (len .CmdArgs) 2}}
+			{{"ERREUR"}}
+		{{else}}
+			{{$nom := (index .CmdArgs 1)}}
+			{{dbSet .User.ID "manuel" $nom}}
+			{{$cd := (index .CmdArgs 2)}}
+			{{dbSet .User.ID "cdmanuel" $cd}}
+			{{$arg := (dbGet .User.ID "manuel").Value}}
+			{{if not (dbGet .User.ID $arg)}}
+				{{dbSet .User.ID $arg 1}}
+				{{$embed := cembed
+				"author" (sdict "name" $user "icon_url" $imgm)
+				"description" (joinStr "" "Début du cooldown pour la compétence " $arg)
+				"color" 0x977ED0}}
+			{{$id := sendMessageRetID nil $embed}}
+			{{deleteMessage nil $id 30}}
+			{{else}}
+				{{ $embed := cembed
+					"author" (sdict "name" $user "icon_url" $imgm)
+					"description" (joinStr "" "La compétence " $arg " a déjà été utilisée")
+					"color" 0x977ED0}}
+				{{ $id := sendMessageRetID nil $embed }}
+				{{deleteMessage nil $id 30}}
+			{{end}}
+		{{end}}
+
+
 	{{else}}
 		{{ $embed := cembed
 			"description" "Merci d'indiquer le type de cooldown que vous utilisez.\n\n **Usage** : `$cooldown <attaque|support> nom`"}}
@@ -45,4 +97,3 @@
 		{{deleteMessage nil $id 30}}
 {{end}}
 {{deleteTrigger 1}}
-bite

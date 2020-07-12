@@ -4,6 +4,15 @@ It will also count the number of balls used, and will return this message to tel
 
 If you change the value of the if, you must change the value in the "$x := sub".  */}}
 
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$img := "https://www.pixenli.com/image/Dkm5e-vR"}}
 
 {{if not (dbGet .User.ID "canon")}}
   {{dbSet .User.ID "canon" 0}}
@@ -11,14 +20,17 @@ If you change the value of the if, you must change the value in the "$x := sub".
   {{$y := (dbGet .User.ID "canon").Value}}
   {{$x := sub 20 $y}}
   {{if lt $y (toFloat 20)}}
-    {{ $embed := cembed
-      "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de canon !")}}
-      {{ $id := sendMessageRetID nil $embed }}
-  		{{deleteMessage nil $id 30}}
+		{{ $embed := cembed
+		"author" (sdict "name" $user "icon_url" $img)
+		"color" 0x6CAB8E
+		"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/20 charges de canon !")}}
+    {{ $id := sendMessageRetID nil $embed }}
+  	{{deleteMessage nil $id 30}}
   {{else}}
-    {{ $embed := cembed
-      "description" (joinStr "" .User.Mention ", votre canon est vide.")}}
-      {{ $id := sendMessageRetID nil $embed }}
+		{{ $embed := cembed
+				"author" (sdict "name" $user "icon_url" $img)
+				"color" 0x6CAB8E
+				"description" "Votre canon est vide !"}}
   		{{deleteMessage nil $id 30}}
   {{end}}
 {{else}}
@@ -26,13 +38,17 @@ If you change the value of the if, you must change the value in the "$x := sub".
   {{$y := (dbGet .User.ID "canon").Value}}
   {{$x := sub 20 $y}}
   {{if lt $y (toFloat 20)}}
-    {{ $embed := cembed
-    "description" (joinStr "" .User.Mention ", il vous reste " (toString (toInt $x)) " charges de canon !")}}
+		{{ $embed := cembed
+			"author" (sdict "name" $user "icon_url" $img)
+			"color" 0x6CAB8E
+			"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/20 charges de canon !")}}
     {{ $id := sendMessageRetID nil $embed }}
     {{deleteMessage nil $id 30}}
   {{else}}
-    {{ $embed := cembed
-    "description" (joinStr "" .User.Mention ", votre canon est vide.")}}
+		{{ $embed := cembed
+			"author" (sdict "name" $user "icon_url" $img)
+			"color" 0x6CAB8E
+			"description" "Votre canon est vide !"}}
     {{ $id := sendMessageRetID nil $embed }}
 		{{deleteMessage nil $id 30}}
   {{end}}

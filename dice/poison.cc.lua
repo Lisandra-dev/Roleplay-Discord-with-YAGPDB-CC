@@ -262,8 +262,7 @@
 {{end}}
 
 {{$img:="https://www.pixenli.com/image/eJlppGzy"}}
-{{$pv := sub 9 $d }}
-{{$pv := mult $d 5}}
+{{$pv := sub 10 $d }}
 {{$pvall := mult $pv 3}}
 
 {{$urc := cembed
