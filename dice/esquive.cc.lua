@@ -1,9 +1,16 @@
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
+{{$id := .User.ID }}
 
 {{if $name}}
 	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{$id = ""}}
+	{{range $idperso}}
+		{{- $id = (print $id .)}}
+	{{- end}}
+	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
@@ -39,22 +46,22 @@
 	{{$seuil = (toInt (joinStr "" (split $manuel "s")))}}
 	{{$idb = (toInt 0)}}
 {{else if $force}}
-	{{$seuil = (toInt (dbGet .User.ID "force").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_force").Value)}}
+	{{$seuil = (toInt (dbGet $id "force").Value)}}
+	{{$idb = (toInt (dbGet $id "i_force").Value)}}
 {{else if $agi}}
-	{{$seuil = (toInt (dbGet .User.ID "agi").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_agi").Value)}}
+	{{$seuil = (toInt (dbGet $id "agi").Value)}}
+	{{$idb = (toInt (dbGet $id "i_agi").Value)}}
 {{else if $endu}}
-	{{$seuil = (toInt (dbGet .User.ID "endurance").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_endu").Value)}}
+	{{$seuil = (toInt (dbGet $id "endurance").Value)}}
+	{{$idb = (toInt (dbGet $id "i_endu").Value)}}
 {{else if $preci}}
-	{{$seuil = (toInt (dbGet .User.ID "preci").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_preci").Value)}}
+	{{$seuil = (toInt (dbGet $id "preci").Value)}}
+	{{$idb = (toInt (dbGet $id "i_preci").Value)}}
 {{else if $intell}}
-	{{$seuil = (toInt (dbGet .User.ID "intelligence").Value)}}
-	{{$idb = (toInt (dbGet .User.ID "i_intel").Value)}}
+	{{$seuil = (toInt (dbGet $id "intelligence").Value)}}
+	{{$idb = (toInt (dbGet $id "i_intel").Value)}}
 {{else if $karma}}
-	{{$seuil = (toInt (dbGet .User.ID "karma").Value)}}
+	{{$seuil = (toInt (dbGet $id "karma").Value)}}
 	{{$idb = (toInt 0)}}
 {{else}}
 	{{$seuil = (toInt 8)}}
@@ -317,6 +324,6 @@
 	{{else if eq $d (toInt 9)}}
 		{{sendMessage nil $echec}}
 	{{else}}
-	{{end}}
+{{end}}
 
-	{{deleteTrigger 1}}
+{{deleteTrigger 1}}
