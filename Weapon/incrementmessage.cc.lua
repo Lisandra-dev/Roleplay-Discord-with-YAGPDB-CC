@@ -1,16 +1,16 @@
 {{/* Float corresspond to the number of message what must be send */}}
 {{/* len .Message.Content is for the length of each message : the message must be that length for +1 the counter.  */}}
 
-{{/* Fusil : "cf" and "fusil" key : 6 message of 15 characters */}}
-{{/* Fusil : "cf2" and "fusil2" key : 6 message of 15 characters */}}
+{{/* Fusil : "cf" and "fusil" key : 4 message of 15 characters */}}
+{{/* Fusil : "cf2" and "fusil2" key : 4 message of 15 characters */}}
 
 {{ $matches := (index (reFindAllSubmatches `^\((.*)\)|(^\$(.*))|(^\!\!(.+))|((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})` .Message.Content)) }}
 {{if not $matches}}
 {{if (dbGet .User.ID "cf")}}
-	{{if and (lt (dbGet .User.ID "cf").Value (toFloat 6)) (gt (len .Message.Content) 15)}}
+	{{if and (lt (dbGet .User.ID "cf").Value (toFloat 4)) (gt (len .Message.Content) 15)}}
 		{{$incr := dbIncr .User.ID "recharge_cf" 1}}
 		{{$incr := dbIncr .User.ID "cf" 1}}
-	{{else if and (eq (dbGet .User.ID "cf").Value (toFloat 6))}}
+	{{else if and (eq (dbGet .User.ID "cf").Value (toFloat 4))}}
 		{{ $embed := cembed
 			"description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")}}
 		{{ $id := sendMessageRetID nil $embed }}
@@ -21,10 +21,10 @@
 	{{end}}
 
 	{{else if (dbGet .User.ID "cf2")}}
-		{{if and (lt (dbGet .User.ID "cf2").Value (toFloat 6)) (gt (len .Message.Content) 15)}}
+		{{if and (lt (dbGet .User.ID "cf2").Value (toFloat 4)) (gt (len .Message.Content) 15)}}
 			{{$incr := dbIncr .User.ID "recharge_cf2" 1}}
 			{{$incr := dbIncr .User.ID "cf2" 1}}
-		{{else if and (eq (dbGet .User.ID "cf2").Value (toFloat 6))}}
+		{{else if and (eq (dbGet .User.ID "cf2").Value (toFloat 4))}}
 			{{ $embed := cembed
 				"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")}}
 			{{ $id := sendMessageRetID nil $embed }}
@@ -34,13 +34,13 @@
 			{{dbDel .User.ID "fusil2"}}
 		{{end}}
 
-  {{/* CANON : "ca" key and "canon" key : 11 messages of 15 characters */}}
+  {{/* CANON : "ca" key and "canon" key : 7 messages of 15 characters */}}
 
 {{else if (dbGet .User.ID "ca")}}
-	{{if and (lt (dbGet .User.ID "ca").Value (toFloat 11)) (gt (len .Message.Content) 15) }}
+	{{if and (lt (dbGet .User.ID "ca").Value (toFloat 7)) (gt (len .Message.Content) 15) }}
 		{{$incr := dbIncr .User.ID "recharge_ca" 1}}
 		{{$incr := dbIncr .User.ID "ca" 1}}
-	{{else if and (eq (dbGet .User.ID "ca").Value (toFloat 11))}}
+	{{else if and (eq (dbGet .User.ID "ca").Value (toFloat 7))}}
 	  	{{ $embed := cembed
 	     		"description" (joinStr "" "Canon de " $.User.Mention " rechargé.")}}
 	  	{{ $id := sendMessageRetID nil $embed }}
@@ -50,14 +50,14 @@
 		{{dbDel .User.ID "canon"}}
   	{{end}}
 
-  {{/* PISTOLET : "cp" key and "pistol" key : 4 messages of 15 characters */}}
-	{{/* PISTOLET 2 : "cp2" key and "pistol2" key : 4 messages of 15 characters */}}
+  {{/* PISTOLET : "cp" key and "pistol" key : 2 messages of 15 characters */}}
+	{{/* PISTOLET 2 : "cp2" key and "pistol2" key : 2 messages of 15 characters */}}
 
 {{else if (dbGet .User.ID "cp")}}
-	{{if and (lt (dbGet .User.ID "cp").Value (toFloat 4)) (gt (len .Message.Content) 15)}}
+	{{if and (lt (dbGet .User.ID "cp").Value (toFloat 2)) (gt (len .Message.Content) 15)}}
 	{{$incr := dbIncr .User.ID "recharge_cp" 1}}
 	{{$incr := dbIncr .User.ID "cp" 1}}
-	{{else if and (eq (dbGet .User.ID "cp").Value (toFloat 4))}}
+	{{else if and (eq (dbGet .User.ID "cp").Value (toFloat 2))}}
     		{{ $embed := cembed
 	     		"description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")}}
 	  	{{ $id := sendMessageRetID nil $embed }}
@@ -68,10 +68,10 @@
 	{{end}}
 
 {{else if (dbGet .User.ID "cp2")}}
-	{{if and (lt (dbGet .User.ID "cp2").Value (toFloat 4)) (gt (len .Message.Content) 15)}}
+	{{if and (lt (dbGet .User.ID "cp2").Value (toFloat 2)) (gt (len .Message.Content) 15)}}
 	{{$incr := dbIncr .User.ID "recharge_cp2" 1}}
 	{{$incr := dbIncr .User.ID "cp2" 1}}
-	{{else if and (eq (dbGet .User.ID "cp2").Value (toFloat 4))}}
+	{{else if and (eq (dbGet .User.ID "cp2").Value (toFloat 2))}}
     		{{ $embed := cembed
 	     		"description" (joinStr "" "Deuxième pistolet de " $.User.Mention " rechargé.")}}
 	  	{{ $id := sendMessageRetID nil $embed }}

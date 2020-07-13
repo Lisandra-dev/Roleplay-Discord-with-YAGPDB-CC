@@ -19,9 +19,10 @@
 
 {{if not $matches}}
 	{{if (dbGet .User.ID $arg)}}
-		{{if and (lt (dbGet .User.ID $arg).Value (toFloat 3)) (gt (len .Message.Content) 15) }}
+		{{if and (lt (dbGet .User.ID $arg).Value (toFloat 2)) (gt (len .Message.Content) 15) }}
 				{{$incr := dbIncr .User.ID $arg 1}}
-		{{else if (eq (dbGet .User.ID $arg).Value (toFloat 3))  }}
+		{{else if (eq (dbGet .User.ID $arg).Value (toFloat 2))  }}
+				{{dbDel .User.ID "comp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Votre compétence " $arg " est de nouveau utilisable")
@@ -32,9 +33,10 @@
 		{{end}}
 
 	{{else if (dbGet .User.ID $arg2)}}
-		{{if and (lt (dbGet .User.ID $arg2).Value (toFloat 6)) (gt (len .Message.Content) 15) }}
+		{{if and (lt (dbGet .User.ID $arg2).Value (toFloat 5)) (gt (len .Message.Content) 15) }}
 			{{$incr := dbIncr .User.ID $arg2 1}}
-		{{else if (eq (dbGet .User.ID $arg2).Value (toFloat 6))}}
+		{{else if (eq (dbGet .User.ID $arg2).Value (toFloat 5))}}
+			{{dbDel .User.ID "aide"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $imgs)
 				"description" (joinStr "" "Votre compétence " $arg2 " est de nouveau utilisable")
@@ -49,16 +51,16 @@
 		{{if and (lt (dbGet .User.ID $arg3).Value (toFloat $cd)) (gt (len .Message.Content) 15)}}
 			{{$incr := dbIncr .User.ID $arg3 1}}
 		{{else if eq (dbGet .User.ID $arg3).Value (toFloat $cd)}}
+			{{dbDel .User.ID "cdmanuel"}}
+			{{dbDel .User.ID "manuel"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $imgm)
 				"description" (joinStr "" "Votre compétence " $arg3 " est de nouveau utilisable")
 				"color" 0xB57CA3}}
 			{{ $id := sendMessageRetID nil $embed }}
-		{{deleteMessage nil $id 30}}
-		{{dbDel .User.ID $arg3}}
-		{{dbDel .User.ID $cd}}
+			{{deleteMessage nil $id 30}}
+			{{dbDel .User.ID $arg3}}
 	{{end}}
-
 	{{else}}
 	{{end}}
 {{end}}
