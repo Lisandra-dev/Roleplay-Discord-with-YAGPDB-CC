@@ -1,3 +1,4 @@
+{$name := reFind `(\#\S*)` .Message.Content}}
 {{$malus:=reFindAllSubmatches `^\;malus` .Message.Content}}
 {{$soin:= reFindAllSubmatches `^\;soin` .Message.Content}}
 {{$poison:= reFindAllSubmatches `^\;poison` .Message.Content}}
@@ -8,9 +9,11 @@
 {{$poisoncol:=0x370E6A}}
 {{$maluscol:=0x2B7697}}
 {{$id:= ""}}
+{{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
-
-{{if eq (len $user) 0}}
+{{if $name}}
+	{{$user = $name}}
+{{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
 
