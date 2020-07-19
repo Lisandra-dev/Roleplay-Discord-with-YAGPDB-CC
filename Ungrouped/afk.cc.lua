@@ -9,18 +9,29 @@
 
 {{$duration := 3600}}
 {{$msg := ""}}
-{{$id := ""}}
+{{$id := 0}}
 {{$idrole := 729351261576626229 }}
 {{$chan :=  719905269081178152 }}
+{{$idold := 0}}
 
 
 {{ if .CmdArgs }}
 	{{if eq (toFloat (len .CmdArgs)) (toFloat 1)}}
+	{{if hasRoleID $idrole}}
+		{{$duration = 3600}}
+		{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+		{{deleteMessage $chan $idold}}
 		{{$msg = .CmdArgs}}
+	{{end}}
 	{{else if gt (toFloat (len .CmdArgs)) (toFloat 1)}}
 		{{if eq (toFloat (len .CmdArgs)) (toFloat 2)}}
 			{{if eq (index .CmdArgs 0) "-d"}}
 				{{$duration = (index .CmdArgs 1)}}
+				{{if hasRoleID $idrole}}
+					{{$duration = (index .CmdArgs 1)}}
+					{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+					{{deleteMessage $chan $idold}}
+				{{end}}
 				{{if eq (toInt $duration) (toInt 0)}}
 					"Mauvaise durée d'absence."
 				{{end}}
@@ -33,6 +44,11 @@
 		{{else}}
 			{{if eq (index .CmdArgs 0) "-d"}}
 				{{$duration = (index .CmdArgs 1)}}
+				{{if hasRoleID $idrole}}
+					{{$duration = (index .CmdArgs 1)}}
+					{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+					{{deleteMessage $chan $idold}}
+				{{end}}
 				{{if eq (toInt $duration) (toInt 0)}}
 					"Mauvaise durée d'absence."
 				{{end}}
@@ -42,25 +58,27 @@
 			{{end}}
 		{{end}}
 	{{end}}
-		{{$embed := cembed
+		{{$afkembed := cembed
 			"color" (randInt 111111 999999)
 			"author" (sdict "name" (printf "%s est AFK" .User.Username) "icon_url" (.User.AvatarURL "256"))
-			"description" (joinStr " " "Durant"  (toDuration (joinStr "" $duration "s" )) $msg)}}
-		{{$id = sendMessageRetID $chan $embed }}
-		{{deleteMessage $chan $id $duration}}
+			"description" (joinStr " " "Durant"  (humanizeDurationSeconds (toDuration (joinStr "" $duration "s" ))) $msg)}}
+		{{$id = sendMessageRetID $chan $afkembed }}
+		{{dbSet .User.ID "afkmsg" (str $id) }}
 	{{addRoleID $idrole}}
 	{{removeRoleID $idrole $duration}}
-{{end}}
-
-{{if hasRoleID $idrole}}
-	{{removeRoleID $idrole}}
-	Vous n'êtes plus AFK
-	{{$embed := cembed
-	"author" (sdict "name" (printf "%s n'est plus AFK" .User.Username) "icon_url" (.User.AvatarURL "256" ))}}
-	{{$afk:= sendMessageRetID $chan $embed}}
-	{{deleteMessage $chan $id $duration}}
-	{{deleteMessage $chan $afk 4320}}
-	{{dbDel .User.ID "afk"}}
+{{else}}
+	{{if hasRoleID $idrole}}
+		{{removeRoleID $idrole}}
+		{{.User.Mention}} : vous n'êtes plus AFK
+		{{$embed := cembed
+		"author" (sdict "name" (printf "%s n'est plus AFK" .User.Username) "icon_url" (.User.AvatarURL "256" ))}}
+		{{$afk:= sendMessageRetID $chan $embed}}
+		{{$idold = (toInt (dbGet .User.ID "afkmsg").Value)}}
+		{{deleteMessage $chan $idold}}
+		{{deleteMessage $chan $afk 180}}
+		{{dbDel .User.ID "afk"}}
+		{{dbDel .User.ID "idold"}}
+	{{end}}
 {{end}}
 {{deleteTrigger 1}}
-{{deleteResponse 1}}
+{{deleteResponse 15}}
