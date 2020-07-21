@@ -11,7 +11,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$img := "https://www.pixenli.com/image/Dkm5e-vR"}}
+{{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
 {{if not (dbGet .User.ID "fusil2")}}
 	{{dbSet .User.ID "fusil2" 0}}

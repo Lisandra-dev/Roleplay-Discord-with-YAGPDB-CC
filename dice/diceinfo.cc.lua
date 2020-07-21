@@ -2,9 +2,9 @@
 {{$malus:=reFindAllSubmatches `^\;malus` .Message.Content}}
 {{$soin:= reFindAllSubmatches `^\;soin` .Message.Content}}
 {{$poison:= reFindAllSubmatches `^\;poison` .Message.Content}}
-{{$soinimg := "https://www.sphanalytics.com/wp-content/uploads/2018/01/Health-Icon334.png"}}
-{{$malusimg:="https://www.pixenli.com/image/xsms14QB"}}
-{{$poisonimg:="https://www.pixenli.com/image/eJlppGzy"}}
+{{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
+{{$malusimg:="https://i.imgur.com/fuHvIUn.png"}}
+{{$poisonimg:="https://i.imgur.com/CmgNFYu.png"}}
 {{$soincol:=0xb66dc1}}
 {{$poisoncol:=0x370E6A}}
 {{$maluscol:=0x2B7697}}

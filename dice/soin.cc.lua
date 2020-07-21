@@ -271,7 +271,7 @@
 
 {{$r := ""}}
 
-{{$soinimg := "https://www.sphanalytics.com/wp-content/uploads/2018/01/Health-Icon334.png"}}
+{{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)

@@ -9,7 +9,7 @@ Float are for the number of bullet, you can change it.  */}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$img := "https://www.pixenli.com/image/xDMop79G"}}
+{{$img := "https://i.imgur.com/WNuPWCv.png"}}
 
 {{if not (dbGet .User.ID "recharge")}}
   {{if .CmdArgs}}

@@ -9,9 +9,9 @@
 	{{$user = .User.Username}}
 {{end}}
 
-{{$imga:="https://www.pixenli.com/image/_ODhDu_c"}}
-{{$imgs :="https://www.pixenli.com/image/LsAuceyE" }}
-{{$imgm := "https://www.pixenli.com/image/SwqOezUj"}}
+{{$imga:="https://i.imgur.com/zNofnyh.png"}}
+{{$imgs :="https://i.imgur.com/9iRdtbM.png" }}
+{{$imgm := "https://i.imgur.com/FCy00x2.png"}}
 
 {{if .CmdArgs}}
 	{{if eq (index .CmdArgs 0) "attaque"}}

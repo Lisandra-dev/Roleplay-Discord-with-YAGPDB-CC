@@ -12,7 +12,7 @@
 {{$msgp2 := ""}}
 {{$msgf := ""}}
 {{$msgf2 := ""}}
-{{$img := "https://www.pixenli.com/image/Dkm5e-vR"}}
+{{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
 {{if .CmdArgs}}
 	{{if eq (index .CmdArgs 0) "fusil"}}

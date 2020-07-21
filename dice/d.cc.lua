@@ -1,7 +1,7 @@
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
-{{$img := "https://www.pixenli.com/image/YtG5gOEa"}}
+{{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
 {{if $name}}
 	{{$user = $name}}

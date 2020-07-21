@@ -2,10 +2,10 @@
 {{$chan:= 716988208205791342}} {{/* Change the channel ID you want send the embed */}}
 
 {{/*Thumbnail*/}}
-{{$nuit:="https://cdn.discordapp.com/attachments/717422988038897744/717423036713795625/Citycons_night_icon-icons.com_67936.png"}}
-{{$matin:="https://cdn.discordapp.com/attachments/717422988038897744/717423356550447204/morning-3867006_640.png"}}
-{{$midi:="https://cdn.discordapp.com/attachments/717422988038897744/717423822705262662/vippng.com-soleil-png-3861240.png"}}
-{{$soir:="https://cdn.discordapp.com/attachments/717422988038897744/717424480959332452/-night-scenery_89739.png"}}
+{{$nuit:="https://i.imgur.com/e04keB7.png"}}
+{{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
+{{$midi:="https://i.imgur.com/AFOj90o.png"}}
+{{$soir:="https://i.imgur.com/xSDYgqD.png"}}
 
 {{/*All message database counter*/}}
 {{$count := "count"}}

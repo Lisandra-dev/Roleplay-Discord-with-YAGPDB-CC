@@ -268,7 +268,7 @@
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
 
-{{$img:="https://www.pixenli.com/image/eJlppGzy"}}
+{{$img:="https://i.imgur.com/CmgNFYu.png"}}
 {{$pv := sub 10 $d }}
 {{$pvall := mult $pv 3}}
 

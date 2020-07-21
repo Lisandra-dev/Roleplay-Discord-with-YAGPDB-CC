@@ -268,7 +268,7 @@
 	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
 {{end}}
 
-{{$img := "https://www.pixenli.com/image/gLsV6A4F"}}
+{{$img := "https://i.imgur.com/zmtq2ZF.png"}}
 
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)

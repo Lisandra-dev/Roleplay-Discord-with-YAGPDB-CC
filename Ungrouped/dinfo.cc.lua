@@ -13,7 +13,7 @@
 			"title" "Malus de caractéristiques"
 			"Description" "**0** : +4 → IMPLANT UNIQUEMENT\n**1** : +3\n**2** : +3\n**3** : +2\n**4**: +2\n**5**: +2\n**6**: +1 \n**7**: +1 \n**8**: +1\n**9** : Echec\n**10** : EC → Bonus -2 à l'adversaire"
 			"color" 0x2B7697
-			"thumbnail" (sdict "url" "https://www.pixenli.com/image/xsms14QB")}}
+			"thumbnail" (sdict "url" "https://i.imgur.com/fuHvIUn.png")}}
       {{$id = sendMessageRetID nil $embed}}
 
 	{{else if eq (index .CmdArgs 0) "poison"}}
@@ -21,7 +21,7 @@
 			"title" "Empoisonnement"
 			"Description" "Attention, les poisons ne sont pas en pourcentages, et les dégâts sont multipliés, au final, par 3 car une altération dure trois tours. \n\n  **0** : -10 (-30 PV) → IMPLANT UNIQUEMENT \n**1** : -9 (-27PV)\n**2** : -8 (-24 PV)\n**3** : -7 (-21PV)\n**4**: -6 (-18PV)\n**5** : -5 (-15PV)\n**6** : -4 (-12PV) \n**7** : -3 (-9PV)\n**8** : -2 (-6PV)\n**9** : Echec\n**10** : +15 PV (+45PV)"
 			"color" 0x370E6A
-			"thumbnail" (sdict "url" "https://www.pixenli.com/image/eJlppGzy")}}
+			"thumbnail" (sdict "url" "https://i.imgur.com/CmgNFYu.png")}}
       {{$id = sendMessageRetID nil $embed}}
 	{{end}}
 
