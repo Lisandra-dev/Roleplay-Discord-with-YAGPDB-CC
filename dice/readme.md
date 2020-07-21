@@ -14,14 +14,20 @@
 
 > Give the information about the result for some dice.
 
-# d :
+# d | Esquive | poison | soin | malus
 
 **Trigger** : command
 
-**Usage** : `-d (implant|malus) (implant|malus) (commentaire)`
+**Usage** :
+* d : `-d (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
+* esquive : `-esquive (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
+* poison : `-poison (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
+* soin : `-soin (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
+* malus : `-malus (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
 
 > Same as above, but the message is a simple markdown.
 > Argument are optional.
+> If #charname, take from the "reroll database". If it not exists, use the default value. Without, take the stats value with the User.ID
 
 # choose
 
@@ -38,35 +44,3 @@
 **Usage** : `-carac`
 
 > Same as above, but the list is "Force", "Endurance", "Agilité", "Précision", "Intelligence", "Karma"
-
-# Malus | Poison | Soin
-
-**Trigger** : Command
-
-**Usage** `-malus (implant|malus) (implant|malus) (commentaire)`
-
-> Arg are optional.
-> Same as "dice info" but in simpler markdown and roll the dice directly.
-
-# Setchar :
-
-**Trigger** : command
-
-**Usage** : `-set -(all|stats|implant) (-ID <id>) Force Endurance Agilité Précision Karma`
-
-> Set in the YAGPDB database the char value for a User ID (can be set by another people by it's ID or just using USER.ID if there are no ID set)
-
-# Getchar :
-
-**Trigger** : command
-
-**Usage** : `-getchar -(all|stats|implant) (-ID <id>) characteristics`
-
-> Get characteristics from user or an user.id
-
-# Delchar :
-
-**Trigger** : command
-**Usage** : `$delchar <id>`
-
-> If someone quit the roleplay, it can be used for deleting the DB values. 

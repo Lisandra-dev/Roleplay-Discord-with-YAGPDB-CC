@@ -6,11 +6,6 @@ All command here can work as stand alone. That's why there are ungrouped.
 **Usage** : `-pins`
 > The bot send a message with a gif indicate to click on the pins if the response is pinned.
 
-# Soin - Healing system :
-**Trigger** : Command
-
-**Usage** : `-soin`
-> The bot send, in french, a message indicate the HP healed.
 
 # Instruction :
 **Trigger** : Command
@@ -46,8 +41,10 @@ All command here can work as stand alone. That's why there are ungrouped.
 # Edit :
 **Trigger** : Command
 
-**Usage** : `-edit <channel ID> <Message ID> <new message>`
+**Usage** : `-edit <id> <things>`
 > Edit a message send by the bot.
+> From https://github.com/Jo3-L/yagpdb-cc
+> See CC for more information
 
 # Google :
 *Source : The Yagpdb github CC*
@@ -63,7 +60,7 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 **Usage** : `-afk -d duration (in second) <reason>`
 
-> Set an role AFK in the user who trigger it, for a certain time. Send an embed in the channel for afk with the reason and duration. 
+> Set an role AFK in the user who trigger it, for a certain time. Send an embed in the channel for afk with the reason and duration.
 
 # Viewafk
 
@@ -72,3 +69,19 @@ All command here can work as stand alone. That's why there are ungrouped.
 **Usage** : Regex : `^\$(viewafk <@!?\d+>)`
 
 > View the afk duration for an user and the reason behind it.
+
+# dice info (dinfo)
+
+**Trigger** : command
+
+**Usage** : `-dinfo (soin|poison|malus)`
+
+> View information about the dice
+
+# Snippet
+
+**Trigger** : Starts with !
+
+**Usage** : `!(snippet|all|help|bouclier|horloge|notes|ticket|charge|position|dégâts|dégât|dégat|dégat|dés|résumé|arme|armes)`
+
+> Quote some message from the discord
