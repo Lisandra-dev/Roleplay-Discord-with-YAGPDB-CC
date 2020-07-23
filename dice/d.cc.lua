@@ -31,9 +31,9 @@
 
 {{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
-{{$agi := reFindAllSubmatches `(agilité|Agilité|\dagi|\dAgi)` .Message.Content}}
+{{$agi := reFindAllSubmatches `(agilit(é|e)|Agilit(é|e)|\dagi|\dAgi)` .Message.Content}}
 {{$endu := reFindAllSubmatches `(Endurance|endurance|\dendu|\dEndu)` .Message.Content}}
-{{$preci := reFindAllSubmatches `(Précision|précision|préci|Préci)` .Message.Content}}
+{{$preci := reFindAllSubmatches `(Pr(é|e)cision|pr(é|e)cision|pr(é|e)ci|Pr(é|e)ci)` .Message.Content}}
 {{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
 {{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
 

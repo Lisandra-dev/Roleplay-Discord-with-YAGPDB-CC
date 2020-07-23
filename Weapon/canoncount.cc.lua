@@ -7,49 +7,56 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
+{{$id:= .User.ID}}
 {{if $name}}
 	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{$id = ""}}
+	{{range $idperso}}
+		{{- $id = (print $id .)}}
+	{{- end}}
+	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
-{{if not (dbGet .User.ID "canon")}}
-  {{dbSet .User.ID "canon" 0}}
-  {{$incr := dbIncr .User.ID "canon" 1}}
-  {{$y := (dbGet .User.ID "canon").Value}}
+{{if not (dbGet $id "canon")}}
+  {{dbSet $id "canon" 0}}
+  {{$incr := dbIncr $id "canon" 1}}
+  {{$y := (dbGet $id "canon").Value}}
   {{$x := sub 20 $y}}
   {{if lt $y (toFloat 20)}}
 		{{ $embed := cembed
 		"author" (sdict "name" $user "icon_url" $img)
 		"color" 0x6CAB8E
 		"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/20 charges de canon !")}}
-    {{ $id := sendMessageRetID nil $embed }}
-  	{{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+  	{{deleteMessage nil $idM 30}}
   {{else}}
 		{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $img)
 				"color" 0x6CAB8E
 				"description" "Votre canon est vide !"}}
-  		{{deleteMessage nil $id 30}}
+  		{{deleteMessage nil $idM 30}}
   {{end}}
 {{else}}
-  {{$incr := dbIncr .User.ID "canon" 1}}
-  {{$y := (dbGet .User.ID "canon").Value}}
+  {{$incr := dbIncr $id "canon" 1}}
+  {{$y := (dbGet $id "canon").Value}}
   {{$x := sub 20 $y}}
   {{if lt $y (toFloat 20)}}
 		{{ $embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/20 charges de canon !")}}
-    {{ $id := sendMessageRetID nil $embed }}
-    {{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $idM 30}}
   {{else}}
 		{{ $embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" "Votre canon est vide !"}}
-    {{ $id := sendMessageRetID nil $embed }}
-		{{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+		{{deleteMessage nil $idM 30}}
   {{end}}
 {{end}}

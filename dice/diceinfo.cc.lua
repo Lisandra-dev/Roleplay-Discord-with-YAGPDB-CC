@@ -67,13 +67,13 @@
 	{{else if $soin}}
 		{{if eq $d (toFloat 0)}}
 			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible regagne 40 PV *(+1 si module/PSI)* et obtient un bonus de votre choix."
+				"description" "Ultra critique : Votre cible regagne 40 PV *(+5 si module/PSI)* et obtient un bonus de votre choix."
 				"color" $soincol
 				"author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 1)}}
 			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible regagne 40 PV *(+1 si module/PSI).*"
+				"description" "Réussite critique : Votre cible regagne 40 PV *(+5 si module/PSI).*"
 				"color" $soincol
         "author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
@@ -94,7 +94,7 @@
 		{{$regen := mult $regen 5}}
 		{{$r := cembed
 			"author" (sdict "name" $user "icon_url" $soinimg)
-				"description" (joinStr "" "**Réussite : ** *+" $regen " PV (+1 si capacité).*\n")
+				"description" (joinStr "" "**Réussite : ** *+" $regen " PV (+5 si capacité).*\n")
 				"color" 0xEFA3EA }}
 				{{$id = sendMessageRetID nil $r}}
 

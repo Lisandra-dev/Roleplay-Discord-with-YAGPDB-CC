@@ -5,8 +5,15 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
+{{$id:= .User.ID}}
 {{if $name}}
 	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{$id = ""}}
+	{{range $idperso}}
+		{{- $id = (print $id .)}}
+	{{- end}}
+	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
@@ -24,15 +31,15 @@ If you change the value of the if, you must change the value in the "$x := sub".
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/8 charges dans votre deuxième pistolet !")}}
-    {{ $id := sendMessageRetID nil $embed }}
-  		{{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+  		{{deleteMessage nil $idM 30}}
  	{{else}}
 		{{ $embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" "Votre deuxième pistolet est vide."}}
-		{{ $id := sendMessageRetID nil $embed }}
-    {{deleteMessage nil $id 30}}
+		{{ $idM := sendMessageRetID nil $embed }}
+    {{deleteMessage nil $idM 30}}
   	{{end}}
 
 {{else}}
@@ -44,14 +51,14 @@ If you change the value of the if, you must change the value in the "$x := sub".
 				"author" (sdict "name" $user "icon_url" $img)
 				"color" 0x6CAB8E
 				"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/8 charges dans votre deuxième pistolet !")}}
-    	{{ $id := sendMessageRetID nil $embed }}
-    	{{deleteMessage nil $id 30}}
+    	{{ $idM := sendMessageRetID nil $embed }}
+    	{{deleteMessage nil $idM 30}}
   	{{else}}
 			{{ $embed := cembed
 			 "author" (sdict "name" $user "icon_url" $img)
 			 "color" 0x6CAB8E
 			 "description" "Votre deuxième pistolet est vide."}}
-    	{{ $id := sendMessageRetID nil $embed }}
-    	{{deleteMessage nil $id 30}}
+    	{{ $idM := sendMessageRetID nil $embed }}
+    	{{deleteMessage nil $idM 30}}
   	{{end}}
 {{end}}

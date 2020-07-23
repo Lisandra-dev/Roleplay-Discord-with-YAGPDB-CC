@@ -275,13 +275,13 @@
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Ultra critique** " $comm " *+8 PV + Bonus (+1 si capacité)* \n"
+		"description" (joinStr "" "**Ultra critique** " $comm " *+40 PV + Bonus (+5 si capacité)* \n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{$rc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite critique** " $comm " *+8 PV (+1 si capacité).*\n"
+		"description" (joinStr "" "**Réussite critique** " $comm " *+40 PV (+5 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
@@ -290,7 +290,7 @@
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV (+1 si capacité).*\n"
+		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV (+5 si capacité).*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 

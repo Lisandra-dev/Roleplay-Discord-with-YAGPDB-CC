@@ -29,7 +29,7 @@
 {{$embed := cembed
 			"title" "Informations sur les résultats de dés"
 			"fields" (cslice
-(sdict "name" "Soin" "value" "**0** : URC / Bonus + 8 pv → IMPLANT UNIQUEMENT \n**1** : 8\n**2** : 7\n**3** : 6\n**4** : 5\n**5** : 4\n**6** : 3\n**7** : 2\n**8** : 1\n**9** : Echec\n**10** : Echec + Malus\n\nEn cas d'utilisation avec un pouvoir ou un module :\n:white_small_square: Les PV rendus sont augmentés de 1.\n:white_small_square: Il n'y a pas de malus en cas d'EC." "inline" false)
+(sdict "name" "Soin" "value" "**0** : URC / Bonus + 40 pv → IMPLANT UNIQUEMENT \n**1** : 40\n**2** : 35\n**3** : 30\n**4** : 25\n**5** : 20\n**6** : 15\n**7** : 10\n**8** : 5\n**9** : Echec\n**10** : Echec + Malus\n\nEn cas d'utilisation avec un pouvoir ou un module :\n:white_small_square: Les PV rendus sont augmentés de 1.\n:white_small_square: Il n'y a pas de malus en cas d'EC." "inline" false)
 		(sdict "name" "_ _" "value" "_ _" "inline" false)
 			(sdict "name" "Poison" "value" "Attention, les poisons ne sont pas en pourcentages, et les dégâts sont multipliés, au final, par 3 car une altération dure trois tours. \n\n  **0** : -10 (30) → IMPLANT UNIQUEMENT \n**1** : -8 (24)\n**2** : -7 (21)\n**3** : -6 (18)\n**4**: -5 (15)\n**5** : -4 (12)\n**6** : -3 (9) \n**7** : -2 (6)\n**8** : -1 (3)\n**9** : Echec\n**10** : +3 PV (+9)" "inline" false)
 		(sdict "name" "_ _" "value" "_ _" "inline" false)

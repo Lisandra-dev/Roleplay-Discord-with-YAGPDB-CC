@@ -6,51 +6,61 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
+{{$id:= .User.ID}}
 {{if $name}}
 	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{$id = ""}}
+	{{range $idperso}}
+		{{- $id = (print $id .)}}
+	{{- end}}
+	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
-{{if not (dbGet .User.ID "pistol")}}
-  {{dbSet .User.ID "pistol" 0}}
+{{if not (dbGet $id "pistol")}}
+  {{dbSet $id "pistol" 0}}
   {{dbSet 0 "chan" (toString .Channel.ID)}}
-  {{$incr := dbIncr .User.ID "pistol" 1}}
-  {{$y := (dbGet .User.ID "pistol").Value}}
+  {{$incr := dbIncr $id "pistol" 1}}
+  {{$y := (dbGet $id "pistol").Value}}
   {{$x := sub 8 $y}}
     {{if lt $y (toFloat 7)}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $img)
 				"color" 0x6CAB8E
 				"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/8 charges de pistolet !")}}
-      {{ $id := sendMessageRetID nil $embed }}
-  		{{deleteMessage nil $id 30}}
+      {{ $idM := sendMessageRetID nil $embed }}
+  		{{deleteMessage nil $idM 30}}
   {{else}}
 		{{ $embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" "Votre pistolet est vide."}}
-    {{ $id := sendMessageRetID nil $embed }}
-    {{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+
+    {{deleteMessage nil $idM 30}}
   {{end}}
 {{else}}
-  {{$incr := dbIncr .User.ID "pistol" 1}}
-  {{$y := (dbGet .User.ID "pistol").Value}}
+  {{$incr := dbIncr $id "pistol" 1}}
+  {{$y := (dbGet $id "pistol").Value}}
   {{$x := sub 8 $y}}
   {{if lt $y (toFloat 8)}}
 		{{ $embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/8 charges de pistolet !")}}
-    {{ $id := sendMessageRetID nil $embed }}
-    {{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+
+    {{deleteMessage nil $idM 30}}
   {{else}}
 		{{ $embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
 			"color" 0x6CAB8E
 			"description" "Votre pistolet est vide."}}
-    {{ $id := sendMessageRetID nil $embed }}
-    {{deleteMessage nil $id 30}}
+    {{ $idM := sendMessageRetID nil $embed }}
+
+    {{deleteMessage nil $idM 30}}
   {{end}}
 {{end}}
