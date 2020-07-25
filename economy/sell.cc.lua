@@ -71,14 +71,16 @@
 		{{end}}
 		{{$items.Set $initem $item}}
 		{{$serverEco.Set "Items" $items}}
+		{{$user = joinStr " " "Vente |" (title $user)}}
 		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png") "color" 0x8CBAEF "description" (print "Vous avez vendu " $amount " " $initem " pour " (mult $item.sellprice $amount) " " $symbol " .")) }}
 	{{else}}
 		Tu n'as pas assez de {{$symbol}} pour acheter cet objet.
 	{{end}}
 	{{end}}
 {{else}}
+	{{$user = joinStr " " "Vente impossible |" (title $user)}}
 		{{$embed := cembed
-		"author" (sdict "name" (title $user) "icon_url" "https://i.imgur.com/9HnsF14.png")
+		"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png")
 		"description" "Le magasin est actuellement indisponible, vous ne pouvez rien vendre. "
 	"color" 0x8CBAEF}}
 	{{sendMessage nil $embed}}

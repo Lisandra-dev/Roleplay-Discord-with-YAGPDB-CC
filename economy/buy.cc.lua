@@ -100,8 +100,9 @@
 						{{$info.Set (joinStr " " $initem) $desc}}
 					{{end}}
 		      {{if not .reply}}
+					{{$user = joinStr " " "Achat | " (title $user)}}
 		        {{sendMessage nil (cembed
-		          "author" (sdict "name" (title $user) "icon_url" "https://i.imgur.com/3uiVkvv.png")
+		          "author" (sdict "name" $user "icon_url" "https://i.imgur.com/3uiVkvv.png")
 		          "description" (print "Vous avez acheté " $amount " " $initem " pour " (mult .buyprice $amount) " " $symbol ".")
 		          "color" 0x8CBAEF)}}
 		      {{end}}
@@ -117,8 +118,9 @@
 	{{dbSet .Server.ID "economy" $serverEco}}
 	{{dbSet $id "economy" $userEco}}
 {{else}}
+{{$user = joinStr " " "Achat impossible | " (title $user)}}
 	{{sendMessage nil (cembed
-		"author" (sdict "name" (title $user) "icon_url" "https://i.imgur.com/3uiVkvv.png")
+		"author" (sdict "name" $user "icon_url" "https://i.imgur.com/3uiVkvv.png")
 		"description" "La boutique est actuellement indisponible ! Vous ne pouvez rien acheter. "
 		"color" 0x8CBAEF)}}
 {{end}}

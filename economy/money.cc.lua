@@ -27,8 +27,9 @@
 {{if $serverEco.Get "symbol"}}
 	{{$symbol = $serverEco.Get "symbol"}}
 {{end}}
+{{$user = joinStr " " "Porte monnaie |" (title $user)}}
 
 {{/* Balance */}}
 {{$bal := (toInt ($userEco.Get "balance"))}}
-{{sendMessage nil (cembed "author" (sdict "name" (title $user) "icon_url" "https://i.imgur.com/ATSj8fe.png") "description" (print (str $bal) " " $symbol ) "color" 0x8CBAEF)}}
+{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png") "description" (print (str $bal) " " $symbol ) "color" 0x8CBAEF)}}
 {{deleteTrigger 1}}

@@ -9,6 +9,7 @@
 {{$charge := reFindAllSubmatches `((charg(e|é|)(s|r)?)|(recharg(é|e)(s|r)?))` .Message.Content}}
 {{$horloge := reFindAllSubmatches `(horloges?|times?)` .Message.Content}}
 {{$bouclier := reFindAllSubmatches `boucliers?` .Message.Content}}
+{{$store := reFindAllSubmatches `store` .Message.Content}}
 
 
 {{if .CmdArgs}}
@@ -110,10 +111,20 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
+	{{else if $store}}
+	{{$message := getMessage 734838748721840188 736713337571901570}}
+	{{$embed := cembed
+		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+		"color" (randInt 111111 999999)
+		"description" (joinStr "" $message.Content)
+		"icon_url" (.User.AvatarURL "512")}}
+	{{sendMessage nil $embed}}
+	{{deleteTrigger 1}}
+
 	{{else if $help }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-		"description" ":white_small_square: `!(armes|arme)`\n:white_small_square: `!résumé`\n:white_small_square: `!dés`\n:white_small_square: `!position`\n:white_small_square: `!(dégâts|dégât|dégat|dégats)`\n:white_small_square: `!notes`\n:white_small_square: `!horloge`\n:white_small_square: `!bouclier`\n:white_small_square:`!ticket`\n:white_small_square: `!charge`\n\n:white_medium_square: **Pour afficher cette liste** : `!(all|snippet|help)`"}}
+		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?notes`\n:white_small_square: `?horloge`\n:white_small_square: `?bouclier`\n:white_small_square:`?ticket`\n:white_small_square: `?charge`\n:white_small_square: `?store`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}
