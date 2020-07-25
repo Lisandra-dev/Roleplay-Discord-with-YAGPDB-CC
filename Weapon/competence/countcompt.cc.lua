@@ -36,7 +36,6 @@
 					"description" (joinStr "" "Votre compétence " $arg " est de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-
 				{{dbDel $id $arg}}
 		{{end}}
 
@@ -50,7 +49,6 @@
 				"description" (joinStr "" "Votre compétence " $arg2 " est de nouveau utilisable")
 				"color" 0xB57CA3}}
 			{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-
 			{{dbDel $id $arg2}}
 		{{end}}
 
@@ -66,7 +64,6 @@
 				"description" (joinStr "" "Votre compétence " $arg3 " est de nouveau utilisable")
 				"color" 0xB57CA3}}
 			{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-
 			{{dbDel $id $arg3}}
 	{{end}}
 	{{else}}
