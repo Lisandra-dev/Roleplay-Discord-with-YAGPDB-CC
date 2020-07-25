@@ -105,29 +105,6 @@
 		{{end}}
 	{{end}}
 
-{{else if eq $flag "-edit"}}
-	{{$buyprice := ""}}
-	{{if eq $flag2 "-price"}}
-		{{$buyprice = (toInt (index .CmdArgs 3)) }}
-	{{end}}
-	{{if $name}}
-		{{if ($items.Get ( $name))}}
-			{{$i := ($items.Get ( $name))}}
-			{{$.Get "buyprice"}}
-			{{with $i}}
-				{{$.Set "buyprice" $buyprice}}
-				**Item Info**
-				Nom : `{{ $name}}`
-				Prix d'achat : `{{.buyprice}}`
-				Prix de vente : `{{.sellprice}}`
-				Quantité : `{{.stock}}`
-				SII: `{{.sii}}`
-				Description : `{{.desc}}`
-			{{end}}
-		{{else}}
-			Cet objet n'existe pas !
-		{{end}}
-	{{end}}
 
 {{else}}
 	Argument error
