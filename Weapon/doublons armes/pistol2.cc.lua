@@ -17,6 +17,8 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$user = title $user}}
+
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
 

@@ -14,6 +14,7 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$user = title $user}}
 
 {{$arg := (dbGet $id "comp").Value}}
 {{$arg2 := (dbGet $id "aide").Value}}
@@ -34,8 +35,8 @@
 					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Votre compétence " $arg " est de nouveau utilisable")
 					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID nil $embed }}
-				{{deleteMessage nil $idM 30}}
+				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+
 				{{dbDel $id $arg}}
 		{{end}}
 
@@ -48,8 +49,8 @@
 				"author" (sdict "name" $user "icon_url" $imgs)
 				"description" (joinStr "" "Votre compétence " $arg2 " est de nouveau utilisable")
 				"color" 0xB57CA3}}
-			{{ $idM := sendMessageRetID nil $embed }}
-			{{deleteMessage nil $idM 30}}
+			{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+
 			{{dbDel $id $arg2}}
 		{{end}}
 
@@ -64,8 +65,8 @@
 				"author" (sdict "name" $user "icon_url" $imgm)
 				"description" (joinStr "" "Votre compétence " $arg3 " est de nouveau utilisable")
 				"color" 0xB57CA3}}
-			{{ $idM := sendMessageRetID nil $embed }}
-			{{deleteMessage nil $idM 30}}
+			{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+
 			{{dbDel $id $arg3}}
 	{{end}}
 	{{else}}

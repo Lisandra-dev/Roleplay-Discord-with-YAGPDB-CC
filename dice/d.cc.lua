@@ -14,6 +14,8 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$user = title $user}}
+
 {{$d:= (randInt 1 10)}}
 
 {{$arg1:=""}}

@@ -13,6 +13,8 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$user = title $user}}
+
 
 {{$fusil := reFindAllSubmatches `fusil` .Message.Content}}
 {{$fusil2 := reFindAllSubmatches `fusil2` .Message.Content}}
