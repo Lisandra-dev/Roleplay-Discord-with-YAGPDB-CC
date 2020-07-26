@@ -56,9 +56,12 @@
 		{{$inv = sdict .}}
 	{{end}}
 	{{if not $item}}
-		L'objet n'existe pas !
+		ERREUR : **L'OBJET N'EXISTE PAS**
 	{{else}}
-	{{if ge (toInt ($inv.Get $initem)) $amount}}
+	{{if eq (toInt $item.sellprice) 0}}
+		{{$user = joinStr " " "Vente |" (title $user)}}
+		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png") "color" 0x8CBAEF "description" (print "Le marchand n'achète pas ce genre d'objet...")) }}
+	{{else if ge (toInt ($inv.Get $initem)) $amount}}
 		{{$bal = add $bal (mult $item.sellprice $amount)}}
 		{{$userEco.Set "balance" $bal}}
 		{{$inv.Set $initem (sub ($inv.Get $initem) $amount)}}
@@ -74,7 +77,7 @@
 		{{$user = joinStr " " "Vente |" (title $user)}}
 		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png") "color" 0x8CBAEF "description" (print "Vous avez vendu " $amount " " $initem " pour " (mult $item.sellprice $amount) " " $symbol " .")) }}
 	{{else}}
-		Tu n'as pas assez de {{$symbol}} pour acheter cet objet.
+		**ERREUR** : Quantité supérieure à celle possédée.
 	{{end}}
 	{{end}}
 {{else}}

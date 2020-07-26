@@ -20,12 +20,15 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{$user = .User.Username}}
 {{end}}
 {{$user = title $user}}
+{{/* dbGet PA */}}
+{{/* if PA > 0 */}}
 
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
 {{if not (dbGet $id "canon")}}
   {{dbSet $id "canon" 0}}
   {{$incr := dbIncr $id "canon" 1}}
+	{{*/ PA +1 */}}
   {{$y := (dbGet $id "canon").Value}}
   {{$x := sub 20 $y}}
   {{if lt $y (toFloat 20)}}

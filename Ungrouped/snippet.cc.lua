@@ -1,80 +1,85 @@
-{{$chan := 701373579593252944}}
-{{$degat:=reFindAllSubmatches `d(é|e)g(a|â)s?` .Message.Content}}
-{{$arme := reFindAllSubmatches `armes?` .Message.Content}}
-{{$resume := reFindAllSubmatches `r(e|é)sum(e|é)s?` .Message.Content}}
-{{$dice := reFindAllSubmatches `(d(é|e)s?|dices?)` .Message.Content}}
-{{$note:= reFindAllSubmatches `notes?` .Message.Content}}
-{{$ticket := reFindAllSubmatches `tickets?` .Message.Content}}
-{{$help := reFindAllSubmatches `(help|snippet|aide|all)` .Message.Content}}
-{{$charge := reFindAllSubmatches `((charg(e|é|)(s|r)?)|(recharg(é|e)(s|r)?))` .Message.Content}}
-{{$horloge := reFindAllSubmatches `(horloges?|times?)` .Message.Content}}
-{{$bouclier := reFindAllSubmatches `boucliers?` .Message.Content}}
-{{$store := reFindAllSubmatches `store` .Message.Content}}
+{{$chancommande := 701373579593252944}}
+{{$combat := 701373579593252944}}
+{{$col := 16777215}}
+{{$p := 0}}
+{{$r := .Member.Roles}}
+{{range .Guild.Roles}}
+	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
+	{{$p = .Position}}
+	{{$col = .Color}}
+	{{end}}
+{{end}}
+{{$link := ""}}
 
+{{$commande := reFind `(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?)` .Message.Content}}
 
 {{if .CmdArgs}}
-		{{if $arme}}
-	 		{{$message := getMessage $chan 733363513988218952 }}
+		{{if or (eq $commande "arme") (eq $commande "armes")}}
+	 		{{$message := getMessage $combat 733363513988218952 }}
+			{{$link = "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 733363513988218952 "/)"}}
 			{{$embed := cembed
     		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-				"color" (randInt 111111 999999)
-				"description" (joinStr "" $message.Content "\n\n [➥ Original](https://discordapp.com/channels/701368588690522112/701373579593252944/710817488392290305) \n")
+				"color" $col
+				"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link " \n")
 				"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
 				"icon_url" (.User.AvatarURL "512"))}}
 				{{sendMessage nil $embed}}
 				{{deleteTrigger 1}}
 
-		{{else if $resume}}
+		{{else if or (eq $commande "résumé") (eq $commande "resume") (eq $commande "résume") (eq $commande "resumé") (eq $commande "résumés") (eq $commande "resumes") (eq $commande "résumes") (eq $commande "resumés")}}
 			{{$embed := cembed
 				"title" "Commande de base"
-				"color" (randInt 111111 999999)
+				"color" $col
 				"description" ":white_small_square: Pour un dé simple : `$d Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec bonus extérieur à un implant : `$d -bonus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec malus : `$d malus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec malus, bonus : `$d -bonus malus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n:\nwhite_small_square **Autre type d'action :** Pour les utiliser, remplacer `$d` par la commande suivante : \n <:tr:724626754282717194> :small_blue_diamond: `$poison` : poison\n <:tr:724626754282717194> :small_blue_diamond: `$soin` : Soin\n <:tr:724626754282717194> :small_blue_diamond: `$malus` : Malus (de statistiques)\n<:tr:724626754282717194> :small_blue_diamond: `$esquive` : Dé d'esquive"}}
 			{{sendMessage nil $embed}}
 			{{deleteTrigger 1}}
 
-	{{else if $dice}}
-		{{$message := getMessage 734838748721840188 735871277889486938}}
+	{{else if or (eq $commande "dés") (eq $commande "dice") (eq $commande "dé") (eq $commande "de") (eq $commande "dices")}}
+		{{$link = "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 727992973131776020 "/)"}}
+		{{$message := getMessage $combat 727992973131776020 }}
 		{{$embed := cembed
     	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-			"color" (randInt 111111 999999)
-			"description" (joinStr "" $message.Content "\n\n [➥ Original](https://discordapp.com/channels/701368588690522112/701373579593252944/727992973131776020) \n")
+			"color" $col
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link " \n")
 			"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
 			"icon_url" (.User.AvatarURL "512"))}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if $degat}}
-		{{$message := getMessage $chan 701374206268538960}}
+	{{else if or (eq $commande "dégât") (eq $commande "dégat") (eq $commande "degât") (eq $commande "degat") (eq $commande "dégâts") (eq $commande "dégats") (eq $commande "degâts") (eq $commande "degats")}}
+		{{$link = "https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 7701374206268538960 "/)"}}
+		{{$message := getMessage $combat 701374206268538960}}
 		{{$embed := cembed
     	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-			"color" (randInt 111111 999999)
-			"description" (joinStr "" $message.Content "\n\n [➥ Original](https://discordapp.com/channels/701368588690522112/701373579593252944/701374206268538960) \n")
+			"color" $col
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
 			"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
 			"icon_url" (.User.AvatarURL "512"))}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if (eq (index .CmdArgs 0) "position")}}
+	{{else if or (eq $commande "position") (eq $commande "positions")}}
 		{{$embed :=cembed
 		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-		"color" (randInt 111111 999999)
+		"color" $col
 		"description" ":white_small_square:  *Abrité* : +3 en précision pour les attaquants, mais ne peut ni attaquer, ni esquiver.\n:white_small_square: *A découvert* : -1 aux jets d'attaques (pour les attaquants).\n:white_small_square:  *Duel* : -1 aux jets d'attaques (pour les attaquants), et +2 en précision si visée sur les autres rangs."
 		"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
 		"icon_url" (.User.AvatarURL "512"))}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if $charge}}
+	{{else if or (eq $commande "recharge") (eq $commande "recharger") (eq $commande "charger") (eq $commande "rechargé") (eq $commande "chargé")  (eq $commande "charge") (eq $commande "charger")}}
+	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/" 735869281698447463 "/)"}}
 		{{$message := getMessage 734838748721840188 735869281698447463}}
 		{{$embed := cembed
     	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-			"color" (randInt 111111 999999)
+			"color" $col
 			"description" (joinStr "" $message.Content)
 			"icon_url" (.User.AvatarURL "512")}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if $ticket}}
+	{{else if or (eq $commande "ticket") (eq $commande "tickets")}}
 	{{$embed := cembed
 		"title" "Ticket"
 		"color" 0x51CDEF
@@ -82,7 +87,7 @@
 	{{sendMessage nil $embed}}
 	{{deleteTrigger 1}}
 
-	{{else if $note}}
+	{{else if or (eq $commande "note") (eq $commande "notes")}}
 		{{$embed := cembed
 			"title" "Bloc-notes"
 			"color" 0x51CDEF
@@ -93,7 +98,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if $horloge}}
+	{{else if or (eq $commande "horloge") (eq $commande "horloges") (eq $commande "time") (eq $commande "times")}}
 		{{$embed := cembed
 			"title" "Horloge"
 			"color" 0x51CDEF
@@ -101,30 +106,32 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if $bouclier}}
-		{{$message := getMessage $chan 726465578809688135}}
+	{{else if or (eq $commande "bouclier") (eq $commande "boucliers")}}
+	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 726465578809688135 "/)"}}
+		{{$message := getMessage $combat 726465578809688135}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-			"color" (randInt 111111 999999)
+			"color" $col
 			"description" (joinStr "" $message.Content)
 			"icon_url" (.User.AvatarURL "512")}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if $store}}
-	{{$message := getMessage 734838748721840188 736713337571901570}}
-	{{$embed := cembed
-		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-		"color" (randInt 111111 999999)
-		"description" (joinStr "" $message.Content)
-		"icon_url" (.User.AvatarURL "512")}}
-	{{sendMessage nil $embed}}
-	{{deleteTrigger 1}}
+	{{else if eq $commande "shop"}}
+	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/" 736713337571901570 "/)"}}
+		{{$message := getMessage 734838748721840188 736713337571901570}}
+		{{$embed := cembed
+			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+			"color" $col
+			"description" (joinStr "" $message.Content)
+			"icon_url" (.User.AvatarURL "512")}}
+		{{sendMessage nil $embed}}
+		{{deleteTrigger 1}}
 
-	{{else if $help }}
+	{{else if or (eq $commande "help") (eq $commande "snippet") (eq $commande "all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?notes`\n:white_small_square: `?horloge`\n:white_small_square: `?bouclier`\n:white_small_square:`?ticket`\n:white_small_square: `?charge`\n:white_small_square: `?store`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
+		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?notes`\n:white_small_square: `?horloge`\n:white_small_square: `?bouclier`\n:white_small_square:`?ticket`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}

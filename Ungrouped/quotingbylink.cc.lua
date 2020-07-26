@@ -1,3 +1,13 @@
+{{$col := 16777215}}
+{{$p := 0}}
+{{$r := .Member.Roles}}
+{{range .Guild.Roles}}
+	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
+	{{$p = .Position}}
+	{{$col = .Color}}
+	{{end}}
+{{end}}
+
 {{if reFindAllSubmatches `https://(?:\w+\.)?discord(?:app)?\.com/channels\/(\d+)\/(\d+)\/(\d+)` .Message.Content}}
     {{$m := reFindAllSubmatches `https://(?:\w+\.)?discord(?:app)?\.com/channels\/(\d+)\/(\d+)\/(\d+)` .Message.Content}}
     {{if not (eq (toInt64 (index (index $m 0) 1)) .Guild.ID)}}
@@ -17,7 +27,7 @@
             "author" (sdict
                 "name" (print $msg.Author.String)
                 "icon_url" ($msg.Author.AvatarURL "1024"))
-            "color" 0x5A91A7
+            "color" $col
             "footer" (sdict
                 "text" (print "Cité par : " .Message.Author.String ))
             "timestamp" $msg.Timestamp}}
