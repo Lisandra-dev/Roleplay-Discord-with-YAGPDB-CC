@@ -22,9 +22,6 @@
 {{$pistol2 := reFindAllSubmatches `pistolet2` .Message.Content }}
 {{$canon := reFindAllSubmatches `canon` .Message.Content }}
 
-
-
-
 {{$msgc:=""}}
 {{$msgp:=""}}
 {{$msgp2 := ""}}
