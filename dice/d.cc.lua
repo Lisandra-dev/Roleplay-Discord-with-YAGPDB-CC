@@ -16,6 +16,11 @@
 {{end}}
 {{$user = title $user}}
 
+{{$stats := sdict}}
+{{with (dbGet $id "stats")}}
+	{{$stats = sdict .Value}}
+{{end}}
+
 {{$d:= (randInt 1 10)}}
 
 {{$arg1:=""}}
@@ -43,22 +48,22 @@
 	{{$seuil = (toInt (joinStr "" (split $manuel "s")))}}
 	{{$idb = (toInt 0)}}
 {{else if $force}}
-	{{$seuil = (toInt (dbGet $id "force").Value)}}
-	{{$idb = (toInt (dbGet $id "i_force").Value)}}
+	{{$seuil = (toInt ($stats.Get "force"))}}
+	{{$idb = (toInt ($stats.Get "i_force"))}}
 {{else if $agi}}
-	{{$seuil = (toInt (dbGet $id "agi").Value)}}
-	{{$idb = (toInt (dbGet $id "i_agi").Value)}}
+	{{$seuil = (toInt ($stats.Get "agi"))}}
+	{{$idb = (toInt ($stats.Get "i_agi"))}}
 {{else if $endu}}
-	{{$seuil = (toInt (dbGet $id "endurance").Value)}}
-	{{$idb = (toInt (dbGet $id "i_endu").Value)}}
+	{{$seuil = (toInt ($stats.Get "endurance"))}}
+	{{$idb = (toInt ($stats.Get "i_endu"))}}
 {{else if $preci}}
-	{{$seuil = (toInt (dbGet $id "preci").Value)}}
-	{{$idb = (toInt (dbGet $id "i_preci").Value)}}
+	{{$seuil = (toInt ($stats.Get "preci"))}}
+	{{$idb = (toInt ($stats.Get "i_preci"))}}
 {{else if $intell}}
-	{{$seuil = (toInt (dbGet $id "intelligence").Value)}}
-	{{$idb = (toInt (dbGet $id "i_intel").Value)}}
+	{{$seuil = (toInt ($stats.Get "intelligence"))}}
+	{{$idb = (toInt ($stats.Get "i_intel"))}}
 {{else if $karma}}
-	{{$seuil = (toInt (dbGet $id "karma").Value)}}
+	{{$seuil = (toInt ($stats.Get "karma"))}}
 	{{$idb = (toInt 0)}}
 {{else}}
 	{{$seuil = (toInt 8)}}

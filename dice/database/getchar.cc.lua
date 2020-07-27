@@ -1,17 +1,30 @@
-{{$user:= .User.ID}}
+{{$user := .User.ID}}
 
-{{$force:= (dbGet $user "force").Value}}
-{{$endurance := (dbGet $user "endurance").Value}}
-{{$agi:=(dbGet $user "agi").Value}}
-{{$preci:=(dbGet $user "preci").Value}}
-{{$intel:=(dbGet $user "intelligence").Value}}
-{{$karma:=(dbGet $user "karma").Value}}
+{{if .CmdArgs}}
+	{{if eq (index .CmdArgs 1) "-ID"}}
+		{{$user = (toInt (index .CmdArgs 2))}}
+	{{else}}
+		{{$user = .User.ID}}
+	{{end}}
+{{end}}
 
-{{$iforce:=(dbGet  $user "i_force").Value}}
-{{$iendu:=(dbGet $user "i_endu").Value}}
-{{$iagi:=(dbGet $user "i_agi").Value}}
-{{$ipreci:=(dbGet $user "i_preci").Value}}
-{{$iintel:=(dbGet $user "i_intel").Value}}
+{{$stats := sdict}}
+{{with (dbGet $user "stats")}}
+	{{$stats = sdict .Value}}
+{{end}}
+
+{{$force:= $stats.Get "force"}}
+{{$endurance := $stats.Get "endurance"}}
+{{$agi:=$stats.Get "agi"}}
+{{$preci:=$stats.Get "preci"}}
+{{$intel:=$stats.Get "intelligence"}}
+{{$karma:=$stats.Get "karma"}}
+
+{{$iforce:=$stats.Get "i_force"}}
+{{$iendu:=$stats.Get "i_endu"}}
+{{$iagi:=$stats.Get "i_agi"}}
+{{$ipreci:=$stats.Get "i_preci"}}
+{{$iintel:=$stats.Get "i_intel"}}
 
 {{if .CmdArgs}}
 	{{if eq (len .CmdArgs ) 1}}
@@ -38,20 +51,6 @@
 
 	{{else if eq (len .CmdArgs) 3}}
 		{{if and (eq (index .CmdArgs 0) "-all") (eq (index .CmdArgs 1) "-ID")}}
-			{{$user = (toInt (index .CmdArgs 2))}}
-
-			{{$force:= (dbGet $user "force").Value}}
-			{{$endurance := (dbGet $user "endurance").Value}}
-			{{$agi:=(dbGet $user "agi").Value}}
-			{{$preci:=(dbGet $user "preci").Value}}
-			{{$intel:=(dbGet $user "intelligence").Value}}
-			{{$karma:=(dbGet $user "karma").Value}}
-
-			{{$iforce:=(dbGet  $user "i_force").Value}}
-			{{$iendu:=(dbGet $user "i_endu").Value}}
-			{{$iagi:=(dbGet $user "i_agi").Value}}
-			{{$ipreci:=(dbGet $user "i_preci").Value}}
-			{{$iintel:=(dbGet $user "i_intel").Value}}
 
 **Statistiques de <@{{$user}}>**
 	:white_small_square: Force : {{$force}}
@@ -69,20 +68,6 @@
 	:white_small_square: Intelligence : {{$iintel}}
 
 		{{else if and (eq (index .CmdArgs 0) "-stats") (eq (index .CmdArgs 1) "-ID")}}
-			{{$user = (toInt (index .CmdArgs 2))}}
-
-			{{$force:= (dbGet $user "force").Value}}
-			{{$endurance := (dbGet $user "endurance").Value}}
-			{{$agi:=(dbGet $user "agi").Value}}
-			{{$preci:=(dbGet $user "preci").Value}}
-			{{$intel:=(dbGet $user "intelligence").Value}}
-			{{$karma:=(dbGet $user "karma").Value}}
-
-			{{$iforce:=(dbGet  $user "i_force").Value}}
-			{{$iendu:=(dbGet $user "i_endu").Value}}
-			{{$iagi:=(dbGet $user "i_agi").Value}}
-			{{$ipreci:=(dbGet $user "i_preci").Value}}
-			{{$iintel:=(dbGet $user "i_intel").Value}}
 
 **Statistiques de <@{{$user}}>**
 	:white_small_square: Force : {{$force}}
@@ -93,20 +78,6 @@
 	:white_small_square: Karma : {{$karma}}
 
 		{{else if and (eq (index .CmdArgs 0) "-implant") (eq (index .CmdArgs 1) "-ID")}}
-			{{$user = (toInt (index .CmdArgs 2))}}
-
-			{{$force:= (dbGet $user "force").Value}}
-			{{$endurance := (dbGet $user "endurance").Value}}
-			{{$agi:=(dbGet $user "agi").Value}}
-			{{$preci:=(dbGet $user "preci").Value}}
-			{{$intel:=(dbGet $user "intelligence").Value}}
-			{{$karma:=(dbGet $user "karma").Value}}
-
-			{{$iforce:=(dbGet  $user "i_force").Value}}
-			{{$iendu:=(dbGet $user "i_endu").Value}}
-			{{$iagi:=(dbGet $user "i_agi").Value}}
-			{{$ipreci:=(dbGet $user "i_preci").Value}}
-			{{$iintel:=(dbGet $user "i_intel").Value}}
 
 **Implants de <@{{$user}}>** :
 	:white_small_square: Force : {{$iforce}}
@@ -148,3 +119,4 @@
 	:white_small_square: Précision : {{$ipreci}}
 	:white_small_square: Intelligence : {{$iintel}}
 {{end}}
+{{deleteTrigger 1}}

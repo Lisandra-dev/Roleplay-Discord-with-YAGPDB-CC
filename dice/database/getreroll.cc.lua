@@ -6,18 +6,23 @@
 	{{- end}}
 	{{$user = (toInt $user)}}
 
-	{{$force:= (dbGet $user "force").Value}}
-	{{$endurance := (dbGet $user "endurance").Value}}
-	{{$agi:=(dbGet $user "agi").Value}}
-	{{$preci:=(dbGet $user "preci").Value}}
-	{{$intel:=(dbGet $user "intelligence").Value}}
-	{{$karma:=(dbGet $user "karma").Value}}
+		{{$stats := sdict}}
+		{{with (dbGet $user "stats")}}
+			{{$stats = sdict .Value}}
+		{{end}}
 
-	{{$iforce:=(dbGet  $user "i_force").Value}}
-	{{$iendu:=(dbGet $user "i_endu").Value}}
-	{{$iagi:=(dbGet $user "i_agi").Value}}
-	{{$ipreci:=(dbGet $user "i_preci").Value}}
-	{{$iintel:=(dbGet $user "i_intel").Value}}
+	{{$force:= $stats.Get "force"}}
+	{{$endurance := $stats.Get "endurance"}}
+	{{$agi:=$stats.Get "agi"}}
+	{{$preci:=$stats.Get "preci"}}
+	{{$intel:=$stats.Get "intelligence"}}
+	{{$karma:=$stats.Get "karma"}}
+
+	{{$iforce:=$stats.Get "i_force"}}
+	{{$iendu:=$stats.Get "i_endu"}}
+	{{$iagi:=$stats.Get "i_agi"}}
+	{{$ipreci:=$stats.Get "i_preci"}}
+	{{$iintel:=$stats.Get "i_intel"}}
 
 	{{if eq (len .CmdArgs ) 2}}
 		{{if eq (index .CmdArgs 1) "-stats"}}
@@ -75,3 +80,4 @@
 {{else}}
 	**ERREUR** : Vous devez indiquer votre personnage !
 {{end}}
+{{deleteTrigger 1}}
