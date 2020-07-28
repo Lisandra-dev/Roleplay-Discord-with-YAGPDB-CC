@@ -24,6 +24,10 @@
 **Usage** : `$reset`
 
 > Reset le cycle actuel, les message, et le jour à respectivement 1, 0 et 1. 
+>
+> Afin d'éviter des miss click, cette commande a une sécurité et force l'utilisateur à taper une seconde commande aléatoire pour reset. 
+>
+> 
 
 # Changer le nom d'un channel en fonction du temps
 
