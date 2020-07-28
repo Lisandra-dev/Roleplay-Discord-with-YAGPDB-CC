@@ -80,8 +80,14 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 # Snippet
 
-**Trigger** : Starts with !
+**Trigger** : Starts with ?
 
-**Usage** : `!(snippet|all|help|bouclier|horloge|notes|ticket|charge|position|dégâts|dégât|dégat|dégat|dés|résumé|arme|armes)`
+**Usage** : `?(snippet|all|help|bouclier|horloge|notes|ticket|charge|position|dégâts|dégât|dégat|dégat|dés|résumé|arme|armes)`
 
 > Quote some message from the discord
+
+# Delete emoji :
+
+**Trigger** : Regex `((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})`
+
+> Delete solo emoji.

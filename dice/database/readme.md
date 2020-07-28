@@ -1,9 +1,11 @@
+All these command use dictionnary, so it will not have much space. YEAY !
+
 # Delreroll :
 
 **Trigger** : command
-**Usage** : `-delreroll name`
+**Usage** : `-delchar name/ID`
 
-> Delete in the database, with using the name like an ID, the reroll.
+> Delete in the database, with using the name for a reroll, and an ID for another player.
 
 # Getchar :
 

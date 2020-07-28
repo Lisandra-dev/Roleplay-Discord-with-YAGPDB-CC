@@ -73,7 +73,7 @@
 		SII: `{{$sii}}`
 		Description : `{{$desc}}`
 	{{else}}
-		Il manque des arguments !
+	**Usage** : `$item -add <name> price (none|price) (number|inf) (true|false) description`
 	{{end}}
 
 {{else if eq $flag "-delete"}}
@@ -84,6 +84,7 @@
 			**Objet supprimé : ** `{{( $name)}}`
 		{{else}}
 			Cet objet n'existe pas.
+			**Usage** : `$item -delete <name>`
 		{{end}}
 	{{end}}
 
@@ -102,12 +103,13 @@
 			{{end}}
 		{{else}}
 			Cet objet n'existe pas !
+			**Usage** : `$item -info <name>`
 		{{end}}
 	{{end}}
 
 
 {{else}}
-	Argument error
+	**Usage** : `$item -(info|add|delete)`
 {{end}}
 
 {{/* Database Updates */}}

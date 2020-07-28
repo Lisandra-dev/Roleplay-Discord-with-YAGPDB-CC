@@ -68,6 +68,7 @@
 				{{sendMessage nil $embed}}
 			{{else}}
 				Vous avez besoin de spécifier une valeur !
+				**Usage : ** `$admin -money -(add|remove|reset|set) user amount`
 			{{end}}
 		{{else if eq $secondflag "-remove"}}
 			{{if $amount}}
@@ -79,17 +80,23 @@
 				{{sendMessage nil $embed}}
 			{{else}}
 				Vous avez besoin de spécifier une valeur !
+				**Usage : ** `$admin -money -(add|remove|reset|set) user amount`
 			{{end}}
 		{{else if eq $secondflag "-reset"}}
 			{{$bal = 0}}
 			Reset de {{$mention}}.
 		{{else if eq $secondflag "-set"}}
-			{{$bal = $amount}}
-			{{$embed := cembed
-			"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-			"description" (joinStr " "  "La balance de" $mention "a été fixé à :" $amount "<:klix:724739705954107405>\n Vous avez donc actuellement" $bal "<:klix:724739705954107405>")
-			"color" 0x8CBAEF}}
-			{{sendMessage nil $embed}}
+			{{if $amount}}
+				{{$bal = $amount}}
+				{{$embed := cembed
+				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
+				"description" (joinStr " "  "La balance de" $mention "a été fixé à :" $amount "<:klix:724739705954107405>\n Vous avez donc actuellement" $bal "<:klix:724739705954107405>")
+				"color" 0x8CBAEF}}
+				{{sendMessage nil $embed}}
+			{{else}}
+				Vous avez besoin de spécifier une valeur !
+				**Usage : ** `$admin -money -(add|remove|reset|set) user amount`
+			{{end}}
 		{{end}}
 		{{$userEco.Set "balance" $bal}}
 		{{dbSet $target "economy" $userEco}}
@@ -143,7 +150,7 @@
 		{{end}}
 	{{end}}
 	{{if not $secondflag}}
-		Il manque des arguments.
+		**Usage** : `$admin -manageinv -(add|tremove|reset|clean|set) user item amount`
 	{{else}}
 		{{$userEco := sdict}}
 		{{if $target}}
@@ -151,7 +158,7 @@
 			{{$userEco = sdict .Value}}
 		{{end}}
 	{{else}}
-		Et la cible ?
+		**Usage** : `$admin -manageinv -(add|tremove|reset|clean|set) user item amount`
 	{{end}}
 	{{if eq $secondflag "-clean"}}
 		{{if $target}}
@@ -259,7 +266,11 @@
 			{{end}}
 		{{end}}
 	{{else}}
-	Cet option n'existe pas.
+	**Usage** :
+:white_small_square: Money : `$admin -money -(add|remove|reset|set) user amount`
+:white_small_square: Symbol : `$admin -symbol <symbol>`
+:white_small_square: Manage inventory : `$admin -manageinv -(add|remove|set) user item amount`
+:white_small_square: Reset inventory : `$admin -manageinv -reset user`
 {{end}}
 
 {{/* Database Updates */}}

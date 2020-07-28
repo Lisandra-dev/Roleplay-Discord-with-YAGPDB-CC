@@ -1,4 +1,13 @@
 {{$desc := ""}}
+{{$col := 16777215}}
+{{$p := 0}}
+{{$r := .Member.Roles}}
+{{range .Guild.Roles}}
+	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
+	{{$p = .Position}}
+	{{$col = .Color}}
+	{{end}}
+{{end}}
 
 {{/* Groupe dictionnaire */}}
 
@@ -218,9 +227,9 @@
 			{{end}}
 		{{end}}
 		{{if $namesupp}}
-			{{if lt $supp 8}}
+			{{if lt $supp 12}}
 				{{$x := dbIncr $id $namesupp 1}}
-			{{else if eq $supp 8}}
+			{{else if eq $supp 12}}
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -236,5 +245,10 @@
 	{{end}}
 	{{$groupe.Set $idict $j}}
 {{end}}
-{{$desc}}
+{{$embed := cembed
+	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
+	"description" $desc
+	"color" $col}}
+	{{$idPA := sendMessageRetID nil $embed}}
+	{{deleteMessage nil $idPA 30}}
 {{dbSet .Server.ID "groupe" $groupe}}
