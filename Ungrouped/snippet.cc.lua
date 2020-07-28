@@ -11,10 +11,10 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?)` .Message.Content}}
+{{$commande := reFind `^\?(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?)` .Message.Content}}
 
 {{if .CmdArgs}}
-		{{if or (eq $commande "arme") (eq $commande "armes")}}
+		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
 	 		{{$message := getMessage $combat 733363513988218952 }}
 			{{$link = "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 733363513988218952 "/)"}}
 			{{$embed := cembed
@@ -26,7 +26,7 @@
 				{{sendMessage nil $embed}}
 				{{deleteTrigger 1}}
 
-		{{else if or (eq $commande "résumé") (eq $commande "resume") (eq $commande "résume") (eq $commande "resumé") (eq $commande "résumés") (eq $commande "resumes") (eq $commande "résumes") (eq $commande "resumés")}}
+		{{else if or (eq $commande "?résumé") (eq $commande "?resume") (eq $commande "?résume") (eq $commande "?resumé") (eq $commande "?résumés") (eq $commande "?resumes") (eq $commande "?résumes") (eq $commande "?resumés")}}
 			{{$embed := cembed
 				"title" "Commande de base"
 				"color" $col
@@ -34,7 +34,7 @@
 			{{sendMessage nil $embed}}
 			{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "dés") (eq $commande "dice") (eq $commande "dé") (eq $commande "de") (eq $commande "dices")}}
+	{{else if or (eq $commande "?dés") (eq $commande "?dice") (eq $commande "?dé") (eq $commande "?de") (eq $commande "?dices")}}
 		{{$link = "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 727992973131776020 "/)"}}
 		{{$message := getMessage $combat 727992973131776020 }}
 		{{$embed := cembed
@@ -46,7 +46,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "dégât") (eq $commande "dégat") (eq $commande "degât") (eq $commande "degat") (eq $commande "dégâts") (eq $commande "dégats") (eq $commande "degâts") (eq $commande "degats")}}
+	{{else if or (eq $commande "dégât") (eq $commande "?dégat") (eq $commande "?degât") (eq $commande "?degat") (eq $commande "?dégâts") (eq $commande "?dégats") (eq $commande "?degâts") (eq $commande "?degats")}}
 		{{$link = "https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 7701374206268538960 "/)"}}
 		{{$message := getMessage $combat 701374206268538960}}
 		{{$embed := cembed
@@ -58,7 +58,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "position") (eq $commande "positions")}}
+	{{else if or (eq $commande "?position") (eq $commande "?positions")}}
 		{{$embed :=cembed
 		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 		"color" $col
@@ -68,7 +68,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "recharge") (eq $commande "recharger") (eq $commande "charger") (eq $commande "rechargé") (eq $commande "chargé")  (eq $commande "charge") (eq $commande "charger")}}
+	{{else if or (eq $commande "?recharge") (eq $commande "?recharger") (eq $commande "?charger") (eq $commande "?rechargé") (eq $commande "?chargé")  (eq $commande "?charge") (eq $commande "?charger")}}
 	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/" 735869281698447463 "/)"}}
 		{{$message := getMessage 734838748721840188 735869281698447463}}
 		{{$embed := cembed
@@ -79,7 +79,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "ticket") (eq $commande "tickets")}}
+	{{else if or (eq $commande "?ticket") (eq $commande "?tickets")}}
 	{{$embed := cembed
 		"title" "Ticket"
 		"color" 0x51CDEF
@@ -87,7 +87,7 @@
 	{{sendMessage nil $embed}}
 	{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "note") (eq $commande "notes")}}
+	{{else if or (eq $commande "?note") (eq $commande "?notes")}}
 		{{$embed := cembed
 			"title" "Bloc-notes"
 			"color" 0x51CDEF
@@ -98,7 +98,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "horloge") (eq $commande "horloges") (eq $commande "time") (eq $commande "times")}}
+	{{else if or (eq $commande "?horloge") (eq $commande "?horloges") (eq $commande "?time") (eq $commande "?times")}}
 		{{$embed := cembed
 			"title" "Horloge"
 			"color" 0x51CDEF
@@ -106,7 +106,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "bouclier") (eq $commande "boucliers")}}
+	{{else if or (eq $commande "?bouclier") (eq $commande "?boucliers")}}
 	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 726465578809688135 "/)"}}
 		{{$message := getMessage $combat 726465578809688135}}
 		{{$embed := cembed
@@ -117,7 +117,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if eq $commande "shop"}}
+	{{else if eq $commande "?shop"}}
 	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/" 736713337571901570 "/)"}}
 		{{$message := getMessage 734838748721840188 736713337571901570}}
 		{{$embed := cembed
@@ -128,7 +128,7 @@
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if or (eq $commande "help") (eq $commande "snippet") (eq $commande "all") }}
+	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
 		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?notes`\n:white_small_square: `?horloge`\n:white_small_square: `?bouclier`\n:white_small_square:`?ticket`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
