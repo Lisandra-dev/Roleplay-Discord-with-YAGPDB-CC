@@ -1,120 +1,33 @@
-All command here can work as stand alone. That's why there are ungrouped.
+Toutes les commandes sont en français, et ont été crée pour un RP de science-fiction avec un gameplay particulier (vous pouvez retrouver plus d'info à ce sujet [ici](https://www.jdr-system.ovh/readme.html). Cependant, vous pouvez les adapter et certaines commandes (notamment celle du groupe "ungrouped") peuvent être utilisée sans édit.
 
-# Pins 
+A noter que j'utilise ici `$` pour le "trigger" des commandes du bot. Vous devez donc penser à la changer sur les commandes pour l'adapter à votre serveur.
 
-**Trigger** : Command
 
-**Usage** : `$pins`
 
-> Le bot envoie juste un gif. 
+A noter que la majorité des ID ici sont celles du serveurs, donc penser bien à les changer. 
 
-# Instruction 
 
-**Trigger** : Command
 
-**Usage** : `$instruction`
+Nous avons donc :
 
-> Commande réservée aux administrateur, elle envoie un message à une personne mentionnée qui lui indique quoi faire une fois que son perso a été validé. 
+* Le groupe "ungrouped", qui contient des commandes "fun" et d'aide. 
 
-# Bloc
+* Le dossier pour les notes, qui a été pris entièrement depuis le serveurs officiels de YAGPD. Il est composé de deux parties : 
 
-**Trigger** : Command
+  * Un système de notes sur le serveurs et où tous les utilisateurs peuvent y accéder. 
+  * Un système de note "privé", où les notes sont envoyés en DM.
 
-**Usage** : `-bloc`
-> La partie code de la commande précédente. Ce code contient tout ce qui doit être mis pour résumé son personnage. 
+* Le système d'arme, qui doit être pris entièrement, se basant sur un système de PA. Les armes et compétences se rechargent donc en fonction du nombre de PA que l'utilisateur utilise. De plus, le PA et les armes ont une fonction qui permet de compter les utilisations, et la fonction `:pa:` est très centrale ici. Dans ce dossier se trouve aussi les fonctions reliés au bouclier, qui prend en compte le nombre de message pour recharger ce dernier.
 
-# Delete HRP message 
+  > Il se trouve aussi l'ancienne version du gameplay, où tout était basé sur la longueur des messages et le nombre de message pour recharger les armes et compétences.
 
-**Trigger** : Regex `^\((.*)`
+* Le système de temps permet, au final, d'avoir une sorte de temps interne au serveur, basé sur le nombre de message envoyé dans les catégories de RP. Ce temps peut être facilement modifié, et à chaque nouveau cycle, un nom de channel est modifié, et un embed envoyé. Actuellement, il y a quatre cycles. A la fin du quatrième, une nouvelle journée commence. Il est suffisamment facile de modifier le nombre de cycle pour une journée. Une commande spécifique a été créée pour modifier facilement les paramètres de cette commande. Une commande permet d'accéder au temps actuel, avec le nombre de message présent dans le cycle. 
 
-**Usage** : /
-> Supprime tout le HRP dans les channels RP, c'est à dire toutes les commandes commençant par une parenthèse. 
+* Le dossier dés contient tout le système de dés du RP, où le bot tire un dé et affiche un message avec le résultat. Un système de bonus/malus permet de modifier se résultat, et les messages sont basés sur ce résultat "final". Des commandes pour certaines attaques spéciales ont été faite et indique directement le résultat de l'action (nombre de PV soigné, nombre de pv retiré par un poison, malus, réussite d'esquive...). Les dés sont tirés en fonctions des statistiques indiquées par le joueur et le reliant à la base de donnée. De plus, on peut indiquer un nom de personnage pour tirer un dé sur ce "reroll".
 
-# Quoting By link 
+* Le dossier "database" contient les fonctions qui permettent d'intégrer dans la base de données les statistiques d'un reroll ou d'un personnage. 
 
-*Source : The YAGPDB server*
-**Trigger** : Regex `https://discordapp.com/channels\/(\d+)\/(\d+)\/(\d+)`
+* Le système d'économie permet d'avoir une boutique et un système monétaire, et les joueurs  (ou reroll) peuvent vendre ou acheter des objets. La boutique peut être ouverte ou fermée. De plus, une commande permet de mettre à jour l'inventaire du vaisseau en fonction de ce qui a été créée.
 
-**Usage** : Send a message with a discord link message in the server.
-> Le bot envoie un message citant le message dont le lien a été posté. Il peut même citer les embed de divers bots. 
 
-# End 
-
-**Trigger** : Command
-
-**Usage** : `$end`
-
-> Le bot envoie une ligne dans le channel où il a été trigger. 
-
-# Edit 
-
-**Trigger** : Command
-
-**Usage** : `-edit <id> <things>`
-> Permet d'éditer un message de YAG, dont des embed.
->
-> Source : https://github.com/Jo3-L/yagpdb-cc
-> Voir au dessus pour plus d'information. 
-
-# Google:
-
-*Source : The Yagpdb github CC*
-
-**Trigger** : Command
-
-**Usage** : `$google <things to search>`
-
-> Permet d'envoyer une recherche google à quelqu'un. 
-
-# AFK
-
-**Trigger** : command
-
-**Usage** : `-afk -d duration (en heure) <raison>`
-
-> Permet de donner le rôle AFK à quelqu'un durant x temps, avec une raison optionnel. Un message indiquant son absence est envoyé dans un channel, et le message est automatiquement supprimé si la personne supprime son AFK (avec la commande) ou sort naturellement de l'AFK. 
-
-# Viewafk
-
-**Trigger** : Command
-
-**Usage** : Regex : `^\$(viewafk <@!?\d+>)`
-
-> Permet de voir le temps restant d'une AFK, mais aussi la raison.
-
-# Snippet
-
-**Trigger** : Starts with ?
-
-**Usage** : `?(snippet|all|help|bouclier|horloge|notes|ticket|charge|position|dégâts|dégât|dégat|dégat|dés|résumé|arme|armes)`
-
-> Donne certaines informations en rapport avec le nom. Affiche parfois des messages du serveur. 
-
-# Support help
-
-**Trigger :** Regex `^\?(malus|soin|poison|support)`
-
-**Usage : ** `?(malus|soin|poison|support)`
-
-> Analogue à la précédente commande, mais était trop longue pour y être rajouté. Donne les infos sur les résultats des supports/altérations, pour tous les résultats possibles. 
-
-# Delete emoji
-
-**Trigger** : Regex `((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})`
-
-**Usage** : /
-
-> Supprime les émoji "solitaire".
-
-# play or skip : 
-
-**Trigger : ** Reaction added/removed
-
-> Edit un message de YAG, et rajoute l'utilisateur dans l'embed. Permet d'indiquer rapidement les roles des membres sur le message.
-
-# rm player guide : 
-
-**Trigger : ** Reaction added / Removed
-
-> Envoie un message aux personnes choisissant d'être joueur, avec un guide pour ne pas être perdu dans les channels.
 
