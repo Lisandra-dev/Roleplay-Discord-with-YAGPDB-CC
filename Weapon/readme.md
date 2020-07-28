@@ -66,6 +66,13 @@ Recharge work like that :
 
 **Trigger : ** Command
 
-**Usage : ** `$turn (optional trigger)`
+**Usage :** `$turn (optional trigger)`
 
 > Reset the PA for all people in the group dictionnary and add +1 to the DBkey for the turn. If argument, reset the turn number to 1.
+
+#delweapon :
+
+**Trigger** : Command
+
+**Usage :** `$delweapon <mention|#name>`
+  > Reset in the DB all weapon things (and PA) related to the user.
