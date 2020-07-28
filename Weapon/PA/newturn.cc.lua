@@ -3,12 +3,6 @@
 	{{$groupe = sdict .Value}}
 {{end}}
 
-{{/* Seuil & dictionnaire */}}
-{{$seuil := sdict}}
-{{with (dbGet .Server.ID "seuil")}}
-	{{$seuil = sdict .Value}}
-{{end}}
-
 {{/* Tour count :Incr each call unless CmdArgs = reset */}}
 {{if .CmdArgs}}
 	{{dbSet 0 "turn" 1}}
@@ -40,3 +34,4 @@
 	"timestamp" currentTime}}
 {{sendMessage nil $embed}}
 {{dbSet .Server.ID "groupe" $groupe}}
+{{deleteTrigger 1}}
