@@ -107,9 +107,76 @@
 		{{end}}
 	{{end}}
 
-
+{{else if eq $flag "-edit"}}
+	{{if $name}}
+			{{if $name}}
+				{{if ($items.Get ( $name))}}
+					{{$i := ($items.Get ( $name))}}
+					{{if eq flag2 "-price"}}
+						{{$buyprice := toInt (index .CmdArgs 3)}}
+						{{$items.Set $name $i}}
+						{{$i.Set "buyprice" $buyprice}}
+						{{$serverEco.Set "Items" $items}}
+					{{else if eq flag2 "-sell"}}
+						{{$sprice := toInt (index .CmdArgs 3)}}
+						{{if eq $sprice 0}}
+							{{$sprice = "Invendable"}}
+						{{end}}
+						{{$items.Set $name $i}}
+						{{$i.Set "sellprice" $sprice}}
+						{{$serverEco.Set "Items" $items}}
+					{{else if eq flag2 "-stock"}}
+						{{$stock := toInt (index .CmdArgs 3)}}
+						{{if eq $stock "inf"}}
+							{{$stock = "♾️"}}
+						{{end}}
+						{{$items.Set $name $i}}
+						{{$i.Set "stock" $stock}}
+						{{$serverEco.Set "Items" $items}}
+					{{else if eq flag2 "-sii"}}
+						{{$sii := (index .CmdArgs 2)}}
+						{{$items.Set $name $i}}
+						{{$i.Set "sii" $sii}}
+						{{$serverEco.Set "Items" $items}}
+					{{else if eq flag2 "-desc"}}
+						{{$desc := (index .CmdArgs 3)}}
+						{{$items.Set $name $i}}
+						{{$i.Set "desc" $desc}}
+						{{$serverEco.Set "Items" $items}}
+					{{else if eq flag2 "-rbuy"}}
+						{{$buyprice := randInt (toInt (index .CmdArgs 3)) (toInt (index .CmdArgs 4))}}
+						{{$items.Set $name $i}}
+						{{$i.Set "buyprice" $buyprice}}
+						{{$serverEco.Set "Items" $items}}
+					{{else if eq flag2 "-rsell"}}
+						{{$sellprice := randInt (toInt (index .CmdArgs 3)) (toInt (index .CmdArgs 4))}}
+						{{$items.Set $name $i}}
+						{{$i.Set "sellprice" $sprice}}
+						{{$serverEco.Set "Items" $items}}
+					{{end}}
+				{{end}}
+			{{end}}
+		{{end}}
+	{{else}}
+	**Erreur : ** Le produit n'existe pas.
+	**Usage : ** `$item -edit "nom" -(price|sell|stock|sii|desc|rbuy|rsell) <value>`
+		> Pour rbuy & rsell : A besoin des bornes pour l'aléatoire.
+		> pour price & sell : Prix
+		> Stock : Montant ou `inf`
+		> SII : True / False (signifie si l'objet apparaît dans les inventaires ou non)
+		> Description : Chaîne de caractère entre `"`.
+	{{end}}
+	{{with $i}}
+		**Item Info**
+		Nom : `{{ $name}}`
+		Prix d'achat : `{{.buyprice}}`
+		Prix de vente : `{{.sellprice}}`
+		Quantité : `{{.stock}}`
+		SII: `{{.sii}}`
+		Description : `{{.desc}}`
+	{{end}}
 {{else}}
-	**Usage** : `$item -(info|add|delete)`
+	**Usage** : `$item -(info|add|delete|edit)`
 {{end}}
 
 {{/* Database Updates */}}
