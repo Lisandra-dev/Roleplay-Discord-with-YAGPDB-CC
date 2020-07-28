@@ -220,7 +220,7 @@
 				{{with ($userEco.Get "Inventory")}}
 					{{$inv = sdict .}}
 				{{end}}
-				{{if $items.Get $item}}
+				{{if $inv.Get $item}}
 					{{$value := (sub (toInt ($inv.Get $item)) $amount)}}
 					{{if ne $value 0}}
 						{{$inv.Set $item $value}}
