@@ -63,7 +63,8 @@
 			"author" (sdict "name" (printf "%s est AFK" .User.Username) "icon_url" (.User.AvatarURL "256"))
 			"description" (joinStr " " "Durant"  (humanizeDurationSeconds (toDuration (joinStr "" $duration "s" ))) $msg)}}
 		{{$id = sendMessageRetID $chan $afkembed }}
-		{{dbSet .User.ID "afkmsg" (str $id) }}
+		{{dbSetExpire .User.ID "afkmsg" (str $id) (toInt $duration)}}
+		{{deleteMessage $id (toInt $duration)}}
 	{{addRoleID $idrole}}
 	{{removeRoleID $idrole $duration}}
 {{else}}
@@ -78,6 +79,7 @@
 		{{deleteMessage $chan $afk 180}}
 		{{dbDel .User.ID "afk"}}
 		{{dbDel .User.ID "idold"}}
+		{{dbDel .User.ID "afkmsg"}}
 	{{end}}
 {{end}}
 {{deleteTrigger 1}}
