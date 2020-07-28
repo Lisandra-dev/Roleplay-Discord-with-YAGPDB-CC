@@ -14,7 +14,7 @@ The center of the weapon / cooldown system.
 > Counts the PA the user use. At 4, the user use all this PA. Each time he uses a PA, the function looks in the DB if the user recharge something (weapon, or competence). If yes, count it. If the count is good, trigger an embed and reset the recharge value.
 
 # Recharge :
-*Fun : it's one of the only command who doesn't use dictionnary because it's more pratical without*
+*Fun : it's one of the only command who doesn't use dictionnary because it's more pratical without, because key are always deleted after the end of the recharge. So, normally, it doesn't kill your DB*
 
 **Trigger :** Command
 
