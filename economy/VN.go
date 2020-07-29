@@ -25,11 +25,11 @@
 {{if .CmdArgs}}
 	{{if eq $flag2 "-add"}}
 		{{if or (eq $flag "-arme") (eq $flag "-armes")}}
-			{{$item := (index .CmdArgs 2)}}
+			{{$item := title (index .CmdArgs 2)}}
 			{{$armes = $armes.Append $item}}
 			{{dbSet .Server.ID "arme" $armes}}
 		{{else if or (eq $flag "-module") (eq $flag "-modules")}}
-			{{$mod := (index .CmdArgs 2)}}
+			{{$mod := title (index .CmdArgs 2)}}
 			{{$module = $module.Append $mod}}
 			{{dbSet .Server.ID "module" $module}}
 		{{else if or (eq $flag "-bc") (eq $flag "-BC")}}
@@ -70,7 +70,7 @@
 
 	{{else if eq $flag2 "-use"}}
 		{{if or (eq $flag "-arme") (eq $flag "-armes")}}
-			{{$item := (index .CmdArgs 2)}}
+			{{$item := title (index .CmdArgs 2)}}
 			{{$newarme := cslice}}
 			{{range $armes}}
 				{{- if ne . $item }}
@@ -79,7 +79,7 @@
 			{{- end}}
 			{{dbSet .Server.ID "arme" $newarme}}
 		{{else if or (eq $flag "-module") (eq $flag "-modules")}}
-			{{$mod := (index .CmdArgs 2)}}
+			{{$mod := title (index .CmdArgs 2)}}
 			{{$newmod := cslice}}
 			{{range $module}}
 				{{- if ne . $mod }}

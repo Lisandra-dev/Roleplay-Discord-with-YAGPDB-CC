@@ -23,12 +23,12 @@
 {{/* Command Body */}}
 {{$flag := ""}}
 {{if .CmdArgs}}
-	{{$flag = (reFind `\-(money|symbol|manageinv)` (index .CmdArgs 0))}}
+	{{$flag = (reFind `\$(adminmoney|symbol|manageinv)` (index .CmdArgs 0))}}
 {{end}}
 {{$mention := ""}}
 
 
-{{ if eq $flag "-money"}}
+{{ if eq $flag "$money"}}
 	{{$secondflag := ""}}
 	{{$target := ""}}
 	{{$amount := 0}}
@@ -68,7 +68,7 @@
 				{{sendMessage nil $embed}}
 			{{else}}
 				Vous avez besoin de spécifier une valeur !
-				**Usage : ** `$admin -money -(add|remove|reset|set) user amount`
+				**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
 			{{end}}
 		{{else if eq $secondflag "-remove"}}
 			{{if $amount}}
@@ -80,7 +80,7 @@
 				{{sendMessage nil $embed}}
 			{{else}}
 				Vous avez besoin de spécifier une valeur !
-				**Usage : ** `$admin -money -(add|remove|reset|set) user amount`
+				**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
 			{{end}}
 		{{else if eq $secondflag "-reset"}}
 			{{$bal = 0}}
@@ -95,14 +95,14 @@
 				{{sendMessage nil $embed}}
 			{{else}}
 				Vous avez besoin de spécifier une valeur !
-				**Usage : ** `$admin -money -(add|remove|reset|set) user amount`
+				**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
 			{{end}}
 		{{end}}
 		{{$userEco.Set "balance" $bal}}
 		{{dbSet $target "economy" $userEco}}
 	{{end}}
 
-{{else if eq $flag "-symbol"}}
+{{else if eq $flag "$symbol"}}
 	{{$symbol := ""}}
 	{{if $serverEco.Get "symbol"}}
 		{{$symbol = $serverEco.Get "symbol"}}
@@ -119,7 +119,7 @@
 	{{$serverEco.Set "symbol" $symbol}}
 	Le symbole de la monnaie est maintenant : `{{or $symbol "none"}}`
 
-{{else if eq $flag "-manageinv"}}
+{{else if eq $flag "$manageinv"}}
 	{{$secondflag := ""}}
 	{{$target := ""}}
 	{{$item := ""}}
@@ -150,7 +150,7 @@
 		{{end}}
 	{{end}}
 	{{if not $secondflag}}
-		**Usage** : `$admin -manageinv -(add|tremove|reset|clean|set) user item amount`
+		**Usage** : `$manageinv -(add|tremove|reset|clean|set) user item amount`
 	{{else}}
 		{{$userEco := sdict}}
 		{{if $target}}
@@ -158,7 +158,7 @@
 			{{$userEco = sdict .Value}}
 		{{end}}
 	{{else}}
-		**Usage** : `$admin -manageinv -(add|tremove|reset|clean|set) user item amount`
+		**Usage** : `$manageinv -(add|tremove|reset|clean|set) user item amount`
 	{{end}}
 	{{if eq $secondflag "-clean"}}
 		{{if $target}}
@@ -267,10 +267,10 @@
 		{{end}}
 	{{else}}
 	**Usage** :
-:white_small_square: Money : `$admin -money -(add|remove|reset|set) user amount`
-:white_small_square: Symbol : `$admin -symbol <symbol>`
-:white_small_square: Manage inventory : `$admin -manageinv -(add|remove|set) user item amount`
-:white_small_square: Reset inventory : `$admin -manageinv -reset user`
+:white_small_square: __Money__ : `$adminmoney -(add|remove|reset|set) user amount`
+:white_small_square: __Symbol__ : `$symbol <symbol>`
+:white_small_square: __Manage inventory__ : `$manageinv -(add|remove|set) user item amount`
+:white_small_square: __Reset inventory__ : `$manageinv -reset user`
 {{end}}
 
 {{/* Database Updates */}}

@@ -16,7 +16,7 @@
 {{with .CmdArgs}}
 	{{if ge (len .) 2}}
 		{{$flag = (reFind `\-(add|edit|delete|info)` (index . 0))}}
-		{{$name = (index . 1)}}
+		{{$name = title (index . 1)}}
 		{{if ge (len .) 3}}
 			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc)` (index . 2))}}
 		{{end}}

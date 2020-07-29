@@ -40,7 +40,7 @@
 	{{$initem := ""}}
 	{{$amount := 1}}
 	{{with .CmdArgs}}
-		{{$initem = ( (index . 0))}}
+		{{$initem = ( title (index . 0))}}
 		{{if ge (len .) 2}}
 			{{$amount = or (toInt (index . 1)) 1}}
 		{{end}}
