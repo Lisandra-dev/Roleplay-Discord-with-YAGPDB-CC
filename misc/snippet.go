@@ -11,12 +11,12 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `^\?(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?)` .Message.Content}}
+{{$commande := reFind `^\?(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store)` .Message.Content}}
 
 {{if .CmdArgs}}
 		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
 	 		{{$message := getMessage $combat 733363513988218952 }}
-			{{$link = "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 733363513988218952 "/)"}}
+			{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/733363513988218952)"}}
 			{{$embed := cembed
     		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 				"color" $col
@@ -35,7 +35,7 @@
 			{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?dés") (eq $commande "?dice") (eq $commande "?dé") (eq $commande "?de") (eq $commande "?dices")}}
-		{{$link = "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 727992973131776020 "/)"}}
+		{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/727992973131776020)")}}
 		{{$message := getMessage $combat 727992973131776020 }}
 		{{$embed := cembed
     	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
@@ -47,7 +47,7 @@
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "dégât") (eq $commande "?dégat") (eq $commande "?degât") (eq $commande "?degat") (eq $commande "?dégâts") (eq $commande "?dégats") (eq $commande "?degâts") (eq $commande "?degats")}}
-		{{$link = "https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 7701374206268538960 "/)"}}
+		{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/7701374206268538960)")}}
 		{{$message := getMessage $combat 701374206268538960}}
 		{{$embed := cembed
     	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
@@ -69,12 +69,12 @@
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?recharge") (eq $commande "?recharger") (eq $commande "?charger") (eq $commande "?rechargé") (eq $commande "?chargé")  (eq $commande "?charge") (eq $commande "?charger")}}
-	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/" 735869281698447463 "/)"}}
+	{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/735869281698447463)")}}
 		{{$message := getMessage 734838748721840188 735869281698447463}}
 		{{$embed := cembed
     	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
-			"description" (joinStr "" $message.Content)
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
 			"icon_url" (.User.AvatarURL "512")}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
@@ -107,23 +107,23 @@
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?bouclier") (eq $commande "?boucliers")}}
-	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" $combat "/" 726465578809688135 "/)"}}
+	{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/726465578809688135)")}}
 		{{$message := getMessage $combat 726465578809688135}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
-			"description" (joinStr "" $message.Content)
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
 			"icon_url" (.User.AvatarURL "512")}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 
-	{{else if eq $commande "?shop"}}
-	{{$link = "https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/" 736713337571901570 "/)"}}
+	{{else if or (eq $commande "?shop") (eq $commande "?store")}}
+	{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/734838748721840188/736713337571901570)")}}
 		{{$message := getMessage 734838748721840188 736713337571901570}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
-			"description" (joinStr "" $message.Content)
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
 			"icon_url" (.User.AvatarURL "512")}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
