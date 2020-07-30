@@ -11,30 +11,26 @@
 
 {{$ban:="**Bandage** : Des bandes de tissus assez simples et vieilles comme Ophéris, qui permette de restaurer 10 pv et réduire de deux tours un malus."}}
 
-{{$eu:="**Eufyrusant** : Un boost se présentant comme un comprimé rose, destiné aux PSI,  qui permet d'augmenter les capacités de 8% durant trois tours."}}
-
-{{$pl:="**Implant temporaire** : Un patch triangulaire transparent qui se place sur la peau, agissant sur une seule caractéristique durant trois tours. La caractéristique est décidé lors de sa création."}}
+{{$eu:="**Eufyrusant** : Un boost se présentant comme un comprimé rose, ou sous forme d'injection, qui permet d'augmenter les capacités de 8% durant trois tours."}}
 
 {{$so:="**Soma** : Un comprimé rouge, permettant d'annuler tous les cooldown d'un module ou d'un PSI."}}
-
-{{$je:="**Injection Eufyrusant** : Fabriqué par la même corporation que le comprimé, cette injection est destinée aux personnes ayant un module, et qui augmente les capacités d'un module de 8% pendant 3 tours."}}
 
 {{$ro:="**Sirop de betapropyl** : Un sirop hyper sucrée et légèrement addictif, qui annule tous les malus dont la personne était victime."}}
 
 {{$xe:="**Xenox** : Un comprimé vert très précieux qui permet d'avoir, pendant trois tours, l'effets d'un implant sur trois caractéristiques au choix." }}
 
 
-{{$gr:="**Grenade nécrotique** : Une grande qui provoque des nécroses sur la peau de la personne l'ayant reçue. A manipuler avec précautions."}}
+{{$gr:="**Grenade nécrotique** : Une grande qui provoque des nécroses sur la peau de la personne l'ayant reçue. A manipuler avec précautions. (10% bonus projectile)"}}
 
-{{$fn:="**Liquide antifongique** : Il fait fondre les cellules épaisses de protection d'un Mush."}}
+{{$fn:="**Liquide antifongique** : Il fait fondre les cellules épaisses de protection d'un Mush. (Annule un bouclier mush pendant 3 tours)"}}
 
-{{$th:="**Gaz anesthésiant de combat : ** Bonne nuit !"}}
+{{$th:="**Gaz anesthésiant de combat : ** Endort la cible. "}}
 
-{{$sng:="**Sang Etherique** : Un petit nom donnée au sang particulier d'Ether. Il peut être utilisé dans de nombreux objets différents. Dans tous les cas : il est toxique."}}
+{{$sng:="**Sang Etherique** : Un petit nom donnée au sang particulier d'Ether. Il peut être utilisé dans de nombreux objets différents. Dans tous les cas : il est toxique. (15% bonus)"}}
 
-{{$cr:="**Huile carotoxinique :** Une huile issue des toxine d'une araignée, destinée aux armes blanches. Une fois dans les blessures, elle augmente la douleur."}}
+{{$cr:="**Huile carotoxinique :** Une huile issue des toxine d'une araignée, destinée aux armes blanches. Une fois dans les blessures, elle augmente la douleur. (Malus de caractéristiques sur tout le combat)"}}
 
-{{$di:="**Huile digestive** : Une arme très redoutable, composée d'une protéase qui digère les armures."}}
+{{$di:="**Huile digestive** : Une arme très redoutable, composée d'une protéase qui digère les armures. (Annule l'armure sur tout le combat)"}}
 
 {{$d:=""}}
 {{$v:="722755391498485800"}}
@@ -45,11 +41,16 @@
 {{$b:=true}}
 {{$a:="https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png"}}
 {{$l:="https://i.imgur.com/o557fMx.png"}}
+{{$fu:= true}}
+
+
 
 {{if .CmdArgs}}
 	{{$i:=lower (index .CmdArgs 0)}}
 	{{if eq $i "cb"}}
 	  {{$d =$cb}}
+	{{else if eq $i "faible"}}
+		{{$fu = false}}
 	{{else if eq $i  "bc"}}
 	  {{$d =$bc}}
 	{{else if eq $i "lc"}}
@@ -67,10 +68,6 @@
 
 	{{else if eq $i "eufyrusant" "eufy"}}
 		{{ $d =$eu}}
-		{{ $d =$je}}
-
-	{{else if eq $i "implants temporaires" "implant temporaire"}}
-		{{$d =$pl}}
 
 	{{else if eq $i "soma"}}
 		{{$d =$so}}
@@ -158,27 +155,6 @@
 		{{$m =(index $msg.Embeds 0).Description}}
 		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
-
-	{{else if eq $i "faible"}}
-		{{if eq (len .CmdArgs) 2}}
-			{{$flag:=reFind `(?i)(analgésiques?|(Armes? biologiques?)|(armes? bio)|Armes?)` (index .CmdArgs 1)}}
-			{{$flag =lower $flag}}
-			{{if eq $flag "analgésique" "analgésiques"}}
-				{{$id ="736005431582916638"}}
-			{{else if eq $flag "arme biologique" "armes biologiques" "arme biologiques" "armes biologique" "arme bio" "armes bio"}}
-				{{$id ="736005737452404778"}}
-			{{else if eq $flag "arme" "armes"}}
-				{{$id ="736006328668913684"}}
-			{{end}}
-			{{$msg:=getMessage $v $id}}
-			{{$m =(index $msg.Embeds 0).Description}}
-			{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
-			{{$d =(joinStr "" $m )}}
-		{{else}}
-			{{$b =true}}
-			{{$d ="Vous cherchez un objet à bas coût ? Mais lequel ?\n\n Pour rappel il existe :\n :white_small_square: Les armes (`?search arme(s)`)\n :white_small_square: Les armes biologiques (`?search \"arme bio\"`) \n :white_small_square: Les analgésiques (`?search analgésique`)"}}
-		{{end}}
-		{{$b =true}}
 	{{else}}
 		{{$b =false}}
 		{{$d ="Cet élément ne figure pas dans ma base de donnée."}}
@@ -188,25 +164,26 @@
 	{{$d ="Pourquoi vous ouvrez l'encyclopédie si ce n'est pas pour y chercher quelque chose ? "}}
 {{end}}
 
-{{if eq $b true}}
+{{if and (eq $b true) (eq $fu true)}}
 	{{$embed:=cembed
-			"author" (sdict "name" "Sola-UI" "icon_url" $a)
-			"title" "Encyclopédie - Objet"
+			"author" (sdict "name" "[Sola-UI] BDD : Objet haut de gamme" "icon_url" $a)
 			"thumbnail" (sdict "url" $l)
 			"description" $d
 			"footer" (sdict "text" $f )
 			"color" 0x94CAF0}}
 	{{sendMessage nil $embed}}
-{{else if eq $b false}}
+{{else if and (eq $b false) (eq $fu true)}}
 	{{$embed:=cembed
-		"author" (sdict "name" "Sola-UI" "icon_url" $a)
-		"title" "Encyclopédie - Objet"
+		"author" (sdict "name" "[Sola-UI] BDD : Objet - ERREUR" "icon_url" $a)
 		"thumbnail" (sdict "url" $l)
-		"description" (joinStr " " $d "\n\n Voici le sommaire : \n▫️ **Inventaire** : `?search inventaire` \n▫️ **Composant** : `?search composant`\n▫️ **Analgésique** : `?search analgésique`\n▫️ **Armes biologiques** : `?search \"Arme biologique\"`\n▫️ **Armes** : `?search arme`\n▫️ **Modules** : `?search module`\n▫️ **Implants** : `?search implants`\n▫️ **Charges : `?search charge`")
+		"description" (joinStr " " $d "\n\n Voici le sommaire : \n▫️ **Inventaire** : `?search inventaire` \n▫️ **Composant** : `?search composant`\n▫️ **Analgésique** : `?search analgésique`\n▫️ **Armes biologiques** : `?search \"Arme biologique\"`\n▫️ **Armes** : `?search arme`\n▫️ **Modules** : `?search module`\n▫️ **Implants** : `?search implants`\n▫️ **Charges** : `?search charge`")
 		"fields" (cslice
+			(sdict "name" "_ _" "value" "_ _" "inline" false)
 			(sdict "name" "Composants" "value" "▫️ **Biocomposant** : `?search bc`\n▫️ **Cellule bionotropique** : `?search cb`\n▫️ **Cellule cytomorphe** : `?search lc`\n▫️ **Substrat ferreux** : `?search sf`\n▫️ **Composant universel** : `?search cu`" "inline" false)
-			(sdict "name" "Analgésique" "value" ":white_small_square:**Rixolam :** `?search rixolam`\n:white_small_square:**Bandage :** `?search bandage(s)`\n:white_small_square:**Eufyrusant :**`?search eufy(rusant)`\n:white_small_square:**Implant :** `?search Implant(s) temporaire(s)`\n:white_small_square:**Soma :** `?search soma`\n:white_small_square:**Injection Eufyrusant :** `?search Eufy(rusant)`\n:white_small_square: **Sirop de betapropyl :** `?search (sirop|betapropyl|\"sirop de betapropyl\")`\n:white_small_square: **Xenox :** `?search xenox`" "inline" false)
-			(sdict "name" "Armes biologiques" ":white_small_square: **La Grenade Nécrotique :** `?search (grenade|grenade nécrotique|nécro)`\n:white_small_square: **Liquide antifongique :**`?search (antifongique|liquide|\"liquide antifongique\")`\n:white_small_square: **Gaz anesthésiant de combat :** `?search (anesthésiant|gaz|\"gaz anesthésiant\")`\n:white_small_square: **Sang Etherique :** `?search (\"sang éthérique\"|sang|éthérique)`\n:white_small_square: **Huile carotoxinique :** `?search (huile|carotonixique|caro|\"huile carotoxinique\")`\n:white_small_square: **Huile digestive :**  `?search (huile|digestive|huile digestive`" "inline" false)
+			(sdict "name" "_ _" "value" "_ _" "inline" false)
+			(sdict "name" "Analgésique" "value" ":white_small_square:**Rixolam :** `?search rixolam`\n:white_small_square:**Bandage :** `?search bandage(s)`\n:white_small_square:**Eufyrusant :**`?search eufy(rusant)`\n:white_small_square:**Soma :** `?search soma`\n:white_small_square: **Sirop de betapropyl :** `?search (sirop|betapropyl|\"sirop de betapropyl\")`\n:white_small_square: **Xenox :** `?search xenox`" "inline" false)
+			(sdict "name" "_ _" "value" "_ _" "inline" false)
+			(sdict "name" "Armes biologiques" "value" ":white_small_square: **La Grenade Nécrotique :** `?search (grenade|grenade nécrotique|nécro)`\n:white_small_square: **Liquide antifongique :**`?search (antifongique|liquide|\"liquide antifongique\")`\n:white_small_square: **Gaz anesthésiant de combat :** `?search (anesthésiant|gaz|\"gaz anesthésiant\")`\n:white_small_square: **Sang Etherique :** `?search (\"sang éthérique\"|sang|éthérique)`\n:white_small_square: **Huile carotoxinique :** `?search (huile|carotonixique|caro|\"huile carotoxinique\")`\n:white_small_square: **Huile digestive :**  `?search (huile|digestive|huile digestive`" "inline" false)
 			)
 		"footer" (sdict "text" $f )
 		"color" 0xA75454}}
