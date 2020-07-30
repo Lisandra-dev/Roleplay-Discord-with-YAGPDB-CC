@@ -12,6 +12,8 @@
 {{$cr := "**Huile carotonixique** : Malus sur toutes les caractéristiques pendant 1 tour"}}
 {{$di := "**Huile digestive** : Divise par 2 les effets d'une armure sur 3 tours"}}
 
+
+
 {{$d:=""}}
 {{$v:="722755391498485800"}}
 {{$m:=""}}
@@ -34,6 +36,8 @@
 		{{ $d =$eu}}
 	{{else if eq $i "soma"}}
 		{{$d =$so}}
+	{{else if eq $i "implant temporaire" "implant" "temporaire" "implants temporaires" "implants" "temporaires" "implants temporaire" "implants temporaire"}}
+		{{$d = $im}}
 	{{else if eq $i "sirop" "betapropyl" "sirop de betapropyl"}}
 		{{$d =$ro}}
 	{{else if eq $i "grenade" "grenade nécrotique" "grenade necrotique" "nécrotique" "necrotique" "necro" "nécro"}}
@@ -66,14 +70,28 @@
 	{{end}}
 
 {{else}}
-	{{$d ="Vous cherchez un objet à bas coût ? Mais lequel ?\n\n Pour rappel il existe :\n :white_small_square: Les armes (`?search arme(s)`)\n :white_small_square: Les armes biologiques (`?search \"arme bio\"`) \n :white_small_square: Les analgésiques (`?search analgésique`)"}}
+	{{$b = false}}
 {{end}}
-
-{{$embed:=cembed
-	"author" (sdict "name" "[Sola-UI] BDD : Objet bas de gamme" "icon_url" $a)
-	"title" "Encyclopédie - Objet"
-	"thumbnail" (sdict "url" $l)
-	"description" $d
-	"footer" (sdict "text" $f )
-	"color" 0x94CAF0}}
-{{sendMessage nil $embed}}
+{{if eq $b true}}
+	{{$embed:=cembed
+		"author" (sdict "name" "[Sola-UI] BDD : Objet bas de gamme" "icon_url" $a)
+		"thumbnail" (sdict "url" $l)
+		"description" $d
+		"footer" (sdict "text" $f )
+		"color" 0x94CAF0}}
+	{{sendMessage nil $embed}}
+{{else if eq $b false}}
+	{{$d = "Vous cherchez un objet à bas coût ? Mais lequel ?"}}
+	{{$embed:=cembed
+		"author" (sdict "name" "[Sola-UI] BDD : Objet - ERREUR" "icon_url" $a)
+		"thumbnail" (sdict "url" $l)
+		"description" (joinStr " " $d "\n\n Voici les commandes : \n▫️ **Analgésique** : `?search faible analgésique`\n▫️ **Armes biologiques** : `?search faible \"Arme biologique\"`\n▫️ **Armes** : `?search faible arme`\n")
+		"fields" (cslice
+			(sdict "name" "_ _" "value" "_ _" "inline" false)
+			(sdict "name" "Analgésique" "value" ":white_small_square:**Rixolam :** `?search faible rixolam`\n:white_small_square:**Bandage :** `?search faible bandage(s)`\n:white_small_square:**Eufyrusant :**`?search faible eufy(rusant)`\n:white_small_square:**Soma :** `?search faible soma`\n:white_small_square: **Sirop de betapropyl :** `?search faible (sirop|betapropyl|\"sirop de betapropyl\")`\n:white_small_square: **Implant temporaire :** `?search faible (\"implant(s) temporaire(s)|implant(s)|temporaire(s))`" "inline" false)
+			(sdict "name" "_ _" "value" "_ _" "inline" false)
+			(sdict "name" "Armes biologiques" "value" ":white_small_square: **Grenade Nécrotique :** `?search faible (grenade|grenade nécrotique|nécro)`\n:white_small_square: **Liquide antifongique :**`?search faible (antifongique|liquide|\"liquide antifongique\")`\n:white_small_square: **Gaz anesthésiant de combat :** `?search faible (anesthésiant|gaz|\"gaz anesthésiant\")`\n:white_small_square: **Sang Etherique :** `?search faible (\"sang éthérique\"|sang|éthérique)`\n:white_small_square: **Huile carotoxinique :** `?search faible (huile|carotonixique|caro|\"huile carotoxinique\")`\n:white_small_square: **Huile digestive :**  `?search faible (huile|digestive|huile digestive`" "inline" false))
+		"footer" (sdict "text" $f )
+		"color" 0xA75454}}
+		{{sendMessage nil $embed}}
+{{end}}
