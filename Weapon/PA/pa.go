@@ -128,7 +128,7 @@
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-				"description" (joinStr "" "Votre compétence " $nameatq " est de nouveau utilisable")
+				"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID 735938256038002818 $embed }}
 			{{dbDel $id $atq}}
@@ -141,7 +141,7 @@
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-				"description" (joinStr "" "Votre compétence " $namesupp " est de nouveau utilisable")
+				"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID 735938256038002818 $embed }}
 			{{dbDel $id $supp}}
@@ -225,7 +225,7 @@
 				{{dbDel $id "cdatq"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-					"description" (joinStr "" "Votre compétence " $nameatq " est de nouveau utilisable")
+					"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
 				{{dbDel $id $atq}}
@@ -238,7 +238,7 @@
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-					"description" (joinStr "" "Votre compétence " $namesupp " est de nouveau utilisable")
+					"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
 				{{dbDel $id $supp}}

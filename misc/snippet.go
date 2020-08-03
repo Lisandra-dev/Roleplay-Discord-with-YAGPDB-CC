@@ -11,7 +11,7 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `^\?(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store)` .Message.Content}}
+{{$commande := reFind `^\?(shop|boucliers?|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|horloges?|times?|help|snippet|aide|all|tickets?|notes?|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa)` .Message.Content}}
 
 {{if .CmdArgs}}
 		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
@@ -118,8 +118,19 @@
 		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?shop") (eq $commande "?store")}}
-	{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/734838748721840188/736713337571901570)")}}
+		{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/734838748721840188/736713337571901570)")}}
 		{{$message := getMessage 734838748721840188 736713337571901570}}
+		{{$embed := cembed
+			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+			"color" $col
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
+			"icon_url" (.User.AvatarURL "512")}}
+		{{sendMessage nil $embed}}
+		{{deleteTrigger 1}}
+
+	{{else if eq $commande "?pa" "?PA"}}
+		{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/739903306683646105)"}}
+		{{$message := getMessage $combat 739903306683646105}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -131,7 +142,7 @@
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?notes`\n:white_small_square: `?horloge`\n:white_small_square: `?bouclier`\n:white_small_square:`?ticket`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
+		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?notes`\n:white_small_square: `?horloge`\n:white_small_square: `?bouclier`\n:white_small_square:`?ticket`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}
