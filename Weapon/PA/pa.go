@@ -135,7 +135,7 @@
 		{{end}}
 	{{end}}
 	{{if $namesupp}}
-		{{if lt $supp 8}}
+		{{if lt $supp 6}}
 			{{$x := dbIncr $id $supp 1}}
 		{{else if eq $supp 6}}
 			{{dbDel $id "cdsupp"}}
@@ -163,6 +163,7 @@
 					"color" 0x6CAB8E}}
 				{{sendMessage nil $embed}}
 				{{dbDel $id "r_pistol1"}}
+				{{dbDel $id "pistol"}}
 			{{end}}
 		{{end}}
 		{{if $rp2}}
@@ -175,6 +176,7 @@
 					"color" 0x6CAB8E}}
 				{{sendMessage nil $embed}}
 				{{dbDel "r_pistol2"}}
+				{{dbDel $id "pistol2"}}
 			{{end}}
 		{{end}}
 		{{if $rf1}}
@@ -187,6 +189,7 @@
 					"color" 0x6CAB8E}}
 				{{sendMessage nil $embed}}
 				{{dbDel $id "r_fusil1"}}
+				{{dbDel $id "fusil"}}
 			{{end}}
 		{{end}}
 		{{if $rf2}}
@@ -199,6 +202,7 @@
 					"color" 0x6CAB8E}}
 				{{sendMessage nil $embed}}
 				{{dbDel $id "r_fusil2"}}
+				{{dbDel $id "fusil2"}}
 			{{end}}
 		{{end}}
 		{{if $rc}}
@@ -207,10 +211,11 @@
 			{{else if eq (toInt $rc) 8}}
 				{{$embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-					"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")
+					"description" (joinStr "" "Canon de " $.User.Mention " rechargé.")
 					"color" 0x6CAB8E}}
 				{{sendMessage nil $embed}}
 				{{dbDel $id "r_canon"}}
+				{{dbDel $id "canon"}}
 			{{end}}
 		{{end}}
 		{{if $nameatq}}
@@ -227,7 +232,7 @@
 			{{end}}
 		{{end}}
 		{{if $namesupp}}
-			{{if lt $supp 12}}
+			{{if lt $supp 6}}
 				{{$x := dbIncr $id $namesupp 1}}
 			{{else if eq $supp 6}}
 				{{dbDel $id "cdsupp"}}
@@ -252,3 +257,4 @@
 	{{$idPA := sendMessageRetID nil $embed}}
 	{{deleteMessage nil $idPA 30}}
 {{dbSet .Server.ID "groupe" $groupe}}
+{{$groupe.Set $idict 3}}

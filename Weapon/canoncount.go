@@ -35,6 +35,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 {{/* get PA */}}
 {{$pa := $groupe.Get (str $id)}}
+
 {{if gt $pa 0}}
 	{{if not (dbGet $id "canon")}}
 	  {{dbSet $id "canon" 0}}
