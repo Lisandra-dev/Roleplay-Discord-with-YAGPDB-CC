@@ -124,7 +124,7 @@
 	{{if $nameatq}}
 		{{if lt $atq 8}}
 			{{$x:= dbIncr $id $atq 1}}
-		{{else if eq $atq 8}}
+		{{else if eq $atq 4}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
@@ -137,7 +137,7 @@
 	{{if $namesupp}}
 		{{if lt $supp 8}}
 			{{$x := dbIncr $id $supp 1}}
-		{{else if eq $supp 8}}
+		{{else if eq $supp 6}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -216,7 +216,7 @@
 		{{if $nameatq}}
 			{{if lt $atq 8}}
 				{{$x:= dbIncr $id $nameatq 1}}
-			{{else if eq $atq 8}}
+			{{else if eq $atq 4}}
 				{{dbDel $id "cdatq"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
@@ -229,7 +229,7 @@
 		{{if $namesupp}}
 			{{if lt $supp 12}}
 				{{$x := dbIncr $id $namesupp 1}}
-			{{else if eq $supp 12}}
+			{{else if eq $supp 6}}
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
