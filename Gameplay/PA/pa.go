@@ -135,9 +135,9 @@
 		{{end}}
 	{{end}}
 	{{if $namesupp}}
-		{{if lt $supp 6}}
+		{{if lt $supp 8}}
 			{{$x := dbIncr $id $supp 1}}
-		{{else if eq $supp 6}}
+		{{else if eq $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -232,9 +232,9 @@
 			{{end}}
 		{{end}}
 		{{if $namesupp}}
-			{{if lt $supp 6}}
+			{{if lt $supp 8}}
 				{{$x := dbIncr $id $namesupp 1}}
-			{{else if eq $supp 6}}
+			{{else if eq $supp 8}}
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")

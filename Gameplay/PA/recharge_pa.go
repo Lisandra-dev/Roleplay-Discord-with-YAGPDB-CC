@@ -111,7 +111,6 @@
 			{{ $idM := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $idM 30}}
 		{{end}}
-
 	{{else if eq (index .CmdArgs 0) "pistolet2"}}
 		{{if not $rp2}}
 			{{if gt (toFloat (dbGet $id "pistol2").Value) (toFloat 7)}}
@@ -138,6 +137,7 @@
 			{{ $idM := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $idM 30}}
 		{{end}}
+
 	{{else if eq (index .CmdArgs 0) "canon"}}
 		{{if not $rc}}
 			{{if gt (toFloat (dbGet $id "canon").Value) (toFloat 19)}}
@@ -164,56 +164,9 @@
 			{{ $idM := sendMessageRetID nil $embed }}
 			{{deleteMessage nil $idM 30}}
 		{{end}}
-
-	{{else if eq (index .CmdArgs 0) "attaque"}}
-		{{if not (index .CmdArgs 1)}}
-			**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque
-		{{else}}
-			{{$name := (index .CmdArgs 1)}}
-			{{$arg := dbGet $id $name}}
-			{{if not $arg}}
-				{{dbSet $id "cdatq" $name}}
-				{{dbSet $id $name 1}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" $imga)
-					"description" (joinStr "" "Début de la recharge de la competence " $name "...\n Please wait...")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-			{{else}}
-				{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" $imga)
-				"description" (joinStr "" "La compétence " $name " est toujours en cooldown... \n Please wait...")
-				"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID nil $embed }}
-				{{deleteMessage nil $idM 30}}
-			{{end}}
-		{{end}}
-	{{else if (index .CmdArgs 0) "support"}}
-		{{if not (index .CmdArgs 1)}}
-			**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque
-		{{else}}
-			{{$name := (index .CmdArgs 1)}}
-			{{$arg := dbGet $id $name}}
-			{{if not $arg}}
-				{{dbSet $id $name 1}}
-				{{dbSet $id "cdsupp" $name}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" $imga)
-					"description" (joinStr "" "Début de la recharge de la competence " $name "...\n Please wait...")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-			{{else}}
-				{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" $imga)
-				"description" (joinStr "" "La compétence " $name " est toujours en cooldown... \n Please wait...")
-				"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID nil $embed }}
-				{{deleteMessage nil $idM 30}}
-			{{end}}
-		{{end}}
 	{{else}}
-		**USAGE** : `$recharge (fusil|fusil2|pistolet|pistolet2|canon|attaque|support)`
+		**Usage** : `$recharge (fusil|fusil2|pistolet|pistolet2|canon)`
 	{{end}}
 {{else}}
-	**USAGE** : `$recharge (fusil|fusil2|pistolet|pistolet2|canon|attaque|support)`
+	**USAGE** : `$comp (court|long) "nom"`
 {{end}}
