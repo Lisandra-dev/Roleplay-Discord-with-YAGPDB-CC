@@ -1,13 +1,15 @@
 {$name := reFind `(\#\S*)` .Message.Content}}
-{{$malus:=reFindAllSubmatches `^\;malus` .Message.Content}}
-{{$soin:= reFindAllSubmatches `^\;soin` .Message.Content}}
-{{$poison:= reFindAllSubmatches `^\;poison` .Message.Content}}
+{{$support:=reFindAllSubmatches `^\!(malus|soutien)` .Message.Content}}
+{{$soin:= reFindAllSubmatches `^\!soin` .Message.Content}}
+{{$poison:= reFindAllSubmatches `^\!poison` .Message.Content}}
 {{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
-{{$malusimg:="https://i.imgur.com/fuHvIUn.png"}}
+{{$supportimg:="https://i.imgur.com/fuHvIUn.png"}}
 {{$poisonimg:="https://i.imgur.com/CmgNFYu.png"}}
+{{$s := "+"}}
+{{$ec := "Bonus de -"}}
 {{$soincol:=0xb66dc1}}
 {{$poisoncol:=0x370E6A}}
-{{$maluscol:=0x2B7697}}
+{{$supportcol:=0x2B7697}}
 {{$id:= ""}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
@@ -19,47 +21,56 @@
 
 {{if .CmdArgs}}
 	{{$d:=(toFloat (index .CmdArgs 0) ) }}
-	{{if $malus}}
+	{{if $support}}
+		{{if eq $support "!malus"}}
+			{{$s = "+"}}
+			{{$ec = "Bonus de -"}}
+			{{$w ="malus"}}
+		{{else if eq $support "!soutien"}}
+			{{$s = "-"}}
+			{{$ec = "Malus de +"}}
+			{{$w = "bonus"}}
+		{{end}}
 		{{if eq $d (toFloat 0)}}
 			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible a un malus de +4 à tous ses dé."
-				"color" $maluscol
-				"author" (sdict "name" $user "icon_url" $malusimg)}}
+				"description" "Ultra critique : Votre cible a un {{$w}} de {{$s}}4."
+				"color" $supportcol
+				"author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if or (eq $d (toFloat 1)) (eq $d (toFloat 2) ) }}
 			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible a un malus de +3 à son dé."
-				"color" $maluscol
-				"author" (sdict "name" $user "icon_url" $malusimg)}}
+				"description" "Réussite critique : Votre cible a un {{$w}} de {{$s}}3."
+				"color" $supportcol
+				"author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if and (le $d (toFloat 5)) (ge $d (toFloat 3))}}
 			{{$embed:=cembed
-				"description" "Votre cible a un malus de +2 à son dé."
-				"color" $maluscol
-        "author" (sdict "name" $user "icon_url" $malusimg)}}
+				"description" "Votre cible a un {{$w}} de {{$s}}2."
+				"color" $supportcol
+        "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if  and (le $d (toFloat 8)) (ge $d (toFloat 6))}}
 			{{$embed:=cembed
-				"description" "Votre cible a un malus de +1 à son dé."
-				"color" $maluscol
-        "author" (sdict "name" $user "icon_url" $malusimg)}}
+				"description" "Votre cible a un {{$w}} de {{$s}}1."
+				"color" $supportcol
+        "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 9)}}
 			{{$embed:=cembed
 				"description" "Echec"
-				"color" $maluscol
-        "author" (sdict "name" $user "icon_url" $malusimg)}}
+				"color" $supportcol
+        "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 10)}}
 			{{$embed:=cembed
-				"description" "Echec critique : Votre cible a un bonus de -2 à son dé."
-				"color" $maluscol
-        "author" (sdict "name" $user "icon_url" $malusimg)}}
+				"description" "Echec critique : Votre cible a un {{ec}}2."
+				"color" $supportcol
+        "author" (sdict "name" $user "icon_url" $supportimg)}}
 			{{$id = sendMessageRetID nil $embed}}
     {{else}}
       {{$embed:=cembed
         "title" "ERREUR"
-        "description" "**Usage** : `$malus <valeur>`\n Votre valeur doit être entre 0 et 10."
+        "description" "**Usage** : `$support <valeur>`\n Votre valeur doit être entre 0 et 10."
         "color" 0xD83333}}
       {{$id = sendMessageRetID nil $embed}}
 		{{end}}
@@ -85,7 +96,7 @@
 			{{$id = sendMessageRetID nil $embed}}
 		{{else if eq $d (toFloat 10)}}
 			{{$embed:=cembed
-				"description" "Echec critique : Votre cible obtient un malus."
+				"description" "Echec critique : Votre cible obtient un support."
 				"color" $soincol
         "author" (sdict "name" $user "icon_url" $soinimg)}}
 			{{$id = sendMessageRetID nil $embed}}
@@ -136,14 +147,5 @@
 				"color" 0x4D399E }}
 				{{sendMessage nil $r}}
 		{{end}}
-
   {{end}}
-{{else}}
-  {{$embed:=cembed
-  	"title" "ERREUR"
-  	"description" "**Usage** : `$(soin|poison|malus) <valeur>`"
-  	"color" 0xD83333}}
-  {{$id = sendMessageRetID nil $embed}}
 {{end}}
-
-{{deleteTrigger 1}}

@@ -60,10 +60,10 @@
 {{/* PA count */}}
 {{if eq $bool false}}
 	{{$groupe.Set $idict 3}}
-	{{$desc = joinStr " " "Il vous reste 3 PA"}}
+	{{$desc = joinStr " " "Il vous reste 2 PA"}}
 	{{if $rp1}}
 		{{if lt $rp1 2}}
-			{{$x := dbIncr $id "r_pistol1" 1}}
+			{{$x := dbIncr $id "r_pistol1" 2}}
 		{{else if eq $rp1 2}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
@@ -75,7 +75,7 @@
 	{{end}}
 	{{if $rp2}}
 		{{if lt $rp2 2}}
-			{{$x := dbIncr $id "r_pistol2" 1}}
+			{{$x := dbIncr $id "r_pistol2" 2}}
 		{{else if eq $rp2 2}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
@@ -87,7 +87,7 @@
 	{{end}}
 	{{if $rf1}}
 		{{if lt $rf1 4}}
-			{{$x := dbIncr $id "r_fusil1" 1}}
+			{{$x := dbIncr $id "r_fusil1" 2}}
 		{{else if eq $rf1 4}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
@@ -99,7 +99,7 @@
 	{{end}}
 	{{if $rf2}}
 		{{if lt $rf2 4}}
-			{{$x := dbIncr $id "r_fusil2" 1}}
+			{{$x := dbIncr $id "r_fusil2" 2}}
 		{{else if eq $rf2 4}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
@@ -111,7 +111,7 @@
 	{{end}}
 	{{if $rc}}
 		{{if lt $rc 8}}
-			{{$x := dbIncr $id "r_canon" 1}}
+			{{$x := dbIncr $id "r_canon" 2}}
 		{{else if eq $rc 8}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
@@ -123,7 +123,7 @@
 	{{end}}
 	{{if $nameatq}}
 		{{if lt $atq 8}}
-			{{$x:= dbIncr $id $atq 1}}
+			{{$x:= dbIncr $id $atq 2}}
 		{{else if eq $atq 4}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
@@ -136,7 +136,7 @@
 	{{end}}
 	{{if $namesupp}}
 		{{if lt $supp 8}}
-			{{$x := dbIncr $id $supp 1}}
+			{{$x := dbIncr $id $supp 2}}
 		{{else if eq $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
@@ -150,105 +150,110 @@
 
 {{else}}
 	{{$j := $groupe.Get $idict}}
-	{{$j = sub $j 1}}
-	{{if gt $j 0}}
-		{{$desc = joinStr " " "Il vous reste" $j "PA"}}
-		{{if $rp1}}
-			{{if lt $rp1 2}}
-				{{$x := dbIncr $id "r_pistol1" 1}}
-			{{else if eq $rp1 2}}
-				{{$embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-					"description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")
-					"color" 0x6CAB8E}}
-				{{sendMessage nil $embed}}
-				{{dbDel $id "r_pistol1"}}
-				{{dbDel $id "pistol"}}
+	{{if eq $j 1}}
+		{{$j =1}}
+		{{$desc = "Vous n'avez pas assez de PA"}}
+	{{else}}
+		{{$j = sub $j 2}}
+		{{if gt $j 0}}
+			{{$desc = joinStr " " "Il vous reste" $j "PA"}}
+			{{if $rp1}}
+				{{if lt $rp1 2}}
+					{{$x := dbIncr $id "r_pistol1" 1}}
+				{{else if eq $rp1 2}}
+					{{$embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
+						"description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")
+						"color" 0x6CAB8E}}
+					{{sendMessage nil $embed}}
+					{{dbDel $id "r_pistol1"}}
+					{{dbDel $id "pistol"}}
+				{{end}}
 			{{end}}
-		{{end}}
-		{{if $rp2}}
-			{{if lt $rp2 2}}
-				{{$x := dbIncr $id "r_pistol2" 1}}
-			{{else if eq $rp2 2}}
-				{{$embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-					"description" (joinStr "" "Deuxième pistolet de " $.User.Mention " rechargé.")
-					"color" 0x6CAB8E}}
-				{{sendMessage nil $embed}}
-				{{dbDel "r_pistol2"}}
-				{{dbDel $id "pistol2"}}
+			{{if $rp2}}
+				{{if lt $rp2 2}}
+					{{$x := dbIncr $id "r_pistol2" 2}}
+				{{else if eq $rp2 2}}
+					{{$embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
+						"description" (joinStr "" "Deuxième pistolet de " $.User.Mention " rechargé.")
+						"color" 0x6CAB8E}}
+					{{sendMessage nil $embed}}
+					{{dbDel "r_pistol2"}}
+					{{dbDel $id "pistol2"}}
+				{{end}}
 			{{end}}
-		{{end}}
-		{{if $rf1}}
-			{{if lt $rf1 4}}
-				{{$x := dbIncr $id "r_fusil1" 1}}
-			{{else if eq $rf1 4}}
-				{{$embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-					"description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")
-					"color" 0x6CAB8E}}
-				{{sendMessage nil $embed}}
-				{{dbDel $id "r_fusil1"}}
-				{{dbDel $id "fusil"}}
+			{{if $rf1}}
+				{{if lt $rf1 4}}
+					{{$x := dbIncr $id "r_fusil1" 2}}
+				{{else if eq $rf1 4}}
+					{{$embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
+						"description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")
+						"color" 0x6CAB8E}}
+					{{sendMessage nil $embed}}
+					{{dbDel $id "r_fusil1"}}
+					{{dbDel $id "fusil"}}
+				{{end}}
 			{{end}}
-		{{end}}
-		{{if $rf2}}
-			{{if lt $rf2 4}}
-				{{$x := dbIncr $id "r_fusil2" 1}}
-			{{else if eq $rf2 4}}
-				{{$embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-					"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")
-					"color" 0x6CAB8E}}
-				{{sendMessage nil $embed}}
-				{{dbDel $id "r_fusil2"}}
-				{{dbDel $id "fusil2"}}
+			{{if $rf2}}
+				{{if lt $rf2 4}}
+					{{$x := dbIncr $id "r_fusil2" 2}}
+				{{else if eq $rf2 4}}
+					{{$embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
+						"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")
+						"color" 0x6CAB8E}}
+					{{sendMessage nil $embed}}
+					{{dbDel $id "r_fusil2"}}
+					{{dbDel $id "fusil2"}}
+				{{end}}
 			{{end}}
-		{{end}}
-		{{if $rc}}
-			{{if lt (toInt $rc) 8}}
-				{{$x := dbIncr $id "r_canon" 1}}
-			{{else if eq (toInt $rc) 8}}
-				{{$embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-					"description" (joinStr "" "Canon de " $.User.Mention " rechargé.")
-					"color" 0x6CAB8E}}
-				{{sendMessage nil $embed}}
-				{{dbDel $id "r_canon"}}
-				{{dbDel $id "canon"}}
+			{{if $rc}}
+				{{if lt (toInt $rc) 8}}
+					{{$x := dbIncr $id "r_canon" 2}}
+				{{else if eq (toInt $rc) 8}}
+					{{$embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
+						"description" (joinStr "" "Canon de " $.User.Mention " rechargé.")
+						"color" 0x6CAB8E}}
+					{{sendMessage nil $embed}}
+					{{dbDel $id "r_canon"}}
+					{{dbDel $id "canon"}}
+				{{end}}
 			{{end}}
-		{{end}}
-		{{if $nameatq}}
-			{{if lt $atq 8}}
-				{{$x:= dbIncr $id $nameatq 1}}
-			{{else if eq $atq 4}}
-				{{dbDel $id "cdatq"}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-					"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-				{{dbDel $id $atq}}
+			{{if $nameatq}}
+				{{if lt $atq 8}}
+					{{$x:= dbIncr $id $nameatq 2}}
+				{{else if eq $atq 4}}
+					{{dbDel $id "cdatq"}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
+						"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+					{{dbDel $id $atq}}
+				{{end}}
 			{{end}}
-		{{end}}
-		{{if $namesupp}}
-			{{if lt $supp 8}}
-				{{$x := dbIncr $id $namesupp 1}}
-			{{else if eq $supp 8}}
-				{{dbDel $id "cdsupp"}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-					"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
-				{{dbDel $id $supp}}
+			{{if $namesupp}}
+				{{if lt $supp 8}}
+					{{$x := dbIncr $id $namesupp 2}}
+				{{else if eq $supp 8}}
+					{{dbDel $id "cdsupp"}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+						"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+					{{dbDel $id $supp}}
+				{{end}}
 			{{end}}
+		{{else if le $j 0}}
+			{{$j = 0}}
+			{{$desc = joinStr " " "Il vous reste 0 PA."}}
 		{{end}}
-	{{else if le $j 0}}
-		{{$j = 0}}
-		{{$desc = joinStr " " "Il vous reste 0 PA."}}
+		{{$groupe.Set $idict $j}}
 	{{end}}
-	{{$groupe.Set $idict $j}}
 {{end}}
 {{$embed := cembed
 	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
