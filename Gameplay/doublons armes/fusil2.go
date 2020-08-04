@@ -30,6 +30,10 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 {{/* get PA */}}
 {{$pa := $groupe.Get (str $id)}}
+{{if not $pa}}
+	{{$groupe.Set (str $id) 4}}
+	{{$pa = 4}}
+{{end}}
 {{if gt $pa 0}}
 	{{if not (dbGet .User.ID "fusil2")}}
 		{{dbSet .User.ID "fusil2" 0}}
