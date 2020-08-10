@@ -21,10 +21,7 @@
 {{end}}
 
 {{/* Command Body */}}
-{{$flag := ""}}
-{{if .CmdArgs}}
-	{{$flag = (reFind `\$(adminmoney|symbol|manageinv)` (index .CmdArgs 0))}}
-{{end}}
+{{$flag := (reFind `\$(adminmoney|symbol|manageinv)` .Message.Content )}}
 {{$mention := ""}}
 
 
@@ -33,22 +30,22 @@
 	{{$target := ""}}
 	{{$amount := 0}}
 	{{with .CmdArgs}}
-		{{$secondflag = (reFind `\-(add|remove|reset|set)` (index . 1))}}
-		{{if ge (len .) 3}}
+		{{$secondflag = (reFind `\-(add|remove|reset|set)` (index . 0))}}
+		{{if ge (len .) 2}}
 			{{if $name}}
 				{{$target = $id}}
 				{{$user = $name}}
 				{{$mention = $name}}
 			{{else}}
-				{{with (userArg (index . 2))}}
+				{{with (userArg (index . 1))}}
 					{{$target = .}}
 					{{$target = $target.ID}}
 					{{$mention = joinStr "" "<@" $target ">"}}
 					{{$user = (getMember $target).Nick}}
 				{{end}}
 			{{end}}
-			{{if ge (len .) 4}}
-				{{$amount = toInt (index . 3)}}
+			{{if ge (len .) 3}}
+				{{$amount = toInt (index . 2)}}
 			{{end}}
 		{{end}}
 	{{end}}
@@ -108,8 +105,8 @@
 		{{$symbol = $serverEco.Get "symbol"}}
 	{{end}}
 	{{with .CmdArgs}}
-		{{if ge (len .) 2}}
-			{{if ne (index . 1) "none"}}
+		{{if ge (len .) 1}}
+			{{if ne (index . 0) "none"}}
 				{{$symbol = joinStr " " (slice . 1)}}
 			{{else}}
 				{{$symbol = ""}}
@@ -125,25 +122,25 @@
 	{{$item := ""}}
 	{{$amount := 1}}
 	{{with .CmdArgs}}
-		{{if ge (len .) 2}}
-			{{$secondflag = (reFind `\-(add|remove|reset|clean|set)` (index . 1))}}
-			{{if ge (len .) 3}}
+		{{if ge (len .) 1}}
+			{{$secondflag = (reFind `\-(add|remove|reset|clean|set)` (index . 0))}}
+			{{if ge (len .) 2}}
 			{{if $name}}
 				{{$target = $id}}
 				{{$user = $name}}
 				{{$mention = $name}}
 			{{else}}
-				{{with (userArg (index . 2))}}
+				{{with (userArg (index . 1))}}
 					{{$target = .}}
 					{{$target = $target.ID}}
 					{{$mention = joinStr "" "<@" $target ">"}}
 					{{$user = (getMember $target).Nick}}
 				{{end}}
 			{{end}}
-				{{if ge (len .) 4}}
-					{{$item = (index . 3)}}
-					{{if ge (len .) 5}}
-						{{$amount = or (toInt (index . 4)) 1}}
+				{{if ge (len .) 3}}
+					{{$item = title (index . 2)}}
+					{{if ge (len .) 4}}
+						{{$amount = or (toInt (index . 3)) 1}}
 					{{end}}
 				{{end}}
 			{{end}}
@@ -158,7 +155,7 @@
 			{{$userEco = sdict .Value}}
 		{{end}}
 	{{else}}
-		**Usage** : `$manageinv -(add|tremove|reset|clean|set) user item amount`
+		**Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
 	{{end}}
 	{{if eq $secondflag "-clean"}}
 		{{if $target}}
@@ -198,17 +195,13 @@
 		{{with ($userEco.Get "Inventory")}}
 			{{$inv = sdict .}}
 		{{end}}
-		{{if $items.Get $item}}
-			{{if ($items.Get $item).sii}}
+			{{if $inv.Get $item}}
 				{{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
+			{{else}}
+				{{$inv.Set $item $amount}}
+			{{end}}
 				{{$userEco.Set "Inventory" $inv}}
 				Ajout de : {{$amount}} {{$item}} à l'inventaire de {{$mention}}.
-			{{else}}
-			Cet item ne peut pas apparaître chez quelqu'un !
-			{{end}}
-		{{else}}
-			Cet item n'existe pas.
-		{{end}}
 
 		{{else if eq $secondflag "-remove"}}
 			{{if $target}}
@@ -230,7 +223,7 @@
 					{{$userEco.Set "Inventory" $inv}}
 					{{$amount}} : {{$item}} de l'inventaire de {{$mention}} a été retiré.
 				{{else}}
-					Cet objet n'existe pas.
+					Cet objet n'existe pas dans l'inventaire cible.
 				{{end}}
 			{{end}}
 		{{else if eq $secondflag "-set"}}
@@ -243,8 +236,6 @@
 				{{with ($userEco.Get "Inventory")}}
 					{{$inv = sdict .}}
 				{{end}}
-				{{if $items.Get $item}}
-					{{if ($items.Get $item).sii}}
 						{{$value := $amount}}
 						{{if ne $value 0}}
 							{{$inv.Set $item $value}}
@@ -253,12 +244,6 @@
 						{{end}}
 						{{$userEco.Set "Inventory" $inv}}
 						{{$amount}} : {{$item}} a été mis dans l'inventaire de {{$mention}}
-					{{else}}
-						Cet item ne peut pas être vu.
-					{{end}}
-					{else}}
-						L'objet n'existe pas.
-					{{end}}
 				{{end}}
 			{{end}}
 			{{if $target}}
