@@ -1,5 +1,3 @@
-{{/* from https://github.com/Jo3-L/yagpdb-cc with some edit */}}
-
 {{/*
 	This command is a tool for editing messages sent by YAGPDB.
 	Usage: `-edit [channel] <msg> <flags...>`.
@@ -18,7 +16,7 @@
 }}
 {{$error := ""}}
 
-{{$flags := sdict "-title" "Title" "-desc" "Description" "-url" "URL" "-image" "Image" "-thumbnail" "Thumbnail" "-author" "Author" "-authoricon" "Author" "-authorurl" "Author" "-footer" "Footer" "-footericon" "Footer" "-color" "Color" "-content" "Content" "-force" "Force" "-clrembed"  "Clear" "Time" "timestamp"}}
+{{$flags := sdict "-title" "Title" "-desc" "Description" "-url" "URL" "-image" "Image" "-thumbnail" "Thumbnail" "-author" "Author" "-authoricon" "Author" "-authorurl" "Author" "-footer" "Footer" "-footericon" "Footer" "-color" "Color" "-content" "Content" "-force" "Force" "-clrembed"  "Clear"}}
 {{$subField := sdict "-image" "URL" "-thumbnail" "URL" "-author" "Name" "-authoricon" "IconURL" "-authorurl" "URL" "-footer" "Text" "-footericon" "IconURL"}}
 {{$channel := .Channel}}
 {{$multipliers := cslice 1048576 65536 4096 256 16 1}}
@@ -52,8 +50,8 @@
 	{{with $msg}}
 		{{if eq .Author.ID 204255221017214977}}
 			{{$content = .Content}}
-			{{if .Embeds}}{{dbSet 0 "convert" (index .Embeds 0)}}
-				{{$embed = sdict (dbGet 0 "convert").Value}}{{$embedPresent = true}}
+			{{if .Embeds}}{{$embed = structToSdict (index .Embeds 0)}}
+				{{range $k, $v := $embed}}{{if eq (kindOf $v true) "struct"}}{{$embed.Set $k (structToSdict $v)}}{{end}}{{end}}{{$embedPresent = true}}
 			{{end}}
 		{{else}}
 			{{$error = "<@204255221017214977> is not Author"}}
@@ -107,7 +105,7 @@
 				{{- else if eq $currentFlag "Content"}}{{if eq $parseFlag 1}}{{$content = ""}}{{end}}{{$content = joinStr " " $content .}}
 				{{- else}}
 					{{- if eq $parseFlag 1}}
-						{{- $tmp := sdict (or ($embed.Get $currentFlag) sdict)}}{{$tmpO := sdict (or ($Oembed.Get $currentFlag) sdict)}}
+						{{- $tmp :=or ($embed.Get $currentFlag) sdict}}{{$tmpO :=or ($Oembed.Get $currentFlag) sdict}}
 						{{- $tmp.Set $currentField ""}}{{$tmpO.Set $currentField ""}}
 						{{- $embed.Set $currentFlag $tmp}}{{$Oembed.Set $currentFlag $tmpO}}{{$embedPresent = true}}
 					{{- end}}
@@ -122,16 +120,16 @@
 	{{- end}}
 
 	{{if $embed}}
-		{{if $embed.Author}}{{$embed.Set "Author" (sdict $embed.Author)}}{{$embed.Author.Set "Icon_URL" $embed.Author.IconURL}}{{end}}
-		{{if $embed.Footer}}{{$embed.Set "Footer" (sdict $embed.Footer)}}{{$embed.Footer.Set "Icon_URL" $embed.Footer.IconURL}}{{end}}
+		{{if $embed.Author}}{{$embed.Author.Set "Icon_URL" $embed.Author.IconURL}}{{end}}
+		{{if $embed.Footer}}{{$embed.Footer.Set "Icon_URL" $embed.Footer.IconURL}}{{end}}
 		{{$embed.Set "timestamp" currentTime}}
 	{{end}}
 	{{if (not $embedPresent)}}{{$embed = $.nil}}{{end}}
 
 	{{if not $error}}
 		{{if or $content (ne (print $embed) "<nil>")}}
-			{{editMessage $channel.ID $id (complexMessageEdit "content" $content "embed" $embed) }}
-			Done ✔️
+			{{editMessage $channel.ID $id (complexMessageEdit "content" $content "embed" $embed)}}
+			Done :+1:
 		{{else}}
 			{{$error = "Content and embed cannot be null at the same time."}}
 		{{end}}
