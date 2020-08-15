@@ -2,11 +2,12 @@
 {{$Suggestion_Channel:=741805466761560134}}
 {{$Logging_Channel:=741808846473003088}}
 {{$Implemented_Channel:=701792582362988615}}
-{{$Approved_Channel:= 741805466761560134}}
+{{$Approved_Channel:= 741808846473003088}}
 {{$Mod_Roles:=cslice 453167633068457984 }}{{/* No need to add Admin roles. They are automatically detected given Yag has right Perms */}}
 {{$Cooldown:=0}}{{/* Can be set to 0 for no cooldown */}}
 {{$Upvote:="this:715708401816043520"}}
 {{$Downvote:=":moins:715708440466554921"}}
+{{$neutral :=":blobshrug:742470860031393924"}}
 {{/* CONFIGURATION AREA ENDS */}}
 {{$globalDict:=dict "chans" (dict $Suggestion_Channel true $Approved_Channel true $Implemented_Channel true) "msg" .nil}}
 {{$Prefix:=index (reFindAllSubmatches `.*?: \x60(.*)\x60\z` (execAdmin "Prefix")) 0 1}}
@@ -27,10 +28,9 @@
 			{{if not $IS_Mod}}{{if $Cooldown}}{{dbSetExpire .User.ID "suggestCld" "cooldown" $Cooldown}}{{end}}{{end}}
 	{{$c:= .StrippedMsg}}
 	{{$title := ""}}
-	{{if reFind `(\#\S*)` $c}}
-		{{$title = reFind `(\#\S*)` $c}}
+	{{if reFind `\#(.*?)\#` $c}}
+		{{$title = reFind `\#(.*?)\#` $c}}
 		{{$c = joinStr " " (split $c $title)}}
-		{{$c = joinStr  " " (split $c "#")}}
 		{{$title = joinStr " " (print "Suggestion #" (dbIncr 0 "suggestions-count" 1) " — " (split $title "#"))}}
 	{{else}}
 		{{$title = (print "Suggestion #" (dbIncr 0 "suggestions-count" 1))}}
@@ -47,8 +47,8 @@
 
 			{{range .Message.Attachments}}{{if and (not $Img_Set) .Width}}{{$Img_Set =true}}{{$embed.Set "image" (sdict "url" .ProxyURL)}}{{else}}{{$Attachments =print $Attachments "\n[" .Filename "](" .ProxyURL ")"}}{{end}}{{end}}
 			{{if $Attachments}}{{$embed.Set "description" (print $embed.description "\n\n**__Attachments:__**" $Attachments)}}{{end}}
-			{{$ID:=sendMessageRetID $Suggestion_Channel (complexMessage "content" "@here : Vous avez une nouvelle suggestion ! \n *Vous pouvez en discuter dans le channel <#741808846473003088>*" "embed" $embed)}}
-			{{addMessageReactions $Suggestion_Channel $ID $Upvote $Downvote}}
+			{{$ID:=sendMessageRetID $Suggestion_Channel (complexMessage "content" (joinStr "" (mentionRoleName "Membres") ": Vous avez une nouvelle suggestion ! \n > Vous pouvez en discuter dans le channel <#741808846473003088> en précisant le numéro de la suggestion") "embed" $embed)}}
+			{{addMessageReactions $Suggestion_Channel $ID $Upvote $neutral $Downvote }}
 			{{addReactions $Upvote}}
 		{{end}}
 	{{else}}
