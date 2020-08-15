@@ -11,7 +11,7 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr)` .Message.Content}}
+{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr|recensement|recens|perso|char(list?)|template)` .Message.Content}}
 
 {{if .CmdArgs}}
 		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
@@ -103,6 +103,16 @@
 
 	{{else if eq $commande "?jdr"}}
 		→ https://www.jdr-system.ovh/
+
+		{{else if eq $commande "?recensement" "?recens" "?perso" "?char" "?charlist"}}
+			→ https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing
+
+		{{else if eq $commande "?template"}}
+			→ https://docs.google.com/document/d/1CX4ye8loV4d34BOwmRlb-nOt8SMA4VvbFy4-_MHX5A8/edit?usp=sharing
+			→ Fichier : Créer une copie
+			→ __Remplacer l'image__ : clic droit (sur l'image) → Remplacer l'image.
+			→ __ Remplir une case__ : Pot de peinture
+
 
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
