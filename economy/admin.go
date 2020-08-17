@@ -107,7 +107,7 @@
 	{{with .CmdArgs}}
 		{{if ge (len .) 1}}
 			{{if ne (index . 0) "none"}}
-				{{$symbol = joinStr " " (slice . 1)}}
+				{{$symbol = joinStr " " (slice . 0)}}
 			{{else}}
 				{{$symbol = ""}}
 			{{end}}

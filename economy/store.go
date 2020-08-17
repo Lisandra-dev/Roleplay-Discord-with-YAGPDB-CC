@@ -18,7 +18,7 @@
 {{$fields := cslice}}
 {{$footer := ""}}
 {{$items := sdict}}
-{{if eq $store "open"}}
+{{if or (eq $store "open") (hasRoleName "Staff") }}
 	{{if ($serverEco.Get "Items")}}
 		{{$items = sdict ($serverEco.Get "Items")}}
 	{{end}}
@@ -37,7 +37,7 @@
 			{{if eq (toString $sprice) "Invendable"}}
 				{{$svente = ""}}
 			{{end}}
-			{{$cslice = $cslice.Append (sdict "name" $item "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
+			{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
 			{{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
 		{{end}}
 	{{end}}
@@ -52,10 +52,12 @@
 {{$page := ""}}
 {{$start := ""}}
 {{$stop := ""}}
+{{$end := ""}}
 {{if $cslice}}
 	{{$page = "1"}}{{if .CmdArgs}}{{$page = toInt (index .CmdArgs 0)}}{{$page = toString $page}}{{end}}
 	{{$start = (mult 10 (sub $page 1))}}
 	{{$stop = (mult $page 10)}}
+	{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
 	{{$data := ""}}
 	{{if ge $stop (len $cslice)}}
 		{{$stop = (len $cslice)}}
@@ -65,17 +67,18 @@
 			{{range (seq $start $stop)}}
 				{{$fields = $fields.Append (index $cslice .)}}
 			{{end}}
-			{{$footer = (print "Page: " $page)}}
+			{{$footer = (print "Page: " $page "/" $end)}}
 		{{else}}
 			{{$desc = "Cette page n'existe pas"}}
-			{{$footer = (print "Page: " $page)}}
+			{{$footer = (print "Page: " $page "/" $end)}}
 		{{end}}
 	{{else}}
 		{{$desc = "Cette page n'existe pas"}}
-		{{$footer = (print "Page: " $page)}}
+		{{$footer = (print "Page: " $page "/" $end)}}
 	{{end}}
 {{end}}
 {{/* hell ends */}}
 
-{{sendMessage nil (cembed "author" (sdict "name" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
+{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
+{{addMessageReactions nil $id "▶️" "◀️"}}
 {{deleteTrigger 1}}
