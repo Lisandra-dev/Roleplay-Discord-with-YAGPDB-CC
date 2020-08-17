@@ -30,6 +30,7 @@
 			{{$sprice := $v.sellprice}}
 			{{$stock := $v.stock}}
 			{{$doc := $v.desc}}
+			{{$rare := $v.rare}}
 			{{if ne (str $stock) "♾️"}}
 				{{$stock = $stock}}
 			{{end}}
@@ -37,7 +38,7 @@
 			{{if eq (toString $sprice) "Invendable"}}
 				{{$svente = ""}}
 			{{end}}
-			{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
+			{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Rareté : " $rare "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
 			{{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
 		{{end}}
 	{{end}}
@@ -80,5 +81,5 @@
 {{/* hell ends */}}
 
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
-{{addMessageReactions nil $id "▶️" "◀️"}}
+{{addMessageReactions nil $id "▶️" "◀️" "🗑️"}}
 {{deleteTrigger 1}}

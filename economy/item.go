@@ -18,7 +18,7 @@
 		{{$flag = (reFind `\-(add|edit|delete|info)` (index . 0))}}
 		{{$name = title (index . 1)}}
 		{{if ge (len .) 3}}
-			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc)` (index . 2))}}
+			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rbuy|rsell)` (index . 2))}}
 		{{end}}
 	{{end}}
 {{end}}
@@ -29,6 +29,7 @@
 	{{$stock := ""}}
 	{{$desc := ""}}
 	{{$sii := true}}
+	{{$rare := 1}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 3}}
 			{{$bprice = toInt (index . 2)}}
@@ -54,7 +55,12 @@
 							{{end}}
 						{{end}}
 						{{if ge (len .) 7}}
-							{{$desc = (index . 6)}}
+							{{range seq 1 (index . 6)}}
+								{{$rare = print $rare "⭐"}}
+							{{end}}
+						{{end}}
+						{{if ge (len .) 8}}
+							{{$desc = (index . 7)}}
 						{{end}}
 					{{end}}
 				{{end}}
@@ -63,7 +69,7 @@
 	{{end}}
 
 	{{if and $name $bprice $stock $sprice}}
-		{{$items.Set $name (sdict "buyprice" $bprice "sellprice" $sprice "stock" $stock "sii" $sii "desc" $desc)}}
+		{{$items.Set $name (sdict "buyprice" $bprice "sellprice" $sprice "stock" $stock "sii" $sii "rare" $rare "desc" $desc)}}
 		{{$serverEco.Set "Items" $items}}
 		**Created/Edited Item**
 		Nom : `{{$name}}`
@@ -71,6 +77,7 @@
 		Prix de vente : `{{$sprice}}`
 		Quantité : `{{$stock}}`
 		SII: `{{$sii}}`
+		Rareté : `{{$rare}}`
 		Description : `{{$desc}}`
 	{{else}}
 	**Usage** : `$item -add <name> price (none|price) (number|inf) (true|false) description`
@@ -99,6 +106,7 @@
 				Prix de vente : `{{.sellprice}}`
 				Quantité : `{{.stock}}`
 				SII: `{{.sii}}`
+				Rareté : `{{.rare}}`
 				Description : `{{.desc}}`
 			{{end}}
 		{{else}}
@@ -110,7 +118,7 @@
 {{else if eq $flag "-edit"}}
 	{{if $name}}
 		{{if ($items.Get ( $name))}}
-			{{$i := ($items.Get ( $name))}}
+			{{$i := sdict ($items.Get ( $name))}}
 			{{if eq $flag2 "-price"}}
 				{{$buyprice := toInt (index .CmdArgs 3)}}
 				{{$items.Set $name $i}}
@@ -126,14 +134,14 @@
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-stock"}}
 				{{$stock := toInt (index .CmdArgs 3)}}
-				{{if eq $stock "inf"}}
+				{{if eq $stock 0}}
 					{{$stock = "♾️"}}
 				{{end}}
 				{{$items.Set $name $i}}
 				{{$i.Set "stock" $stock}}
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-sii"}}
-				{{$sii := (index .CmdArgs 2)}}
+				{{$sii := (index .CmdArgs 3)}}
 				{{$items.Set $name $i}}
 				{{$i.Set "sii" $sii}}
 				{{$serverEco.Set "Items" $items}}
@@ -149,8 +157,17 @@
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-rsell"}}
 				{{$sellprice := randInt (toInt (index .CmdArgs 3)) (toInt (index .CmdArgs 4))}}
+				{{$sellprice}}
 				{{$items.Set $name $i}}
-				{{$i.Set "sellprice" $sprice}}
+				{{$i.Set "sellprice" $sellprice}}
+				{{$serverEco.Set "Items" $items}}
+			{{else if eq $flag2 "-rare"}}
+				{{$rare := "⭐"}}
+				{{range seq 1 (toInt (index .CmdArgs 3))}}
+					{{$rare = print $rare "⭐"}}
+				{{end}}
+				{{$items.Set $name $i}}
+				{{$i.Set "rare" $rare}}
 				{{$serverEco.Set "Items" $items}}
 			{{end}}
 			{{with $i}}
@@ -160,15 +177,17 @@
 				Prix de vente : `{{.sellprice}}`
 				Quantité : `{{.stock}}`
 				SII: `{{.sii}}`
+				Rareté : `{{.rare}}`
 				Description : `{{.desc}}`
 			{{end}}
 		{{else}}
 		**Erreur : ** Le produit n'existe pas.
-		**Usage : ** `$item -edit "nom" -(price|sell|stock|sii|desc|rbuy|rsell) <value>`
+		**Usage : ** `$item -edit "nom" -(price|sell|stock|sii|rare|desc|rbuy|rsell) <value>`
 			> Pour rbuy & rsell : A besoin des bornes pour l'aléatoire.
 			> pour price & sell : Prix
 			> Stock : Montant ou `inf`
 			> SII : True / False (signifie si l'objet apparaît dans les inventaires ou non)
+			> Rareté : Nombre
 			> Description : Chaîne de caractère entre `"`.
 		{{end}}
 	{{end}}
