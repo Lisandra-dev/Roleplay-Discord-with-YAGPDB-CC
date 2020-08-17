@@ -49,7 +49,8 @@
 		{{$page = or (toInt (index .CmdArgs $index)) 1}}
 		{{$page = toString $page}}
 	{{end}}
-	{{$footer = print "Page: " $page}}
+		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+	{{$footer = print "Page: " $page "/" $end}}
 	{{$start := (mult 10 (sub $page 1))}}
 	{{$stop := (mult $page 10)}}
 	{{$data := ""}}
@@ -72,5 +73,6 @@
 {{end}}
 {{$author := (joinStr " " "Inventaire de :" (title $user)}}
 
-{{sendMessage nil (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
+{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
+{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
 {{deleteTrigger 1}}
