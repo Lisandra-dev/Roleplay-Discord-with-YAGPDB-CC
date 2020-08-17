@@ -81,5 +81,5 @@
 {{/* hell ends */}}
 
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
-{{addMessageReactions nil $id "▶️" "◀️" "🗑️"}}
+{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
 {{deleteTrigger 1}}
