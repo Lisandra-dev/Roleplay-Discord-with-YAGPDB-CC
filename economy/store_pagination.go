@@ -30,6 +30,7 @@
 			{{$sprice := $v.sellprice}}
 			{{$stock := $v.stock}}
 			{{$doc := $v.desc}}
+			{{$rare := $v.rare}}
 			{{if ne (str $stock) "♾️"}}
 				{{$stock = $stock}}
 			{{end}}
@@ -37,7 +38,7 @@
 			{{if eq (toString $sprice) "Invendable"}}
 				{{$svente = ""}}
 			{{end}}
-			{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
+			{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Rareté : " $rare "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
 			{{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
 		{{end}}
 	{{end}}
@@ -65,8 +66,12 @@
 	{{ if and (eq $embed.Author.Name "Vaisseau Marchand") $embed.Footer}} {{/* More checks */}}
 		{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
 		{{ $isValid = true }} {{/* Yay, it is valid */}}
+	{{else if eq $embed.Author.Name "Vaisseau Nucleus"}}
+		{{$isValid = true}}
+		{{$page = 1}}
 	{{ end }}
 {{ end }}
+
 
 {{ if and (in $validEmojis $action) $isValid $page }} {{/* Even more checks for validity... */}}
 		{{ deleteMessageReaction nil .ReactionMessage.ID .User.ID $action }}
