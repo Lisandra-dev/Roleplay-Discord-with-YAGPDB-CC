@@ -60,7 +60,7 @@
 	 {{ $embed := structToSdict (index . 0) }}
 	 {{ range $k, $v := $embed }}
 		 {{- if eq (kindOf $v true) "struct" }}
-		 {{- $embed.Set $k (structToSdict $v) }}
+		 	{{- $embed.Set $k (structToSdict $v) }}
 		 {{- end -}}
 		{{ end }}
 	{{ if and (eq $embed.Author.Name "Vaisseau Marchand") $embed.Footer}} {{/* More checks */}}
@@ -79,6 +79,9 @@
 		{{ $page = add $page 1 }} {{/* Update page according to emoji */}}
 	{{ else if eq $action "◀️"}}
 		{{ $page = sub $page 1 }}
+				{{if le $page 1}}
+			{{$page =1}}
+		{{end}}
 	{{else}}
 		{{$del = true}}
 		{{$page = 1}}
