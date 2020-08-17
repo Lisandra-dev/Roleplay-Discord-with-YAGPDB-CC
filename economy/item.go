@@ -18,7 +18,7 @@
 		{{$flag = (reFind `\-(add|edit|delete|info)` (index . 0))}}
 		{{$name = title (index . 1)}}
 		{{if ge (len .) 3}}
-			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rbuy|rsell)` (index . 2))}}
+			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rbuy|rsell|rename)` (index . 2))}}
 		{{end}}
 	{{end}}
 {{end}}
@@ -29,7 +29,7 @@
 	{{$stock := ""}}
 	{{$desc := ""}}
 	{{$sii := true}}
-	{{$rare := 1}}
+	{{$rare := "⭐"}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 3}}
 			{{$bprice = toInt (index . 2)}}
@@ -55,7 +55,7 @@
 							{{end}}
 						{{end}}
 						{{if ge (len .) 7}}
-							{{range seq 1 (index . 6)}}
+							{{range seq 1 (toInt (index . 6))}}
 								{{$rare = print $rare "⭐"}}
 							{{end}}
 						{{end}}
@@ -119,6 +119,7 @@
 	{{if $name}}
 		{{if ($items.Get ( $name))}}
 			{{$i := sdict ($items.Get ( $name))}}
+			{{$rename := $name}}
 			{{if eq $flag2 "-price"}}
 				{{$buyprice := toInt (index .CmdArgs 3)}}
 				{{$items.Set $name $i}}
@@ -160,8 +161,8 @@
 				{{$sellprice}}
 				{{$items.Set $name $i}}
 				{{$i.Set "sellprice" $sellprice}}
-				{{$serverEco.Set "Items" $items}}
-			{{else if eq $flag2 "-rare"}}
+`				{{$serverEco.Set "Items" $items}}
+`			{{else if eq $flag2 "-rare"}}
 				{{$rare := "⭐"}}
 				{{range seq 1 (toInt (index .CmdArgs 3))}}
 					{{$rare = print $rare "⭐"}}
@@ -169,10 +170,16 @@
 				{{$items.Set $name $i}}
 				{{$i.Set "rare" $rare}}
 				{{$serverEco.Set "Items" $items}}
+			{{else if eq $flag2 "-rename"}}
+				{{$rename = title (index .CmdArgs 3)}}
+				{{$items.Del $name}}
+				{{$i.Set "name" $rename}}
+				{{$items.Set $rename $i}}
+				{{$serverEco.Set "Items" $items}}
 			{{end}}
 			{{with $i}}
 				**Item Info**
-				Nom : `{{ $name}}`
+				Nom : `{{ $rename}}`
 				Prix d'achat : `{{.buyprice}}`
 				Prix de vente : `{{.sellprice}}`
 				Quantité : `{{.stock}}`
@@ -182,12 +189,13 @@
 			{{end}}
 		{{else}}
 		**Erreur : ** Le produit n'existe pas.
-		**Usage : ** `$item -edit "nom" -(price|sell|stock|sii|rare|desc|rbuy|rsell) <value>`
+		**Usage : ** `$item -edit "nom" -(price|sell|stock|sii|rare|desc|rbuy|rsell|rename) <value>`
 			> Pour rbuy & rsell : A besoin des bornes pour l'aléatoire.
 			> pour price & sell : Prix
 			> Stock : Montant ou `inf`
 			> SII : True / False (signifie si l'objet apparaît dans les inventaires ou non)
 			> Rareté : Nombre
+			> Rename : Nouveau nom, si plusieurs mots, entre `"`
 			> Description : Chaîne de caractère entre `"`.
 		{{end}}
 	{{end}}
