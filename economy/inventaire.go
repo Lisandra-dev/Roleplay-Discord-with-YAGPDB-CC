@@ -11,6 +11,7 @@
 		{{- $id = (print $id .)}}
 	{{- end}}
 	{{$id = (toInt $id)}}
+	{{dbSet $id "rerollName" $name}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
@@ -33,7 +34,8 @@
 
 
 {{$desc := "Ton inventaire est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
-{{$footer := ""}}
+{{$footer := print "Page: 1 / 1 | #" $id }}
+{{$end :=""}}
 {{$cslice := cslice}}
 {{range $k,$v := $inv}}
 	{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v **  : [%v]" $k $v)}}
@@ -50,7 +52,7 @@
 		{{$page = toString $page}}
 	{{end}}
 		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
-	{{$footer = print "Page: " $page "/" $end}}
+	{{$footer = print "Page: " $page "/" $end "| #" $id }}
 	{{$start := (mult 10 (sub $page 1))}}
 	{{$stop := (mult $page 10)}}
 	{{$data := ""}}
@@ -62,16 +64,19 @@
 			{{range (seq $start $stop)}}
 				{{$data = (print $data "\n" (index $cslice .))}}
 			{{else}}
-				{{$desc = "Cette page n'existe pas"}}
+				{{$data = "Il n'y a rien ici..."}}
+{{$footer = print "Page: " $page "/" $end " | #" $id }}
 			{{end}}
-			{{$desc = print "" $data ""}}
 		{{else}}
-			{{$desc = "Cette page n'existe pas"}}
+			{{$data = "Il n'y a rien ici..."}}
+{{$footer = print "Page: " $page "/" $end " | #" $id }}
 		{{end}}
+			{{$desc = print "" $data ""}}
 	{{end}}
+	
 {{/* hell ends */}}
 {{end}}
-{{$author := (joinStr " " "Inventaire de :" (title $user)}}
+{{$author := (joinStr " " "Inventaire de :" (title $user))}}
 
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
 {{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
