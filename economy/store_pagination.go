@@ -50,9 +50,9 @@
 
 
 
-
+{{$del := false}}
 {{ $action := .Reaction.Emoji.Name }} {{/* The action being ran */}}
-{{ $validEmojis := cslice "▶️" "◀️" }} {{/* Valid emojis */}}
+{{ $validEmojis := cslice "▶️" "◀️" "🗑️" }} {{/* Valid emojis */}}
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
 {{ with and (eq .ReactionMessage.Author.ID 204255221017214977) .ReactionMessage.Embeds }} {{/* Checks for validity */}}
@@ -63,7 +63,7 @@
 		 {{- end -}}
 		{{ end }}
 	{{ if and (eq $embed.Author.Name "Vaisseau Marchand") $embed.Footer}} {{/* More checks */}}
-		{{ $page = reFind `\d+` $embed.Footer.Text }} {{/* We presume that this is valid, and get the page num */}}
+		{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
 		{{ $isValid = true }} {{/* Yay, it is valid */}}
 	{{ end }}
 {{ end }}
@@ -72,8 +72,12 @@
 		{{ deleteMessageReaction nil .ReactionMessage.ID .User.ID $action }}
 	{{ if eq $action "▶️" }}
 		{{ $page = add $page 1 }} {{/* Update page according to emoji */}}
-	{{ else }}
+	{{ else if eq $action "◀️"}}
 		{{ $page = sub $page 1 }}
+	{{else}}
+		{{$del = true}}
+		{{$page = 1}}
+		{{deleteMessage nil .ReactionMessage.ID 1}}
 	{{ end }}
 
 	{{$start := ""}}
@@ -87,7 +91,7 @@
 		{{if ge $stop (len $cslice)}}
 			{{$stop = (len $cslice)}}
 		{{end}}
-		{{if not (eq $page 0)}}
+		{{if ne $page 0}}
 			{{if and (le $start $stop) (ge (len $cslice) $start) (le $stop (len $cslice))}}
 				{{range (seq $start $stop)}}
 					{{$fields = $fields.Append (index $cslice .)}}
@@ -102,5 +106,9 @@
 			{{$footer = (print "Page: " $page)}}
 		{{end}}
 	{{end}}
-	{{editMessage nil .ReactionMessage.ID (cembed "author" (sdict "name" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
+	{{if eq $del false}}
+		{{editMessage nil .ReactionMessage.ID (cembed "author" (sdict "name" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
+	{{else}}
+		{{deleteMessage nil .ReactionMessage.ID 1}}
+	{{end}}
 {{end}}
