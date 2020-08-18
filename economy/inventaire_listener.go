@@ -15,7 +15,7 @@
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
 {{if $embed.Author.Name}}
-	{{$check = reFind `Inventaire` $embed.Author.Name}} 
+	{{$check = reFind `Inventaire` $embed.Author.Name}}
 {{end}}
 {{ if and (eq $check "Inventaire") $embed.Footer}} {{/* More checks */}}
 	{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
@@ -110,7 +110,7 @@
 		{{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
 	{{else}}
 		{{deleteMessage nil $.ReactionMessage.ID 1}}
-		{{dbDel $id "rerollName" $name}}
+		{{dbDel $id "rerollName"}}
 	{{end}}
 {{end}}
 {{end}}
