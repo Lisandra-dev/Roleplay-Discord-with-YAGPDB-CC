@@ -9,11 +9,9 @@
 	{{else if $name}}
 		{{$user = $name}}
 		{{$idperso := (toRune (lower $name))}}
-		{{$id = ""}}
 		{{range $idperso}}
-			{{- $id = (print $id .)}}
+			{{- $id = add $id . }}
 		{{- end}}
-		{{$id = (toInt $id)}}
 	{{end}}
 {{end}}
 {{$user = title $user}}

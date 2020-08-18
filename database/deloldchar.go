@@ -16,14 +16,24 @@
 	{{$id = (toInt $id)}}
 {{end}}
 
-**Commande pour remettre : ** `$setchar -all -ID {{$id}} {{(dbGet $id "force").Value}} {{(dbGet $id "i_force").Value}} {{(dbGet $id "endurance").Value}} {{(dbGet $id "i_endu").Value}} {{(dbGet $id "agi").Value}} {{(dbGet $id "i_agi").Value}} {{(dbGet $id "preci").Value}} {{(dbGet $id "i_preci").Value}} {{(dbGet $id "intelligence").Value}} {{(dbGet $id "i_intel").Value}} {{(dbGet $id "karma").Value}}`
+{{$stats := sdict}}
+{{with (dbGet $id "stats")}}
+	{{$stats = sdict .Value}}
+{{end}}
 
-{{dbDel $id "force"}}
-{{dbDel $id "i_force"}}
-{{dbDel $id "agi"}}
-{{dbDel $id "i_agi"}}
-{{dbDel $id "preci"}}
-{{dbDel $id "i_preci"}}
-{{dbDel $id "intelligence"}}
-{{dbDel $id "i_intel" }}
-{{dbDel $id "karma"}}
+{{$force:= $stats.Get "force"}}
+{{$endurance := $stats.Get "endurance"}}
+{{$agi:=$stats.Get "agi"}}
+{{$preci:=$stats.Get "preci"}}
+{{$intel:=$stats.Get "intelligence"}}
+{{$karma:=$stats.Get "karma"}}
+
+{{$iforce:=$stats.Get "i_force"}}
+{{$iendu:=$stats.Get "i_endu"}}
+{{$iagi:=$stats.Get "i_agi"}}
+{{$ipreci:=$stats.Get "i_preci"}}
+{{$iintel:=$stats.Get "i_intel"}}
+
+**Commande pour remettre : ** `$setchar -all -ID {{$id}} {{$force}} {{$iforce}} {{$endurance}} {{$iendu}} {{$agi}} {{$iagi}} {{$preci}} {{$ipreci}} {{$intel}} {{$iintel}} {{$karma}}`
+
+{{dbDel $id "stats"}}

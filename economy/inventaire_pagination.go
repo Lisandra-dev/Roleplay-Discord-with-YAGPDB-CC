@@ -55,7 +55,7 @@
 
 
 {{$desc := "Ton inventaire est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
-{{$footer := print "Page: 1/1 | #" $id }}
+{{$footer := print "Page: 1 / 1 | #" $id }}
 {{$cslice := cslice}}
 {{range $k,$v := $inv}}
 	{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v** : [%v]" $k $v)}}
@@ -93,14 +93,14 @@
 				{{range (seq $start $stop)}}
 				{{$data = (print $data "\n" (index $cslice .))}}
 				{{end}}
-{{$footer = print "Page: " $page "/" $end " | #" $id }}
+{{$footer = print "Page: " $page " / " $end " | #" $id }}
 			{{else}}
 				{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page "/" $end " | #" $id }}
+{{$footer = print "Page: " $page " / " $end " | #" $id }}
 			{{end}}
 		{{else}}
 			{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page "/" $end " | #" $id }}
+{{$footer = print "Page: " $page " / " $end " | #" $id }}
 		{{end}}
 			{{$desc = print "" $data ""}}
 	{{end}}

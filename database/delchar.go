@@ -8,12 +8,11 @@
 {{end}}
 {{if $name}}
 	{{$user = $name}}
+	{{$id = .User.ID}}
 	{{$idperso := (toRune (lower $name))}}
-	{{$id = ""}}
 	{{range $idperso}}
-		{{- $id = (print $id .)}}
+		{{- $id = (add $id .)}}
 	{{- end}}
-	{{$id = (toInt $id)}}
 {{end}}
 
 {{$stats := sdict}}
@@ -22,7 +21,7 @@
 {{end}}
 
 {{if not $stats}}
-	Le personnage n'était pas dans la Base de données !
+	Le personnage n'était pas dans la base de données !
 {{else}}
 	{{dbDel $id "stats"}}
 		{{$embed := cembed

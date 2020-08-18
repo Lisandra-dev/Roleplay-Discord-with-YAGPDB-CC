@@ -6,15 +6,14 @@
 {{if $name}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
-	{{$id = ""}}
 	{{range $idperso}}
-		{{- $id = (print $id .)}}
+		{{- $id = add $id . }}
 	{{- end}}
-	{{$id = (toInt $id)}}
 	{{dbSetExpire $id "rerollName" $name 3600}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$user = title $user}}
 
 {{$userEco := sdict}}
 {{with (dbGet $id "economy")}}
@@ -52,7 +51,7 @@
 		{{$page = toString $page}}
 	{{end}}
 		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
-	{{$footer = print "Page: " $page "/" $end "| #" $id }}
+	{{$footer = print "Page: " $page " / " $end " | #" $id }}
 	{{$start := (mult 10 (sub $page 1))}}
 	{{$stop := (mult $page 10)}}
 	{{$data := ""}}
@@ -65,15 +64,15 @@
 				{{$data = (print $data "\n" (index $cslice .))}}
 			{{else}}
 				{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page "/" $end " | #" $id }}
+{{$footer = print "Page: " $page " / " $end " | #" $id }}
 			{{end}}
 		{{else}}
 			{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page "/" $end " | #" $id }}
+{{$footer = print "Page: " $page " / " $end " | #" $id }}
 		{{end}}
 			{{$desc = print "" $data ""}}
 	{{end}}
-	
+
 {{/* hell ends */}}
 {{end}}
 {{$author := (joinStr " " "Inventaire de :" (title $user))}}

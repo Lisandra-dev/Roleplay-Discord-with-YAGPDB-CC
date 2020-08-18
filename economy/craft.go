@@ -6,20 +6,19 @@
 {{if $name}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
-	{{$id = ""}}
 	{{range $idperso}}
-		{{- $id = (print $id .)}}
+		{{- $id = add $id . }}
 	{{- end}}
-	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+
 
 {{$target := .User.ID}}
 {{$mention := ""}}
 
 {{$remove := reFind `^\$use` .Message.Content}}
-{{$craft := reFind `^\$craft` .Message.Content}}
+{{$craft := reFind `^\$add` .Message.Content}}
 
 
 {{if .CmdArgs}}
@@ -48,11 +47,11 @@
 				{{$amount = (toInt (index .CmdArgs 0))}}
 				{{$item = title (index .CmdArgs 1)}}
 				{{if $name}}
-					{{$item = title (index .CmdArgs 1)}}
+					{{$item = title (index .CmdArgs 0)}}
 					{{$amount = 1}}
 					{{if gt (len .CmdArgs) 2}}
-						{{$amount = (toInt (index .CmdArgs 1))}}
-						{{$item = title (index .CmdArgs 2)}}
+						{{$amount = (toInt (index .CmdArgs 0))}}
+						{{$item = title (index .CmdArgs 1)}}
 					{{end}}
 				{{end}}
 			{{end}}

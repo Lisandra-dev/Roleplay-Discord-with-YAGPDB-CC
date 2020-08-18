@@ -4,14 +4,13 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 
+
 {{if $name}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
-	{{$id = ""}}
 	{{range $idperso}}
-		{{- $id = (print $id .)}}
+		{{- $id = add $id . }}
 	{{- end}}
-	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}

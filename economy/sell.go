@@ -1,16 +1,13 @@
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
-{{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
 {{if $name}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
-	{{$id = ""}}
 	{{range $idperso}}
-		{{- $id = (print $id .)}}
+		{{- $id = add $id . }}
 	{{- end}}
-	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}

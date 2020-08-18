@@ -1,10 +1,9 @@
 {{if .CmdArgs}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
-	{{$user :=""}}
+	{{$user := .User.ID}}
 	{{range $name}}
-	{{- $user = (print $user .)}}
+	{{- $user = (add $user .)}}
 	{{- end}}
-	{{$user = (toInt $user)}}
 
 	{{$stats := sdict}}
 	{{with (dbGet $user "stats")}}

@@ -12,14 +12,13 @@
 {{if $name}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
-	{{$id = ""}}
 	{{range $idperso}}
-		{{- $id = (print $id .)}}
+		{{- $id = add $id . }}
 	{{- end}}
-	{{$id = (toInt $id)}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+
 {{$user = title $user}}
 {{$idict := str $id}}
 
