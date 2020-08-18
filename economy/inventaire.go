@@ -11,7 +11,7 @@
 		{{- $id = (print $id .)}}
 	{{- end}}
 	{{$id = (toInt $id)}}
-	{{dbSet $id "rerollName" $name}}
+	{{dbSetExpire $id "rerollName" $name 3600}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}

@@ -110,6 +110,7 @@
 		{{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
 	{{else}}
 		{{deleteMessage nil $.ReactionMessage.ID 1}}
+		{{dbDel $id "rerollName" $name}}
 	{{end}}
 {{end}}
 {{end}}
