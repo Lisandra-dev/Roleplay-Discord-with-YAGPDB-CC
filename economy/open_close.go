@@ -25,7 +25,10 @@
 			{{$bmax := $i.Get "bmax"}}
 			{{$smin := $i.Get "smin"}}
 			{{$smax := $i.Get "smax"}}
-				{{$buyprice := randInt (toInt $bmin) (toInt $bmax)}}
+			{{$buyprice := $i.Get "buyprice"}}
+			{{if ne (toInt $bmax) 0}}
+				{{$buyprice = randInt (toInt $bmin) (toInt $bmax)}}
+				{{end}}
 				{{$sellprice := $i.Get "sellprice"}}
 				{{if eq (toInt $smax) 0}}
 					{{$sellprice = "Invendable"}}

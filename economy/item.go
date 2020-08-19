@@ -149,7 +149,7 @@
 			{{$rename := $name}}
 			{{if eq $flag2 "-price"}}
 				{{$bmin := toInt (index .CmdArgs 3)}}
-				{{$bmax := toInt (index .CmdArgs 4)}}		
+				{{$bmax := toInt (index .CmdArgs 4)}}
 				{{$items.Set $name $i}}
 				{{$i.Set "bmax" $bmax}}
 				{{$i.Set "bmin" $bmin}}
