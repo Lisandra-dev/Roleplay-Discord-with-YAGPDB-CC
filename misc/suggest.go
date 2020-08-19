@@ -47,7 +47,7 @@
 
 			{{range .Message.Attachments}}{{if and (not $Img_Set) .Width}}{{$Img_Set =true}}{{$embed.Set "image" (sdict "url" .ProxyURL)}}{{else}}{{$Attachments =print $Attachments "\n[" .Filename "](" .ProxyURL ")"}}{{end}}{{end}}
 			{{if $Attachments}}{{$embed.Set "description" (print $embed.description "\n\n**__Attachments:__**" $Attachments)}}{{end}}
-			{{$ID:=sendMessageRetID $Suggestion_Channel (complexMessage "content" (joinStr "" (mentionRoleName "Membres") ": Vous avez une nouvelle suggestion ! \n > Vous pouvez en discuter dans le channel <#741808846473003088> en précisant le numéro de la suggestion") "embed" $embed)}}
+			{{$ID:=sendMessageNoEscapeRetID $Suggestion_Channel (complexMessage "content" (joinStr "" (mentionRoleName "Membres") ": Vous avez une nouvelle suggestion ! \n > Vous pouvez en discuter dans le channel <#741808846473003088> en précisant le numéro de la suggestion") "embed" $embed)}}
 			{{addMessageReactions $Suggestion_Channel $ID $Upvote $neutral $Downvote }}
 			{{addReactions $Upvote}}
 		{{end}}
