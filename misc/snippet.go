@@ -11,7 +11,7 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr|recensement|recens|perso|char(list?)|template)` .Message.Content}}
+{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr|recensement|recens|perso|char(list?)|template|archive)` .Message.Content}}
 
 {{if .CmdArgs}}
 		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
@@ -103,6 +103,9 @@
 
 	{{else if eq $commande "?jdr"}}
 		→ https://www.jdr-system.ovh/
+	{{else if eq $commande "?archive"}}
+		→ https://mara-li.github.io/Archive-RP/Projet_Nucleus/readme.html
+		
 
 		{{else if eq $commande "?recensement" "?recens" "?perso" "?char" "?charlist"}}
 			→ https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing
@@ -117,7 +120,7 @@
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
+		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n:white_small_square: `?archive`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}
