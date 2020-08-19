@@ -172,7 +172,7 @@ Done :+1:
 
 {{define "handle-comments"}}
 	{{if and (not .embed.Fields) .comment}}{{.embed.Set "Description" (print .embed.Description "\n\n**__Comment:__**")}}{{else if not .comment}}{{.embed.Set "Description" (reReplace  `\n\n\*\*__Comment:__\*\*\z` .embed.Description "")}}{{end}}
-	{{if .comment}}{{.embed.Set "Fields" (cslice (sdict "name" (print "<@" .user.ID ">") "value" .comment))}}{{else}}{{.embed.Set "Fields" cslice}}{{end}}
+	{{if .comment}}{{.embed.Set "Fields" (cslice (sdict "name" (print "-> @" .user.Username) "value" .comment))}}{{else}}{{.embed.Set "Fields" cslice}}{{end}}
 {{end}}
 
 {{define "process-suggest-msg"}}

@@ -30,37 +30,51 @@
 	{{$desc := ""}}
 	{{$sii := true}}
 	{{$rare := "⭐"}}
+	{{$smin := $sprice}}
+	{{$smax := $sprice}}
+	{{$bmin := $bprice}}
+	{{$bmax := $bprice}}
 	{{with .CmdArgs}}
-		{{if ge (len .) 3}}
-			{{$bprice = toInt (index . 2)}}
-			{{if ge (len .) 4}}
-				{{if eq (index . 3) "none"}}
+		{{if ge (len .) 4}}
+			{{$bmin = toInt (index . 2)}}
+			{{$bmax = toInt (index . 3)}}
+			{{if eq $bmax 0}}
+				{{$buyprice = $bmin}}
+			{{else}}
+				{{$buyprice = toInt 0}}
+			{{end}}
+			{{if ge (len .) 5}}
+				{{if eq (index . 4) "none" "0" }}
 					{{$sprice = "Invendable"}}
+					{{$smin = 0}}
+					{{$smax = 0}}
 				{{else}}
-					{{$sprice = toInt (index . 3)}}
+					{{$smin = toInt (index . 4)}}
+					{{$smax = toInt (index . 5)}}
+					{{$sprice = 0}}
 				{{end}}
-				{{if ge (len .) 5}}
-					{{if ne (index . 4) "inf"}}
-						{{$stock = toInt (index . 4)}}
+				{{if ge (len .) 7}}
+					{{if ne (index . 6) "inf"}}
+						{{$stock = toInt (index . 6)}}
 					{{else}}
 						{{$stock = "♾️"}}
 					{{end}}
-					{{if ge (len .) 6}}
-						{{if (reFind `true|false` (index . 5))}}
-							{{$sii = (reFind `true|false` (index . 5))}}
+					{{if ge (len .) 8}}
+						{{if (reFind `true|false` (index . 7))}}
+							{{$sii = (reFind `true|false` (index . 7))}}
 							{{if eq $sii "true"}}
 								{{$sii = true}}
 							{{else}}
 								{{$sii = false}}
 							{{end}}
 						{{end}}
-						{{if ge (len .) 7}}
-							{{range seq 1 (toInt (index . 6))}}
+						{{if ge (len .) 9}}
+							{{range seq 1 (toInt (index . 8))}}
 								{{$rare = print $rare "⭐"}}
 							{{end}}
 						{{end}}
-						{{if ge (len .) 8}}
-							{{$desc = (index . 7)}}
+						{{if ge (len .) 10}}
+							{{$desc = (index . 9)}}
 						{{end}}
 					{{end}}
 				{{end}}
@@ -69,12 +83,14 @@
 	{{end}}
 
 	{{if and $name $bprice $stock $sprice}}
-		{{$items.Set $name (sdict "buyprice" $bprice "sellprice" $sprice "stock" $stock "sii" $sii "rare" $rare "desc" $desc)}}
+		{{$items.Set $name (sdict "buyprice" $bprice "bmin" $bmin "bmax" $bmax "sellprice" $sprice "smin" $smin "smax" $smax "stock" $stock "sii" $sii "rare" $rare "desc" $desc)}}
 		{{$serverEco.Set "Items" $items}}
 		**Created/Edited Item**
 		Nom : `{{$name}}`
-		Prix d'achat : `{{$bprice}}`
-		Prix de vente : `{{$sprice}}`
+		Prix d'achat min : `{{$bmin}}`
+		Prix d'achat max : `{{$bmax}}`
+		Prix de vente min : `{{$smin}}`
+		Prix de vente max : `{{$smax}}` 
 		Quantité : `{{$stock}}`
 		SII: `{{$sii}}`
 		Rareté : `{{$rare}}`
@@ -96,14 +112,25 @@
 	{{end}}
 
 {{else if eq $flag "-info"}}
-	{{if $name}}
+	{{if (reFind `\- all` .Message.Content)}}
+		{{range $k, $v := $items}}
+			**Nom** : {{$k}}
+			**Prix d'achat** : {{$v.buyprice}}
+			**Prix de vente** : {{$v.sellprice}}
+			**Stock** : {{$v.stock}}
+			**Rareté** : {{$v.rare}}
+			**Description** : {{$v.desc}}
+		{{end}}		
+	{{else if not (reFind `\-all` .Message.Content)}}
 		{{if ($items.Get ( $name))}}
 			{{$i := ($items.Get ( $name))}}
 			{{with $i}}
 				**Item Info**
 				Nom : `{{ $name}}`
-				Prix d'achat : `{{.buyprice}}`
-				Prix de vente : `{{.sellprice}}`
+				Prix d'achat min : `{{.bmin}}`
+				Prix d'achat max : `{{.bmax}}`
+				Prix de vente min : `{{.smin}}`
+				Prix de vente max : `{{.smax}}` 
 				Quantité : `{{.stock}}`
 				SII: `{{.sii}}`
 				Rareté : `{{.rare}}`
@@ -121,17 +148,27 @@
 			{{$i := sdict ($items.Get ( $name))}}
 			{{$rename := $name}}
 			{{if eq $flag2 "-price"}}
-				{{$buyprice := toInt (index .CmdArgs 3)}}
+				{{$bmin := toInt (index .CmdArgs 3)}}
+				{{$bmax := toInt (index .CmdArgs 4)}}		
 				{{$items.Set $name $i}}
-				{{$i.Set "buyprice" $buyprice}}
+				{{$i.Set "bmax" $bmax}}
+				{{$i.Set "bmin" $bmin}}
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-sell"}}
-				{{$sprice := toInt (index .CmdArgs 3)}}
-				{{if eq $sprice 0}}
+				{{$sprice := $i.Get "sellprice"}}
+				{{$smin := toInt (index .CmdArgs 3)}}
+				{{$smax := toInt (index .CmdArgs 4)}}
+				{{if eq $smax 0}}
 					{{$sprice = "Invendable"}}
+					{{$smin = 0}}
+					{{$smax = 0}}
+				{{else}}
+					{{$sprice = $smax}}
 				{{end}}
 				{{$items.Set $name $i}}
 				{{$i.Set "sellprice" $sprice}}
+				{{$i.Set "smin" $smin}}
+				{{$i.Set "smax" $smax}}
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-stock"}}
 				{{$stock := toInt (index .CmdArgs 3)}}
@@ -151,17 +188,6 @@
 				{{$items.Set $name $i}}
 				{{$i.Set "desc" $desc}}
 				{{$serverEco.Set "Items" $items}}
-			{{else if eq $flag2 "-rbuy"}}
-				{{$buyprice := randInt (toInt (index .CmdArgs 3)) (toInt (index .CmdArgs 4))}}
-				{{$items.Set $name $i}}
-				{{$i.Set "buyprice" $buyprice}}
-				{{$serverEco.Set "Items" $items}}
-			{{else if eq $flag2 "-rsell"}}
-				{{$sellprice := randInt (toInt (index .CmdArgs 3)) (toInt (index .CmdArgs 4))}}
-				{{$sellprice}}
-				{{$items.Set $name $i}}
-				{{$i.Set "sellprice" $sellprice}}
-`				{{$serverEco.Set "Items" $items}}
 `			{{else if eq $flag2 "-rare"}}
 				{{$rare := "⭐"}}
 				{{range seq 1 (toInt (index .CmdArgs 3))}}
@@ -179,9 +205,11 @@
 			{{end}}
 			{{with $i}}
 				**Item Info**
-				Nom : `{{ $rename}}`
-				Prix d'achat : `{{.buyprice}}`
-				Prix de vente : `{{.sellprice}}`
+				Nom : `{{ $name}}`
+				Prix d'achat min : `{{.bmin}}`
+				Prix d'achat max : `{{.bmax}}`
+				Prix de vente min : `{{.smin}}`
+				Prix de vente max : `{{.smax}}` 
 				Quantité : `{{.stock}}`
 				SII: `{{.sii}}`
 				Rareté : `{{.rare}}`
