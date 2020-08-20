@@ -183,3 +183,4 @@
 "footer" (sdict "text" (joinStr "" "À " $cible) "icon_url" "https://i.imgur.com/WoypxHH.png")
 "color" $col }}
 {{sendMessage nil $embed}}
+{{deleteTrigger 1}}
