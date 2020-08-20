@@ -153,7 +153,12 @@
 				{{$embed.Footer.Set "Text" (print $command " Par : " .User.Username " - " .User.ID " ● " $embed.Footer.Text)}}
 				{{deleteMessage $channel $message.ID 0}}
 				{{if ne $send_chan $Logging_Channel}}{{sendMessage  $send_chan (cembed $embed)}}{{end}}
-				{{sendMessage $Logging_Channel (complexMessage "content" (print print "<@" $authorID "> |La suggestion suivante a été " $command "\n" $co) "embed" $embed)}}
+				{{if eq $send_chan $Implemented_Channel}}
+				{{$chan := $Implemented_Channel}}
+				{{else}}
+					{{$chan := $Logging_Channel}}
+				{{end}}
+				{{sendMessage $chan (complexMessage "content" (print print "<@" $authorID "> | La suggestion suivante a été " $command "\n" $co) "embed" $embed)}}
 			{{end}}
 		{{else}}
 			{{$error ="Vous devez être un modérateur ou un admin pour utiliser les commandes d'administrations."}}
