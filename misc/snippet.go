@@ -11,34 +11,35 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr|recensement|recens|perso|char(list?)|template|archive|give|échange|echange)` .Message.Content}}
+{{$commande := ""}}
 
 {{if .CmdArgs}}
-		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
-	 		{{$message := getMessage $combat 733363513988218952 }}
-			{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/733363513988218952)"}}
-			{{$embed := cembed
+	{{$commande = index .CmdArgs 0}}
+	{{if or (eq $commande "?arme") (eq $commande "?armes")}}
+		{{$message := getMessage $combat 733363513988218952 }}
+		{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/733363513988218952)"}}
+		{{$embed := cembed
     		"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
-				"color" $col
-				"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link " \n")
-				"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
-				"icon_url" (.User.AvatarURL "512"))}}
-				{{sendMessage nil $embed}}
-				{{deleteTrigger 1}}
-
-		{{else if or (eq $commande "?résumé") (eq $commande "?resume") (eq $commande "?résume") (eq $commande "?resumé") (eq $commande "?résumés") (eq $commande "?resumes") (eq $commande "?résumes") (eq $commande "?resumés")}}
-			{{$embed := cembed
-				"title" "Commande de base"
-				"color" $col
-				"description" ":white_small_square: Pour un dé simple : `$d Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec bonus extérieur à un implant : `$d -bonus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec malus : `$d malus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec malus, bonus : `$d -bonus malus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n:\nwhite_small_square **Autre type d'action :** Pour les utiliser, remplacer `$d` par la commande suivante : \n <:tr:724626754282717194> :small_blue_diamond: `$poison` : poison\n <:tr:724626754282717194> :small_blue_diamond: `$soin` : Soin\n <:tr:724626754282717194> :small_blue_diamond: `$malus` : Malus (de statistiques)"}}
+			"color" $col
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link " \n")
+			"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
+			"icon_url" (.User.AvatarURL "512"))}}
 			{{sendMessage nil $embed}}
 			{{deleteTrigger 1}}
+
+	{{else if or (eq $commande "?résumé") (eq $commande "?resume") (eq $commande "?résume") (eq $commande "?resumé") (eq $commande "?résumés") (eq $commande "?resumes") (eq $commande "?résumes") (eq $commande "?resumés")}}
+		{{$embed := cembed
+			"title" "Commande de base"
+			"color" $col
+			"description" ":white_small_square: Pour un dé simple : `$d Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec bonus extérieur à un implant : `$d -bonus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec malus : `$d malus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n :white_small_square: Pour un dé avec malus, bonus : `$d -bonus malus Statistique - Description de l'action (cible, rang, type d'arme, module...)`\n:\nwhite_small_square **Autre type d'action :** Pour les utiliser, remplacer `$d` par la commande suivante : \n <:tr:724626754282717194> :small_blue_diamond: `$poison` : poison\n <:tr:724626754282717194> :small_blue_diamond: `$soin` : Soin\n <:tr:724626754282717194> :small_blue_diamond: `$malus` : Malus (de statistiques)"}}
+		{{sendMessage nil $embed}}
+		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?dés") (eq $commande "?dice") (eq $commande "?dé") (eq $commande "?de") (eq $commande "?dices")}}
 		{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/727992973131776020)")}}
 		{{$message := getMessage $combat 727992973131776020 }}
 		{{$embed := cembed
-    	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+	   	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
 			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link " \n")
 			"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
@@ -50,7 +51,7 @@
 		{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" $combat "/7701374206268538960)")}}
 		{{$message := getMessage $combat 701374206268538960}}
 		{{$embed := cembed
-    	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+	   	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
 			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
 			"footer" (sdict "text" (joinStr "" "Cité par : " .User.String)
@@ -72,7 +73,7 @@
 	{{$link = (print "(https://discordapp.com/channels/" .Guild.ID "/" 734838748721840188 "/735869281698447463)")}}
 		{{$message := getMessage 734838748721840188 735869281698447463}}
 		{{$embed := cembed
-    	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+	   	"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
 			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
 			"icon_url" (.User.AvatarURL "512")}}
@@ -105,14 +106,14 @@
 		→ https://www.jdr-system.ovh/
 	{{else if eq $commande "?archive"}}
 		→ https://mara-li.github.io/Archive-RP/Projet_Nucleus/readme.html
-		
-
+	{{else if eq $commande "?wiki"}}
+		→ https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki
 		{{else if eq $commande "?recensement" "?recens" "?perso" "?char" "?charlist"}}
 			→ https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing
-			
-		{{else if eq $commande "?echange" "?give" "?échange"}}
-		{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/" $chancommande "/739978392409079839)"}}
-		{{$message := getMessage $chancommande 739978392409079839}}
+		
+	{{else if eq $commande "?echange" "?give" "?échange"}}
+		{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/734838748721840188/737814952475361350)"}}
+		{{$message := getMessage 734838748721840188 739978392409079839}}
 		{{$embed := cembed
 			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
 			"color" $col
@@ -120,18 +121,18 @@
 			"icon_url" (.User.AvatarURL "512")}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
-		
-		{{else if eq $commande "?template"}}
-			→ https://docs.google.com/document/d/1CX4ye8loV4d34BOwmRlb-nOt8SMA4VvbFy4-_MHX5A8/edit?usp=sharing
-			→ Fichier : Créer une copie
-			→ __Remplacer l'image__ : clic droit (sur l'image) → Remplacer l'image.
-			→ __ Remplir une case__ : Pot de peinture
+	
+	{{else if eq $commande "?template"}}
+		→ https://docs.google.com/document/d/1CX4ye8loV4d34BOwmRlb-nOt8SMA4VvbFy4-_MHX5A8/edit?usp=sharing
+		→ Fichier : Créer une copie
+		→ __Remplacer l'image__ : clic droit (sur l'image) → Remplacer l'image.
+		→ __ Remplir une case__ : Pot de peinture
 
 
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n:white_small_square: `?archive`\n:white_small_square: `?((e|é)change|give)`\n\n :white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`\n\n [Wiki des commandes](https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki)"}}
+			"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n:white_small_square: `?archive`\n:white_small_square: `?((e|é)change|give)`\n :white_small_square: `?wiki`\n\n :white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`\n\n [Wiki des commandes](https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki)"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}
