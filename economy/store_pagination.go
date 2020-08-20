@@ -33,8 +33,9 @@
 			{{$rare := $v.rare}}
 			{{if ne (str $stock) "♾️"}}
 				{{$stock = $stock}}
-			{{else if eq $stock "0"}}
-				{{$stock = "Rupture"}}
+				{{if eq $stock 0}}
+					{{$stock = "**En rupture...**"}}
+				{{end}}
 			{{end}}
 			{{$svente := $symbol }}
 			{{if eq (toString $sprice) "Invendable"}}
