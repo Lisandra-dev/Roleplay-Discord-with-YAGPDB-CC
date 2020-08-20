@@ -11,7 +11,7 @@
 {{end}}
 {{$link := ""}}
 
-{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr|recensement|recens|perso|char(list?)|template|archive)` .Message.Content}}
+{{$commande := reFind `^\?(shop|(charg(é|e)(s|r)?)|(recharg(é|e)(s|r)?)|help|snippet|aide|all|d(é|e)s?|dices?|r(e|é)sum(e|é)s?|armes?|d(é|e)g(a|â)s?|store|PA|pa|jdr|recensement|recens|perso|char(list?)|template|archive|give|échange|echange)` .Message.Content}}
 
 {{if .CmdArgs}}
 		{{if or (eq $commande "?arme") (eq $commande "?armes")}}
@@ -109,7 +109,18 @@
 
 		{{else if eq $commande "?recensement" "?recens" "?perso" "?char" "?charlist"}}
 			→ https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing
-
+			
+		{{else if eq $commande "?echange" "?give" "?échange"}}
+		{{$link = print "(https://discordapp.com/channels/" .Guild.ID "/" $chancommande "/739978392409079839)"}}
+		{{$message := getMessage $chancommande 739978392409079839}}
+		{{$embed := cembed
+			"author" (sdict "name" .User.String "icon_url" (.User.AvatarURL "512"))
+			"color" $col
+			"description" (joinStr "" $message.Content "\n\n [➥ Original]" $link "\n")
+			"icon_url" (.User.AvatarURL "512")}}
+		{{sendMessage nil $embed}}
+		{{deleteTrigger 1}}
+		
 		{{else if eq $commande "?template"}}
 			→ https://docs.google.com/document/d/1CX4ye8loV4d34BOwmRlb-nOt8SMA4VvbFy4-_MHX5A8/edit?usp=sharing
 			→ Fichier : Créer une copie
@@ -120,9 +131,8 @@
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n:white_small_square: `?archive`\n\n:white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`"}}
+		"description" ":white_small_square: `?(armes|arme)`\n:white_small_square: `?résumé`\n:white_small_square: `?dés`\n:white_small_square: `?position`\n:white_small_square: `?(dégâts|dégât|dégat|dégats)`\n:white_small_square: `?charge`\n:white_small_square: `?shop`\n:white_small_square:`?(pa|PA)`\n:white_small_square: `?archive`\n:white_small_square: `?((e|é)change|give)`\n\n :white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`\n\n [Wiki des commandes](https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki)"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}
 {{end}}
-{{deleteTrigger 1}}

@@ -1,3 +1,15 @@
+{{/* Give color */}}
+{{$col := 16777215}}
+{{$p := 0}}
+{{$r := .Member.Roles}}
+{{range .Guild.Roles}}
+	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
+	{{$p = .Position}}
+	{{$col = .Color}}
+	{{end}}
+{{end}}
+
+
 {{/* DB */}}
 {{$serverEco := sdict}}
 {{with (dbGet .Server.ID "economy")}}
@@ -66,7 +78,7 @@
 		{{else}}
 			{{$newbal := add $value (toInt ($targetEco.Get "balance"))}}
 			{{$oldbal := sub $bal $value }}
-			{{$desc = joinStr " " $value "<:klix:724739705954107405> \n\n" $cible "a maintenant" $newbal "<:klix:724739705954107405> sur son compte. \n" $user "a maintenant" $oldbal "<:klix:724739705954107405> sur son compte."}}
+			{{$desc = joinStr " " $value "<:klix:724739705954107405> \n\n <:next:723131844643651655>" $cible "a maintenant" $newbal "<:klix:724739705954107405> sur son compte. \n <:next:723131844643651655>" $user "a maintenant" $oldbal "<:klix:724739705954107405> sur son compte."}}
 			{{$userEco.Set "balance" $oldbal}}
 			{{$targetEco.Set "balance" $newbal}}
 			{{dbSet $idtarget "economy" $targetEco}}
@@ -81,7 +93,7 @@
 		{{else}}
 			{{$newbal := add $value (toInt ($targetEco.Get "balance"))}}
 			{{$oldbal := sub $bal $value }}
-			{{$desc = joinStr " " $value "<:klix:724739705954107405> \n\n" $cible "a maintenant" $newbal "<:klix:724739705954107405> sur son compte. \n" $user "a maintenant" $oldbal "<:klix:724739705954107405> sur son compte."}}
+			{{$desc = joinStr " " $value "<:klix:724739705954107405> \n\n <:next:723131844643651655>" $cible "a maintenant" $newbal "<:klix:724739705954107405> sur son compte. \n <:next:723131844643651655>" $user "a maintenant" $oldbal "<:klix:724739705954107405> sur son compte."}}
 			{{$userEco.Set "balance" $oldbal}}
 			{{$targetEco.Set "balance" $newbal}}
 			{{dbSet $idtarget "economy" $targetEco}}
@@ -166,7 +178,8 @@
 {{end}}
 
 {{$embed := cembed
-"author" (sdict "name" (joinStr " " $user "donne"))
+"author" (sdict "name" (joinStr " " $user "donne") "icon_url" "https://i.imgur.com/DwoqSFH.png")
 "description" $desc
-"footer" (sdict "text" (joinStr "" "À " $cible))}}
+"footer" (sdict "text" (joinStr "" "À " $cible) "icon_url" "https://i.imgur.com/WoypxHH.png")
+"color" $col }}
 {{sendMessage nil $embed}}
