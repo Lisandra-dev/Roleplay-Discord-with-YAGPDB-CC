@@ -16,7 +16,7 @@
 
 {{if eq $matches "$open"}}
 	{{dbSet .Server.ID "store" "open"}}
-**Génération des items**
+**OUVERTURE**
 
 	{{if $items}}
 		{{range $k, $v := $items}}
@@ -40,7 +40,7 @@
 				{{$rstock := randInt 0 100}}
 				{{if le $rstock 10}}
 					{{$stock = 0}}
-				{{else if and (ge $rstock 11) (le $rstock 20)}}
+				{{else if and (ge $rstock 11) (le $rstock 30)}}
 					{{$stock  = randInt 1 5}}
 				{{end}}
 				{{$i.Set "buyprice" $buyprice}}
@@ -53,16 +53,13 @@
 		{{$serverEco.Set "Items" $items}}
 		{{dbSet .Server.ID "economy" $serverEco}}
 		
-		{{range $k,$v := $items}}
-			{{$k}} : {{$v.buyprice}} - {{$v.sellprice}} - {{$v.stock}}
-			{{end}}
-		
-	
+	{{if not .CmdArgs}}
 		{{$embed := cembed
 		"author" (sdict "name" "Sola-UI" "icon_url" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png")
 		"description" "Un vaisseau marchand vous contacte sur la ligne de communication. Il vous ouvre sa boutique dans un canal privé, n'hésitez pas à aller leur répondre."
 		"color" 0xD5B882}}
 		{{sendMessage 701395027896565810 $embed}}
+	{{end}}
 	
 	{{else}}
 	**FERMÉ**
