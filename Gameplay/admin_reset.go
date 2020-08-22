@@ -22,34 +22,22 @@
 	{{$groupe = sdict .Value}}
 {{end}}
 
-{{dbDel $id "fusil"}}
-{{dbDel $id "fusil2"}}
-{{dbDel $id "pistol"}}
-{{dbDel $id "pistol2"}}
-{{dbDel $id "canon"}}
-{{$atq := (dbGet $id "cdatq").Value}}
-{{$supp := (dbGet $id "cdsupp").Value}}
-{{dbDel $id $atq}}
-{{dbDel $id $supp}}
-{{dbDel $id "cdatq"}}
-{{dbDel $id "cdsupp"}}
-{{dbDel $id "r_pistol1"}}
-{{dbDel $id "r_pistol2"}}
-{{dbDel $id "r_fusil1"}}
-{{dbDel $id "r_fusil2"}}
-{{dbDel $id "r_canon"}}
-
-{{$groupe := sdict}}
-{{with (dbGet .Server.ID "groupe")}}
-	{{$groupe = sdict .Value}}
-{{end}}
-
 {{$bool := "false"}}
 {{range $i, $j := $groupe}}
 	{{- if eq $idict $i}}
 		{{- $bool = "true"}}
 	{{- end -}}
 {{end}}
+
+
+{{dbDel $id "recharge"}}
+{{dbDel $id "arme"}}
+{{$atq := (dbGet $id "cdatq").Value}}
+{{$supp := (dbGet $id "cdsupp").Value}}
+{{dbDel $id $atq}}
+{{dbDel $id $supp}}
+{{dbDel $id "cdatq"}}
+{{dbDel $id "cdsupp"}}
 
 {{if eq $bool "true"}}
 	{{$groupe.Del $idict}}

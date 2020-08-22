@@ -32,55 +32,52 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$pa := $groupe.Get (str $id)}}
 {{if not $pa}}
 	{{$groupe.Set (str $id) 4}}
-	{{$pa = 4}}
 {{end}}
+
+{{/* Dict for weapon */}}
+{{$arme := sdict}}
+{{with (dbGet $id "arme")}}
+	{{$arme = sdict .Value}}
+{{end}}
+
+{{$desc := ""}}
+
+{{/* Function */}}
 {{if gt $pa 0}}
-	{{if not (dbGet .User.ID "pistol2")}}
-	 	{{dbSet .User.ID "pistol2" 0}}
-	 	{{$incr := dbIncr .User.ID "pistol2" 1}}
-	 	{{$y := (dbGet .User.ID "pistol2").Value}}
+	{{if not ($arme.Get "pistol2")}}
+		{{$arme.Set "pistol2" 0}}
+	 	{{$arme.Set "pistol2" (add ($arme.Get "pistol2") 1)}}
+		{{$y := $arme.Get "pistol2"}}
 		{{$x := sub 8 $y}}
-	 	{{if lt $y (toFloat 7)}}
-			{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" $img)
-				"color" 0x6CAB8E
-				"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/8 charges dans votre deuxième pistolet !")}}
-	    {{ $idM := sendMessageRetID nil $embed }}
-	  		{{deleteMessage nil $idM 30}}
+	 	{{if lt (toFloat $y) (toFloat 7)}}
+			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/8 charges dans le pistolet secondaire.")}}
+		{{else if eq (toFloat $y) 0}}
+			{{$desc = "Dernière charge utilisée."}}
 	 	{{else}}
-			{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" $img)
-				"color" 0x6CAB8E
-				"description" "Votre deuxième pistolet est vide."}}
-			{{ $idM := sendMessageRetID nil $embed }}
-	    {{deleteMessage nil $idM 30}}
-	  	{{end}}
+			{{ $desc = "Pistolet secondaire vide."}}
+	  {{end}}
 
 	{{else}}
-		{{$incr := dbIncr .User.ID "pistol2" 1}}
-		{{$y := (dbGet .User.ID "pistol2").Value}}
-	  	{{$x := sub 8 $y}}
-	  	{{if lt $y (toFloat 8)}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" $img)
-					"color" 0x6CAB8E
-					"description" (joinStr "" "Il vous reste " (toString (toInt $x)) "/8 charges dans votre deuxième pistolet !")}}
-	    	{{ $idM := sendMessageRetID nil $embed }}
-	    	{{deleteMessage nil $idM 30}}
+		{{$arme.Set "pistol2" (add ($arme.Get "pistol2") 1)}}
+		{{$y := $arme.Get "pistol2"}}
+		{{$x := sub 8 $y}}
+	  	{{if lt (toFloat $y) (toFloat 8)}}
+				{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/8 charges dans le pistolet secondaire.")}}
+			{{else if eq (toFloat $y) 0}}
+				{{$desc = "Dernière charge utilisée."}}
 	  	{{else}}
-				{{ $embed := cembed
-				 "author" (sdict "name" $user "icon_url" $img)
-				 "color" 0x6CAB8E
-				 "description" "Votre deuxième pistolet est vide."}}
-	    	{{ $idM := sendMessageRetID nil $embed }}
-	    	{{deleteMessage nil $idM 30}}
+				{{ $desc = "Pistolet secondaire vide."}}
 	  	{{end}}
 	{{end}}
 {{else}}
-	{{$embed := cembed
-	"author" (sdict "name" $user "icon_url" $img)
-	"color"  0x6CAB8E
-	"description" "Vous n'avez pas les PA pour faire cette action"}}
-	{{ $idM := sendMessageRetID nil $embed }}
-	{{deleteMessage nil $idM 30}}
+	{{$desc = "PA insuffisants pour réaliser l'action."}}
 {{end}}
+
+{{$embed := cembed
+"author" (sdict "name" $user "icon_url" $img)
+"color"  0x6CAB8E
+"description" $desc}}
+{{ $idM := sendMessageRetID nil $embed }}
+{{deleteMessage nil $idM 30}}
+
+{{dbSet $id "arme" $arme}}

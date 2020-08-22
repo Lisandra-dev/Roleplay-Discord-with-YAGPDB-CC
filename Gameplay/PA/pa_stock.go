@@ -43,10 +43,10 @@
 {{end}}
 
 {{if eq $bool false}}
-	{{$desc = joinStr "Vous avez tous vos PA !"}}
+	{{$desc = joinStr "4 PA RESTANTS"}}
 {{else}}
 	{{$pa := $groupe.Get (str $id)}}
-	{{$desc = joinStr " " "Vous avez" $pa " PA actuellement."}}
+	{{$desc = joinStr " " $pa " PA RESTANTS."}}
 {{end}}
 
 {{$embed := cembed

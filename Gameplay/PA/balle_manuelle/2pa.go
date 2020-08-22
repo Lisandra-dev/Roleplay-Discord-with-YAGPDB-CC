@@ -52,11 +52,11 @@
 
 {{if eq $bool false}}
 	{{$groupe.Set $idict 2}}
-	{{$desc = joinStr " " "Il vous reste 2 PA"}}
+	{{$desc = joinStr " " "2 PA RESTANTS."}}
 	{{if $nameatq}}
 		{{if lt $atq 8}}
 			{{$x:= dbIncr $id $atq 2}}
-		{{else if eq $atq 4}}
+		{{else if ge $atq 4}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
@@ -70,7 +70,7 @@
 	{{if $namesupp}}
 		{{if lt $supp 8}}
 			{{$x := dbIncr $id $supp 2}}
-		{{else if eq $supp 8}}
+		{{else if ge $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -83,13 +83,13 @@
 
 	{{else}}
 		{{$j := $groupe.Get $idict}}
-		{{if eq $j 1}}
-			{{$j =1}}
-			{{$desc = "Vous n'avez pas assez de PA"}}
+		{{if eq $j 2}}
+			{{$j = 2}}
+			{{$desc = "0 PA RESTANTS"}}
 		{{else}}
 			{{$j = sub $j 2}}
 			{{if gt $j 0}}
-				{{$desc = joinStr " " "Il vous reste" $j "PA"}}
+				{{$desc = joinStr " " $j "PA RESTANT(S)"}}
 				{{if $nameatq}}
 				{{if lt $atq 8}}
 					{{$x:= dbIncr $id $nameatq 2}}
@@ -118,7 +118,7 @@
 			{{end}}
 			{{else if le $j 0}}
 			{{$j = 0}}
-			{{$desc = joinStr " " "Il vous reste 0 PA."}}
+			{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION. "}}
 		{{end}}
 		{{$groupe.Set $idict $j}}
 	{{end}}

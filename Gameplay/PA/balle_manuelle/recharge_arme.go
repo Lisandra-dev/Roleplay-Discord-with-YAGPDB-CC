@@ -1,4 +1,4 @@
-{{$arme := "https://i.imgur.com/WNuPWCv.png"}}
+{{$img := "https://i.imgur.com/WNuPWCv.png"}}
 
 
 {{/* Joueur */}}
@@ -20,10 +20,15 @@
 {{$user = title $user}}
 
 {{/* get PA */}}
+
+{{$groupe := sdict}}
+{{with (dbGet .Server.ID "groupe")}}
+	{{$groupe = sdict .Value}}
+{{end}}
+
 {{$pa := $groupe.Get (str $id)}}
 {{if not $pa}}
 	{{$groupe.Set (str $id) 4}}
-	{{$pa = 4}}
 {{end}}
 
 
@@ -42,28 +47,38 @@
 {{$desc := ""}}
 {{$bul := 0}}
 
+{{/* Arme */}}
+{{$arme := sdict}}
+{{with (dbGet $id "arme")}}
+	{{$arme = sdict .Value}}
+{{end}}
+
 {{if .CmdArgs}}
 {{/* chargeur : CHANGER LA LIGNE ICI SI NOM DIFFERENTS
-	Il est possible de créer une fusion des deux avec : (joinStr "" "Chargeur : " (title (index .CmdArgs 0)))
+	Il est possible de créer une fusion des deux avec : (joinStr "" "Chargeur : " $item)
 	LE NOM DOIT ETRE LE MEME DANS LA BOUTIQUE/INVENTAIRE DE L'UTILISATEUR !!!!!!!!!!*/}}
-	{{$char := $inv.Get (title (index .CmdArgs 0))}}
+	{{$item := title (index .CmdArgs 0)}}
+	{{$char := $inv.Get $item}}
 
 {{/* Fusil */}}
 {{if ge $pa 2}}
 
 	{{if eq (index .CmdArgs 0) "fusil"}}
-		{{if gt (toFloat (dbGet $id "fusil").Value) (toFloat 11)}}
+		{{if gt (toFloat ($arme.Get "fusil")) (toFloat 11)}}
 			{{if gt (toInt $char) 0}}
-				{{dbDel $id "fusil"}}
+				{{$arme.Del "fusil"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set (index .CmdArgs 0) $char }}
+				{{$inv.Set $item $char }}
 				{{$desc = joinStr " " "Fusil rechargé.\n Il vous reste" $char "chargeurs pleins." }}
+				{{if eq ($inv.Get $item) 0}}
+					{{$inv.Del $item}}
+				{{end}}
 			{{else}}
 				{{$desc = "Plus de chargeur dans l'inventaire."}}
 			{{end}}
 		{{else}}
-			{{if (dbGet $id "fusil")}}
-				{{$bul = (dbGet $id "fusil").Value}}
+			{{if ($arme.Get "fusil")}}
+				{{$bul = ($arme.Get "fusil")}}
 			{{else}}
 				{{$bul = 12}}
 			{{end}}
@@ -71,18 +86,21 @@
 		{{end}}
 
 	{{else if eq (index .CmdArgs 0) "fusil2"}}
-		{{if gt (toFloat (dbGet $id "fusil2").Value (toFloat 11))}}
+		{{if gt (toFloat ($arme.Get "fusil2")) (toFloat 11)}}
 			{{if gt (toInt $char) 0}}
-				{{dbDel $id "fusil"}}
+				{{$arme.Del "fusil2"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set (index .CmdArgs 0) $char }}
+				{{$inv.Set $item $char }}
 				{{$desc = joinStr " " "Fusil secondaire rechargé.\n Il vous reste" $char "chargeurs pleins." }}
+				{{if eq ($inv.Get $item) 0}}
+					{{$inv.Del $item}}
+				{{end}}
 			{{else}}
 				{{$desc = "Aucun chargeur disponible."}}
 			{{end}}
 		{{else}}
-			{{if (dbGet $id "fusil2")}}
-				{{$bul = (dbGet $id "fusil2").Value}}
+			{{if ($arme.Get "fusil2")}}
+				{{$bul = ($arme.Get "fusil2")}}
 			{{else}}
 				{{$bul = 12}}
 			{{end}}
@@ -91,18 +109,21 @@
 
 {{/* Pistolet */}}
 	{{else if eq (index .CmdArgs 0) "pistolet"}}
-		{{if gt (toFloat (dbGet $id "pistol").Value (toFloat 7))}}
+		{{if gt (toFloat ($arme.Get "pistol")) (toFloat 7)}}
 			{{if gt (toInt $char) 0}}
-				{{dbDel $id "pistol"}}
+				{{$arme.Del "pistol"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set (index .CmdArgs 0) $char }}
+				{{$inv.Set $item $char }}
 				{{$desc = joinStr " " "Pistolet rechargé.\n Il vous reste" $char "chargeurs pleins." }}
+				{{if eq ($inv.Get $item) 0}}
+					{{$inv.Del $item}}
+				{{end}}
 			{{else}}
 				{{$desc = "Aucun chargeur disponible."}}
 			{{end}}
 		{{else}}
-			{{if (dbGet $id "pistol")}}
-				{{$bul = (dbGet $id "pistol").Value}}
+			{{if ($arme.Get "pistol")}}
+				{{$bul = $arme.Get "pistol"}}
 			{{else}}
 				{{$bul = 8}}
 			{{end}}
@@ -110,18 +131,21 @@
 		{{end}}
 
 	{{else if eq (index .CmdArgs 0) "pistolet2"}}
-		{{if gt (toFloat (dbGet $id "pistol2").Value (toFloat 7))}}
+		{{if gt (toFloat ($arme.Get "pistol2")) (toFloat 7)}}
 			{{if gt (toInt $char) 0}}
-				{{dbDel $id "pistol2"}}
+				{{$arme.Del "pistol2"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set (index .CmdArgs 0) $char }}
+				{{$inv.Set $item $char }}
 				{{$desc = joinStr " " "Pistolet secondaire rechargé.\n Il vous reste" $char "chargeurs pleins." }}
+				{{if eq ($inv.Get $item) 0}}
+					{{$inv.Del $item}}
+				{{end}}
 			{{else}}
 				{{$desc = "Aucun chargeur disponible."}}
 			{{end}}
 		{{else}}
-			{{if (dbGet $id "pistol2")}}
-				{{$bul = (dbGet $id "pistol2").Value}}
+			{{if ($arme.Get "pistol2")}}
+				{{$bul = ($arme.Get "pistol2")}}
 			{{else}}
 				{{$bul = 12}}
 			{{end}}
@@ -131,24 +155,26 @@
 {{/* Canon */}}
 
 	{{else if eq (index .CmdArgs 0) "canon"}}
-		{{if gt (toFloat (dbGet $id "canon").Value (toFloat 19))}}
+		{{if gt (toFloat ($arme.Get "canon") (toFloat 19))}}
 			{{if gt (toInt $char) 0}}
-				{{dbDel $id "pistol2"}}
+				{{$arme.Del "canon"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set (index .CmdArgs 0) $char }}
+				{{$inv.Set $item $char }}
 				{{$desc = joinStr " " "Canon rechargé.\n Il vous reste" $char "chargeurs pleins." }}
 			{{else}}
 				{{$desc = "Aucun chargeur disponible."}}
 			{{end}}
+			{{if eq ($inv.Get $item) 0}}
+				{{$inv.Del $item}}
+			{{end}}
 		{{else}}
-			{{if (dbGet $id "canon")}}
-				{{$bul = (dbGet $id "fusil2").Value}}
+			{{if ($arme.Get "canon")}}
+				{{$bul = ($arme.Get "fusil2")}}
 			{{else}}
 				{{$bul = 20}}
 			{{end}}
 			{{$desc = joinStr " " "Il reste encore" $bul "balles dans le chargeur."}}
 		{{end}}
-
 
 	{{else}}
 		{{$desc := "**Usage** : `$recharge (fusil|fusil2|pistolet|pistolet2|canon)`"}}
@@ -162,9 +188,12 @@
 {{end}}
 
 {{$embed := cembed
-	"author" (sdict "name" $user "icon_url" $arme)
+	"author" (sdict "name" $user "icon_url" $img)
 	"color" 0x6CAB8E
 	"description" $desc}}
 {{$idm := sendMessageRetID nil $embed}}
 {{deleteMessage nil $idm 30}}
 {{deleteTrigger 1}}
+{{dbSet $id "arme" $arme}}
+{{$userEco.Set "Inventory" $inv }}
+{{dbSet $id "economy" $userEco}}

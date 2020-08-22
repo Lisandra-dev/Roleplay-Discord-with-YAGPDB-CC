@@ -36,14 +36,26 @@
 {{$user = title $user}}
 {{$idict := str $id}}
 
+{{/* Arme */}}
+{{$arme := sdict}}
+{{with (dbGet $id "arme")}}
+	{{$arme = sdict .Value}}
+{{end}}
+
 {{/* Recharge des armes*/}}
-{{$rp1 := (toInt (dbGet $id "r_pistol1").Value)}}
-{{$rp2 := (toInt (dbGet $id "r_pistol2").Value)}}
-{{$rf1 := (toInt (dbGet $id "r_fusil1").Value)}}
-{{$rf2 := (toInt (dbGet $id "r_fusil2").Value)}}
-{{$rc := (toInt (dbGet $id "r_canon").Value)}}
+{{$recharge := sdict}}
+{{with (dbGet $id "recharge")}}
+	{{$recharge = sdict .Value}}
+{{end}}
+
+{{$rp1 := toInt ($recharge.Get "r_pistol1")}}
+{{$rp2 := toInt ($recharge.Get "r_pistol2")}}
+{{$rf1 := toInt ($recharge.Get "r_fusil1")}}
+{{$rf2 := toInt ($recharge.Get "r_fusil2")}}
+{{$rc := toInt ($recharge.Get "r_canon")}}
 
 {{/* Compétence */}}
+
 {{$nameatq := (dbGet $id "cdatq").Value}}
 {{$namesupp := (dbGet $id "cdsupp").Value}}
 {{$atq := (toInt (dbGet $id $nameatq).Value)}}
@@ -60,71 +72,71 @@
 {{/* PA count */}}
 {{if eq $bool false}}
 	{{$groupe.Set $idict 2}}
-	{{$desc = joinStr " " "Il vous reste 2 PA"}}
+	{{$desc = joinStr " " "2 PA RESTANTS."}}
 	{{if $rp1}}
 		{{if lt $rp1 2}}
-			{{$x := dbIncr $id "r_pistol1" 2}}
-		{{else if eq $rp1 2}}
+			{{$recharge.Set "r_pistol1" (add $rp1 2)}}
+		{{else if ge $rp1 2}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-				"description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")
+				"description" (joinStr "" "Pistolet rechargé.")
 				"color" 0x6CAB8E}}
 			{{sendMessage nil $embed}}
-			{{dbDel $id "r_pistol1"}}
+			{{$recharge.Del "r_pistol1"}}
 		{{end}}
 	{{end}}
 	{{if $rp2}}
 		{{if lt $rp2 2}}
-			{{$x := dbIncr $id "r_pistol2" 2}}
-		{{else if eq $rp2 2}}
+			{{$recharge.Set "r_pistol2" (add $rp2 2)}}
+		{{else if ge $rp2 2}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-				"description" (joinStr "" "Deuxième pistolet de " $.User.Mention " rechargé.")
+				"description" (joinStr "" "Pistolet secondaire rechargé.")
 				"color" 0x6CAB8E}}
 			{{sendMessage nil $embed}}
-			{{dbDel "r_pistol2"}}
+			{{$recharge.Del "r_pistol2"}}
 		{{end}}
 	{{end}}
 	{{if $rf1}}
 		{{if lt $rf1 4}}
-			{{$x := dbIncr $id "r_fusil1" 2}}
+			{{$recharge.Set "r_fusil1" (add $rf1 2)}}
 		{{else if eq $rf1 4}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-				"description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")
+				"description" (joinStr "" "Fusil rechargé.")
 				"color" 0x6CAB8E}}
 			{{sendMessage nil $embed}}
-			{{dbDel $id "r_fusil1"}}
+			{{$recharge.Del "r_fusil1"}}
 		{{end}}
 	{{end}}
 	{{if $rf2}}
 		{{if lt $rf2 4}}
-			{{$x := dbIncr $id "r_fusil2" 2}}
-		{{else if eq $rf2 4}}
+			{{$recharge.Set "r_fusil2" (add $rf2 2)}}
+		{{else if ge $rf2 4}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-				"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")
+				"description" (joinStr "" "Fusil secondaire rechargé.")
 				"color" 0x6CAB8E}}
 			{{sendMessage nil $embed}}
-			{{dbDel $id "r_fusil2"}}
+			{{$recharge.Del "r_fusil2"}}
 		{{end}}
 	{{end}}
 	{{if $rc}}
 		{{if lt $rc 8}}
-			{{$x := dbIncr $id "r_canon" 2}}
-		{{else if eq $rc 8}}
+			{{$recharge.Set "r_canon" (add $rc 2)}}
+		{{else if ge $rc 8}}
 			{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-				"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")
+				"description" (joinStr "" "Canon rechargé.")
 				"color" 0x6CAB8E}}
 			{{sendMessage nil $embed}}
-			{{dbDel $id "r_canon"}}
+			{{$recharge.Del "r_canon"}}
 		{{end}}
 	{{end}}
 	{{if $nameatq}}
 		{{if lt $atq 8}}
 			{{$x:= dbIncr $id $atq 2}}
-		{{else if eq $atq 4}}
+		{{else if ge $atq 4}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
@@ -137,7 +149,7 @@
 	{{if $namesupp}}
 		{{if lt $supp 8}}
 			{{$x := dbIncr $id $supp 2}}
-		{{else if eq $supp 8}}
+		{{else if ge $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -150,82 +162,82 @@
 
 {{else}}
 	{{$j := $groupe.Get $idict}}
-	{{if eq $j 1}}
-		{{$j =1}}
-		{{$desc = "Vous n'avez pas assez de PA"}}
+	{{if eq $j 2}}
+		{{$groupe.Set $idict 0}}
+		{{$desc = "DERNIERS PA UTILISÉS"}}
 	{{else}}
 		{{$j = sub $j 2}}
 		{{if gt $j 0}}
-			{{$desc = joinStr " " "Il vous reste" $j "PA"}}
+			{{$desc = joinStr " " $j "PA RESTANTS"}}
 			{{if $rp1}}
 				{{if lt $rp1 2}}
-					{{$x := dbIncr $id "r_pistol1" 1}}
-				{{else if eq $rp1 2}}
+					{{$recharge.Set "r_pistol1" (add $rp1 2)}}
+				{{else if ge $rp1 2}}
 					{{$embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-						"description" (joinStr "" "Pistolet de " $.User.Mention " rechargé.")
+						"description" (joinStr "" "Pistolet rechargé.")
 						"color" 0x6CAB8E}}
 					{{sendMessage nil $embed}}
-					{{dbDel $id "r_pistol1"}}
-					{{dbDel $id "pistol"}}
+					{{$recharge.Del "r_pistol1"}}
+					{{$arme.Del "pistol"}}
 				{{end}}
 			{{end}}
 			{{if $rp2}}
 				{{if lt $rp2 2}}
-					{{$x := dbIncr $id "r_pistol2" 2}}
-				{{else if eq $rp2 2}}
+				{{$recharge.Set "r_pistol2" (add $rp2 2)}}
+				{{else if ge $rp2 2}}
 					{{$embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-						"description" (joinStr "" "Deuxième pistolet de " $.User.Mention " rechargé.")
+						"description" (joinStr "" "Pistolet secondaire rechargé.")
 						"color" 0x6CAB8E}}
 					{{sendMessage nil $embed}}
-					{{dbDel "r_pistol2"}}
-					{{dbDel $id "pistol2"}}
+					{{$recharge.Del "r_pistol2"}}
+					{{$arme.Del "pistol"}}
 				{{end}}
 			{{end}}
 			{{if $rf1}}
 				{{if lt $rf1 4}}
-					{{$x := dbIncr $id "r_fusil1" 2}}
-				{{else if eq $rf1 4}}
+				{{$recharge.Set "r_fusil1" (add $rf1 2)}}
+				{{else if ge $rf1 4}}
 					{{$embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-						"description" (joinStr "" "Fusil de " $.User.Mention " rechargé.")
+						"description" (joinStr "" "Fusil rechargé.")
 						"color" 0x6CAB8E}}
 					{{sendMessage nil $embed}}
-					{{dbDel $id "r_fusil1"}}
-					{{dbDel $id "fusil"}}
+					{{$recharge.Del "r_fusil1"}}
+					{{$arme.Del "fusil"}}
 				{{end}}
 			{{end}}
 			{{if $rf2}}
 				{{if lt $rf2 4}}
-					{{$x := dbIncr $id "r_fusil2" 2}}
-				{{else if eq $rf2 4}}
+				{{$recharge.Set "r_fusil2" (add $rf2 2)}}
+				{{else if ge $rf2 4}}
 					{{$embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-						"description" (joinStr "" "Deuxième fusil de " $.User.Mention " rechargé.")
+						"description" "Fusil secondaire rechargé."
 						"color" 0x6CAB8E}}
 					{{sendMessage nil $embed}}
-					{{dbDel $id "r_fusil2"}}
-					{{dbDel $id "fusil2"}}
+					{{$recharge.Del "r_fusil2"}}
+					{{$arme.Del "fusil2"}}
 				{{end}}
 			{{end}}
 			{{if $rc}}
 				{{if lt (toInt $rc) 8}}
-					{{$x := dbIncr $id "r_canon" 2}}
-				{{else if eq (toInt $rc) 8}}
+				{{$recharge.Set "r_canon" (add $rc 2)}}
+				{{else if ge (toInt $rc) 8}}
 					{{$embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/YeIsRmw.png")
-						"description" (joinStr "" "Canon de " $.User.Mention " rechargé.")
+						"description" (joinStr "" "Canon rechargé.")
 						"color" 0x6CAB8E}}
 					{{sendMessage nil $embed}}
-					{{dbDel $id "r_canon"}}
-					{{dbDel $id "canon"}}
+					{{$recharge.Del "r_canon"}}
+					{{$arme.Del "canon"}}
 				{{end}}
 			{{end}}
 			{{if $nameatq}}
 				{{if lt $atq 8}}
 					{{$x:= dbIncr $id $nameatq 2}}
-				{{else if eq $atq 4}}
+				{{else if ge $atq 4}}
 					{{dbDel $id "cdatq"}}
 					{{ $embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
@@ -238,7 +250,7 @@
 			{{if $namesupp}}
 				{{if lt $supp 8}}
 					{{$x := dbIncr $id $namesupp 2}}
-				{{else if eq $supp 8}}
+				{{else if ge $supp 8}}
 					{{dbDel $id "cdsupp"}}
 					{{ $embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -250,7 +262,7 @@
 			{{end}}
 		{{else if le $j 0}}
 			{{$j = 0}}
-			{{$desc = joinStr " " "Il vous reste 0 PA."}}
+			{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION."}}
 		{{end}}
 		{{$groupe.Set $idict $j}}
 	{{end}}
@@ -262,3 +274,5 @@
 	{{$idPA := sendMessageRetID nil $embed}}
 	{{deleteMessage nil $idPA 30}}
 {{dbSet .Server.ID "groupe" $groupe}}
+{{dbSet $id "recharge" $recharge}}
+{{dbSet $id "arme" $arme}}
