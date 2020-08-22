@@ -9,6 +9,7 @@
 {{$Downvote:=":moins:715708440466554921"}}
 {{$neutral :=":blobshrug:742470860031393924"}}
 {{/* CONFIGURATION AREA ENDS */}}
+
 {{$globalDict:=dict "chans" (dict $Suggestion_Channel true $Approved_Channel true $Implemented_Channel true) "msg" .nil}}
 {{$Prefix:=index (reFindAllSubmatches `.*?: \x60(.*)\x60\z` (execAdmin "Prefix")) 0 1}}
 {{$Escaped_Prefix:=reReplace `[\.\[\]\-\?\!\\\*\{\}\(\)\|]` $Prefix `\${0}`}}
