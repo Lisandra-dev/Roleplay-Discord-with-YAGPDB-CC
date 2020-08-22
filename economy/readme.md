@@ -1,114 +1,192 @@
-Thanks a lot to Shadownight#9025 to permit me to use it !
-Each command for buy, sell, inventory and money can be use with a reroll with `#name`at **the end of the command**.
-For admin, user can be reroll, with adding the `#` at the User place.
+Merci à Shadownight#9025 de me permettre d'utiliser ses commandes.
 
-All these command use dictionnary and cslice, unless of store open/close, who use an simple db entry. 
+Toutes les commandes pour acheter, vendre, ouvrir l'inventaire et le porte-monnaie peuvent être utiliser avec `#name` à **la fin de la commande**
+Pour les admins, l'user peut être un reroll, en ajoutant `#`à la place de `user`.
 
-# ADMIN
+Toutes ses commandes utilisent des dictionnaires ou des listes, sauf pour l'ouverture / fermeture du shop, qui est une simple entrée de BD.
 
-**Trigger : ** Command
+# Administration : 🧰
 
-**Usage :**
+Ces commandes sont uniquement contrôlés et contrôlables par les administrateurs.
 
-* Money : `$admin -money -(add|remove|reset|set) user amount`
+## Management :
 
-* Symbol : `$admin -symbol <symbol>`
+Ces commandes permettent de gérer l'économie générale : argent des joueurs, leur inventaire, symbole de la monnaie...
 
-* Manage inventory : `$admin -manageinv -(add|remove|set) user item amount`
-
-* Reset/clean inventory : `$admin -manageinv -(reset|clean) user`
-
-  > - Reset détruit complètement l'inventaire du joueur, quand clean le vide seulement.
-
-
-
-# Item :
-
-**Trigger : ** Command
+**Trigger :** Command
 
 **Usage :**
 
-* Add : `$item -add "name" price (none|sellprice) (inf|stockage)(true|false)"description"`
+* Money : `$adminmoney -(add|remove|reset|set) user amount`
+ > L'utilisateur sera averti si un admin change son porte-monnaie.
+
+* Symbol : `$symbol <symbol>`
+
+* Manage inventory : `$manageinv -(add|remove|set) user item amount`
+
+* Reset/clean inventory : `$manageinv -(reset|clean) user`
+
+  > Reset détruit complètement l'inventaire du joueur, quand clean le vide seulement.
+
+
+
+## Item
+
+Ces commandes permettent de rajouter, modifier, ou supprimer un objet dans la boutique.
+
+**Trigger :** Command
+
+**Usage :**
+
+* Add : `$item -add "name" price (none|sellprice) (inf|stockage)(true|false) rareté "description"`
 * Delete : `$item -delete "name"`
 * Information : `$item -info "name"`
 
-> - Beware of case sensitive
+> - Attention à la casse.
 >
-> - SII meaning that the item can be in the inventory or not, like an "auto-use item"
+> - SII veut dire si l'objet peut apparaître ou non dans l'inventaire du joueur.
 
-# Edit item :
+* `$item -edit "name" -(price|sell|stock|sii|desc|rare|rename|rbuy|rsell) "value"`
 
-**Trigger :** Regex
+Type que doit être `value` :
+* <u>Prix :</u> nombre.
+* <u>Vendre</u> : `0` ou un nombre.
+* <u>Stock</u> :  `inf` ou un nombre
+* <u>SII</u> : true ou false
+* <u>desc</u> : Chaîne de caractère.
+* <u>Rare</u> : Nombre
+* <u>Rename</u> : Chaine de caractère
+* <u> rbuy & rsell</u> : Ce sont les deux seules commandes qui ont besoin de deux valeurs : une borne "start" et "end" qui permet de choisir aléatoirement un nombre entre ses deux valeurs.
 
-**Usage :** `$item -edit "name" -(price|sell|stock|sii|desc|rbuy|rsell) "value" `
+## Open & close
 
-* For price : Edit the price of the item, value are number.
-* Sell can be 0 or number.
-* Stock can be inf or number
-* SII : true or false
-* desc : string
-* rbuy and rsell rand a number between two numbers, they need to have two argument.
+**Trigger :** Regex `\$(close|open)`
 
-# Store :
+**Usage :** `$close` ou `$open`
+
+> - Ouvre ou ferme la boutique.
+> - Si la boutique est fermée, les utilisateurs ne peuvent ni vendre ou acheter.
+> - La boutique aura un message spécial si la boutique est fermée.
+> - Un message est envoyé dans un channel pour indiqué l'ouverture/fermeture de la boutique.
+
+
+# Store
 
 **Trigger :** Command
 
 **Usage :** `$store (optional page)`
 
-> Print the embed of the store.
->
-> If store are close (with `$setup (close|open)`print the embed. Else, print an embed where the store is closed.
->
-> If the dictionary have too many entry, user can choose a page.
+> Montre la boutique.
+> Que la boutique soit fermée ou ouverte, un message sera affiché.
+> S'il y a beaucoup d'objet, l'utilisateur peut indiquer une page. De plus, des émoji seront ajouté à la boutique et permettent de changer de page, ou supprimer le message.
 
-# Inventory :
+# Inventaire
 
 **Trigger :** Command
 
 **Usage :** `$inv (optional page)`
 
+> Affiche l'inventaire du joueur ou du personnage cible.
+> Comme pour le magasin, l'utilisateur peut indiquer une page ou utiliser les émoji.
 
+# Achat et vente :
 
-# Sell :
+## Sell
 
-**Trigger : ** Command
+**Trigger :** Command
 
-**Usage :** `$sell "name" amount`
+**Usage :** `$sell "name" amount
 
+> Vend l'objet.
 
-
-# Buy :
+## Buy
 
 **Trigger :** Command
 
 **Usage :** `$buy "name" amount`
 
+> Achete l'objet
 
-
-# Money :
-
-**Trigger :** Command
-
-**Usage : ** `$money`
-
-> Print the balance of the user.
-
-# Open - Close :
-
-**Trigger : ** Command
-
-**Usage :** `$setup (open|close)`
-
-> Open or close the shop. If the shop is closed, user cannot buy or sell anything.
-
-# VN :
+# Money
 
 **Trigger :** Command
 
-**Usage : ** `$vn -(add|use) (-armes?|modules?|BC|LC|SF|CU|bc|lc|cb|sf|cu) "value"`
+**Usage :** `$money`
 
-> For armes and module : Value is the name
+> Affiche le porte monnaie de l'utilisateur.
+
+# VN
+
+**Trigger :** Command
+
+**Usage :** `$vn -(add|use) (-armes?|modules?|BC|LC|SF|CU|bc|lc|cb|sf|cu) "value"`
+
+**Indication sur la valeur :**
+* <u>Armes & module</u>: nom
+* <u> Implant :</u> Quantité
+
+> La fonction va mettre à jour le message de l'inventaire à chaque fois que quelqu'un utilise la commande pour éditer cet inventaire.
+> Le message de l'inventaire doit **obligatoirement** être fait par YAGPD.
+
+# Craft
+
+**Trigger :** Command
+
+**Usage :** `$(add|use) (#nom) (quantité) "nom"`
+
+Pour Use, quantité peut être `all` ce qui permet d'utiliser tous les objets directement.
+
+
+
+Pour les rerolls, il faut ajouter `#nom` avant d'indiquer la quantité et le nom.
+
+> Permet à l'utilisateur de se rajouter à lui ou à un reroll un objet qui ne se trouve pas forcément dans le store. Si l'objet se trouve déjà dans son inventaire, alors il augmente la quantité.
 >
-> For the implant, value is the quantity.
+> Cette dernière est d'ailleurs optionnelle. Non précisé, elle sera de 1. La commande `$use` permet de retirer l'objet de l'inventaire, en précisant un montant ou non.
 >
-> This function update an embed created with YAG and update & edit it each time someone edit the inventory of the guild.
+> Le bot est sensible aux fautes d'orthographes et de frappes. Il est donc possible que vous ayez un affichage doublé pour le même objet si vous avez fait une erreur d''orthographe ou de frappe.
+>
+> *Il est impossible de vérifier toutes les orthographes possibles pour chaque objet, faites donc attention.*
+>
+> Le bot n'est pas sensible à la casse : une fonction permet de mettre automatiquement la première lettre en majuscule, c'est ce qui est fait ici.
+
+# Recherche :
+
+**Trigger** : Regex `?search`
+
+**Usage** : BEAUCOUP.
+-  **Inventaire** : `?search inventaire`
+- **Composant** : `?search composant`
+  - Biocomposant : `?search bc`
+	- Cellule bionotropique : `?search cb`
+  - Cellule cytomorphe : `?search lc`
+  - Substrat ferreux : `?search sf`
+  - Composant universel : `?search cu`
+- **Analgésique** : `?search analgésique`
+	- Rixolam : `?search rixolam`
+	- Bandage : `?search bandage(s)`
+	- Eufyrusant : `?search eufy(rusant)`
+	- Implant : `?search "Implant(s) temporaire(s)"`
+	- Soma : `?search soma`
+	- Injection Eufyrusant : `?search Eufy(rusant)`
+	- Sirop de betapropyl : `?search (sirop|betapropyl|("sirop de betapropyl"))`
+	- Xenox : `?search xenox`
+- **Armes biologiques** : `?search "Arme biologique"`
+	-  Grenade Nécrotique : `?search (grenade|grenade nécrotique|nécro)`
+	-  Liquide antifongique :`?search (antifongique|liquide|"liquide antifongique")`
+	-  Gaz anesthésiant de combat : `?search (anesthésiant|gaz|"gaz anesthésiant")`
+	-  Sang Etherique : `?search ("sang éthérique"|sang|éthérique)`
+	-  Huile carotoxinique : `?search (huile|carotonixique|caro|"huile carotoxinique")`
+	-  Huile digestive : `?search (huile|digestive|"huile digestive"`
+- **Armes** : `?search arme`
+- **Modules** : `?search module`
+- **Implants** : `?search implants`
+- **Charges** : `?search charge`
+- **Objet à bas coût** : `?search faible`
+	-  Les armes : `?search faible arme(s)`
+	-  Les armes biologiques : `?search faible "arme bio"`
+	-  Les analgésiques : `?search faible analgésique`
+  - Pour les objets seuls, ce sont exactement les mêmes variables que pour les objets hauts de gammes.
+
+> Cette commande permet de récupérer la description (et UNIQUEMENT la description) d'un objet.
+> Elle permet aussi de récupérer les messages avec les catégories d'objets.

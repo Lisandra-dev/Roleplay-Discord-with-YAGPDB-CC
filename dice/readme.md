@@ -1,46 +1,48 @@
-# URC/RC :
+# URC/RC
 
-**Trigger** : Regex `^\-(rc|urc)`
+**Trigger** : Regex `^\$(rc|urc)`
 
-**Usage** : `-rc|rcc <value>`
+**Usage** : `$rc|rcc <value>`
 
-> Calculate the RC / URC of a value.
+> Calcule la valeur d'un URC/RC.
 
-# dice info :
+# dice info
 
-**Trigger** : Regex `^\-(malus|poison|soin)`
+**Trigger** : Regex `^\$(malus|poison|soin)`
 
-**Usage** : `-malus|poison|soin <value>`
+**Usage** : `$-malus|poison|soin <value>`
 
-> Give the information about the result for some dice.
+> Donne le résultat d'un poison/soin/malus pour le résulat donné. Pratique si on a lancé le mauvais dés !
 
-# d | Esquive | poison | soin | malus
+# d | poison | soin | malus
 
 **Trigger** : command
 
 **Usage** :
-* d : `-d (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
-* esquive : `-esquive (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
-* poison : `-poison (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
-* soin : `-soin (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
-* malus : `-malus (-bonus|malus) (-bonus|malus) (#charname) (commentaire)`
+* d : `$d (-bonus|malus) (-bonus|malus) (#name) (commentaire)`
+* poison : `$poison (-bonus|malus) (-bonus|malus) (#name) (commentaire)`
+* soin : `$soin (-bonus|malus) (-bonus|malus) (#name) (commentaire)`
+* malus : `$malus (-bonus|malus) (-bonus|malus) (#name) (commentaire)`
+* Soutien : `$soutien (-bonus|malus) (-bonus|malus) (#name) (commentaire)`
 
-> Same as above, but the message is a simple markdown.
-> Argument are optional.
-> If #charname, take from the "reroll database". If it not exists, use the default value. Without, take the stats value with the User.ID
 
-# choose
+> * Lance un dé correspondant à la commande, et affiche le résultat. Les commandes spéciales "malus", "poison", "soin" et "esquive" affiche donc les résultats d'une action spécifique.
+> * Les arguments sont optionnels, cependant, les bonus sont obligatoirement en négatif, sinon ils ne sont pas reconnus.
+> * Si la personne veut prendre la bonne statistiques stockée dans la base de donnée, elle doit l'indiquer, sinon, le dé prend les valeurs par défauts (seuil de 8, bonus de 0.)
+> * `#name` permet d'indiquer un autre personnage que celui du joueur, notamment un reroll. Le bot va donc utiliser ce nom pour fouiller la base de donnée si ce dernier est enregistré. Attention à utiliser le même nom ! Elle n'est cependant pas sensible à la casse.
+
+# Choose
 
 **Trigger** : command
 
-**Usage** : `-choose arg1 arg2...`
+**Usage** : `$choose arg1 arg2...`
 
-> Choose one random argument in a list.
+> Choisit un argument dans une liste, aléatoirement.
 
 # Carac
 
 **Trigger** : Command
 
-**Usage** : `-carac`
+**Usage** : `$carac`
 
-> Same as above, but the list is "Force", "Endurance", "Agilité", "Précision", "Intelligence", "Karma"
+> Comme la commande précédente, sauf que la liste est intégré au bot, et permet de choisir aléatoirement une caractéristique (hormis le karma, puisqu'il est impossible d'altérer la chance de quelqu'un).

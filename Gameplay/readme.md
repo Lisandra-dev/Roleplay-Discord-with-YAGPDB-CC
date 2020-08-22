@@ -1,78 +1,86 @@
-**WARNING** : No command here is independant !! You must take ALL of command listed here.
-*The command are mainly in french*
-Also, the count is only for "one person" : it recharges the weapon of the guy who start the command.
-
-Note : All these command can be use with an reroll, with adding `#name` at the end.
+Toutes les commandes listées peuvent être utiliser avec un reroll, en indiquant `#nom` à la fin de la commande. En outre, les emoji peuvent être indiqué à la fin de la commande.
 
 
-# PA :
+# PA et PA2
 
-The center of the weapon / cooldown system.
+Le centre du système d'arme.
 
-**Trigger :** Coutains`:pa:`
+**Trigger :** Coutains `:pa:`
 
-> Counts the PA the user use. At 4, the user use all this PA. Each time he uses a PA, the function looks in the DB if the user recharge something (weapon, or competence). If yes, count it. If the count is good, trigger an embed and reset the recharge value.
+**Trigger : ** Countains `:2pa:`
 
-# Recharge :
-*Fun : it's one of the only command who doesn't use dictionnary because it's more pratical without, because key are always deleted after the end of the recharge. So, normally, it doesn't kill your DB*
+> Compte les PA d'un utilisateur à chaque trigger. A quatre, l'utilisateur a utilisé tous ses PA. A chaque fois que la commande est lancé, elle recherche dans la base de données si l'utilisateur recharge quelque chose (arme ou compétence). Si oui, elle va faire `+1`. Si cette valeur atteint le seuil, alors elle va indiquer le rechargement complet puis supprimer la clé de la base de données. En outre, pour les armes, elle va reset le compte et indiquer donc le maximum de charge.
+
+# Recharge automatique des armes
+
+Fun : c'est la seule commande qui n'utilise pas de dictionnaire avec le temps, son utilisation nécessite donc un premium car il y a de nombreux `dbGet`. Cette commande permet d'activer la recharge des armes et des compétences.
+
+**Trigger :** Commande
+
+**Usage :**
+
+* <u> Arme :</u>`$recharge (fusil|fusil2|pistolet|pistolet2|canon)`
+* <u> Compétence :</u> `$competence (long|court) "name"`
+
+Il faut :
+
+* Pistolet : 2 PA
+* Fusil : 4 PA
+* Canon : 8 PA
+* Compétence d'attaque : 4 PA
+* Compétence de support : 8 PA (les altération durent 4 PA, et le cooldown 4PA.)
+
+# Recharge manuelle des armes :
+
+* **Il faut absolument que l'utilisateur ait des chargeurs dans son inventaire et que les noms soient indiquent à la fois dans l'inventaire, la boutique, et la fonction.**
+
+ > Pour des raisons de praticités, les chargeurs portent le nom de l'arme. Si dans la boutique, des armes (différente d'un chargeur) doivent y être mis, je conseille de rajouter un indicateur pour les ARMES (**et non les chargeurs**), tel que [A] ou [E] par exemple.
+ > Le nom peut être cependant changé, dans ce cas, il faut changer la ligne indiqué en indiquant le nom exacte des chargeurs se trouvant dans la boutique.
+
+* Les fichiers `pa` et `2pa` ne contiennent la recharge que pour les compétences.
+* Le fichier `competence` ne change pas entre les deux versions.
+* Note : Recharger coûte 2PA, la fonction le vérifie donc.
+* Le compte des `2pa` peut être indiqué directement dans la commande.
+
+**Trigger :** Commande
+
+**Usage :** `$recharge (fusil|fusil2|pistolet|pistolet2|canon)`
+
+
+# Fusil, fusil2, pistolet, pistolet2, canon
+
+**Trigger :** Contains :
+
+* Pistolet : `:pistol:` & `:pistol2:`
+
+* Fusil : `:fusil` & `:fusil2`
+
+* Canon : `:canon:`
+
+  > Le bot compte les balles utilisés par l'utilisateur quand il l'indique avec l'émoji associé.
+  > Les emoji peuvent être indiqué directement dans la commande de dés.
+
+  # Bullet stock
 
 **Trigger :** Command
 
-**Usage :** `$recharge -(fusil|fusil2|pistolet|pistolet2|canon)`
+**Usage :** `$stock -(pistolet|pistol2|canon|fusil|fusil2)`
 
-For competence : `$recharge -(attaque|support) "name"`
+> Indique le nombre de charge restante dans l'arme. Si l'utilisateur n'a pas utilisé son arme, indique le nombre de charge maximal.
 
+# Turn
 
-Recharge work like that :
-* Pistol : 2 PA
-* Fusil : 4 PA
-* Canon : 8 PA
-* Competence attaque : 8 PA
-* Competence support : 12 PA (Alteration delay : 8 PA, cooldown to 4 PA)
+**Trigger :**Command
 
-# Fusil count :
+**Usage :** `$turn (random argument optional)`
 
-**Trigger** : countains `:fusil:`
+> Reset pour tout les membres du groupe les PA, et rajoute +1 au nombre de turn, sauf si un argument est passé en paramètre. Dans ce cas, le tour retourne à 1.
 
-**Usage :** The user send a message with the trigger.
+# Delweapon
 
-> The bot count the number of bullets used by the user.
-
-# Pistol count :
-
-**Trigger** : countains `:pistol:`
-
-**Usage :** The user send a message with the trigger.
-
-> The bot count the number of bullets used by the user.
-
-# Canon count :
-
-**Trigger** : countains `:canon:`
-
-**Usage :** The user send a message with the trigger.
-
-> The bot count the number of bullets used by the user.
-
-# Bullet stock
-
-**Trigger** : Command
-
-**Usage :** `-stock <pistolet|pistolet2|fusil|fusil2|canon>`
-
-> The bot send the number of bullet for the person who send it.
-
-# New turn :
-
-**Trigger : ** Command
-
-**Usage :** `$turn (optional trigger)`
-
-> Reset the PA for all people in the group dictionnary and add +1 to the DBkey for the turn. If argument, reset the turn number to 1.
-
-#delweapon :
-
-**Trigger** : Command
+**Trigger :** Command
 
 **Usage :** `$delweapon <mention|#name>`
-  > Reset in the DB all weapon things (and PA) related to the user.
+
+
+> Permet de supprimer dans la base de données toutes les données des armes relative à la personne passée en paramètre.

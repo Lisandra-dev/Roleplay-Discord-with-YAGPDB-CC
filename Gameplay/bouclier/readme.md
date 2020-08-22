@@ -1,21 +1,17 @@
-The bouclier work exactly as the weapon. Unless, here, we cannot count the bullet used.
+Le bouclier fonctionne un peu comme le temps : il va compter les messages envoyés dans un channel jusqu'à atteindre un seuil.
 
-
-
-# Bouclier :
+# Bouclier
 
 **Trigger** : Command
 
-**Usage :** `-bouclier`
+**Usage :** `$bouclier`
 
-> The bot starts a count.
+> Le bot commence un compte de message pour recharger le bouclier.  
 
-# Recharge :
+# Recharge
 
 **Trigger :** Regex `.*`
 
 **Usage : /**
 
-> Count message for ALL people who send it.
->
-> Need 11 message to be fully recharged.
+> Compte tous les messages après le début de la recharge. Il faut 11 messages pour la terminer.
