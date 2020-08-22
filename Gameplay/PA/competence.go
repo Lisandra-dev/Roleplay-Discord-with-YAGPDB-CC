@@ -3,6 +3,8 @@
 {{$imgs :="https://i.imgur.com/9iRdtbM.png" }}
 {{$imgm := "https://i.imgur.com/FCy00x2.png"}}
 
+{{$chan := "735938256038002818"}}
+
 {{/* Get joueur */}}
 
 {{$name := reFind `(\#\S*)` .Message.Content}}
@@ -36,7 +38,7 @@
 					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Début de la recharge de la competence " $name "...\n Please wait...")
 					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+				{{ $idM := sendMessageRetID $chan $embed }}
 			{{else}}
 				{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $imga)
@@ -59,7 +61,7 @@
 					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Début de la recharge de la competence " $name "...\n Please wait...")
 					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID 735938256038002818 $embed }}
+				{{ $idM := sendMessageRetID $chan $embed }}
 			{{else}}
 				{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $imga)

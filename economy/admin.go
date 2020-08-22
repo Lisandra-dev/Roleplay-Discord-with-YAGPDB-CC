@@ -1,3 +1,9 @@
+{{/* Symbol */}}
+{{$mon := ""}}
+{{if $serverEco.Get "symbol"}}
+	{{$mon = $serverEco.Get "symbol"}}
+{{end}}
+
 {{/* Databases */}}
 {{$serverEco := sdict}}
 {{with (dbGet .Server.ID "economy")}}
@@ -59,7 +65,7 @@
 				{{$bal = add $bal $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " " $mention " a gagné" $amount "<:klix:724739705954107405>\n Vous avez donc actuellement" $bal "<:klix:724739705954107405>")
+				"description" (joinStr " " $mention " a gagné" $amount $mon "\n Vous avez donc actuellement" $bal $mon "")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -71,7 +77,7 @@
 				{{$bal = sub $bal $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " " $mention " a perdu" $amount "<:klix:724739705954107405>\n Vous avez donc actuellement" $bal "<:klix:724739705954107405>")
+				"description" (joinStr " " $mention " a perdu" $amount $mon"\n Vous avez donc actuellement" $bal $mon "")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -86,7 +92,7 @@
 				{{$bal = $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " "  "La balance de" $mention "a été fixé à :" $amount "<:klix:724739705954107405>\n Vous avez donc actuellement" $bal "<:klix:724739705954107405>")
+				"description" (joinStr " "  "La balance de" $mention "a été fixé à :" $amount $mon "\n Vous avez donc actuellement" $bal $mon "")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}

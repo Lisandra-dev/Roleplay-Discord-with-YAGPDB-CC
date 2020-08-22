@@ -1,3 +1,7 @@
+{{/* User Variable */}}
+{{$img := "https://i.imgur.com/ATSj8fe.png"}}
+
+
 {{/* Databases */}}
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
@@ -29,5 +33,5 @@
 
 {{/* Balance */}}
 {{$bal := (toInt ($userEco.Get "balance"))}}
-{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png") "description" (print (str $bal) " " $symbol ) "color" 0x8CBAEF)}}
+{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" $img) "description" (print (str $bal) " " $symbol ) "color" 0x8CBAEF)}}
 {{deleteTrigger 1}}

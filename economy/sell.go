@@ -1,3 +1,7 @@
+{{/* User Variable */}}
+{{$icon := $icon}}
+
+
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
@@ -57,7 +61,7 @@
 	{{else}}
 	{{if eq (toInt $item.sellprice) 0}}
 		{{$user = joinStr " " "Vente |" (title $user)}}
-		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png") "color" 0x8CBAEF "description" (print "Le marchand n'achète pas ce genre d'objet...")) }}
+		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" $icon) "color" 0x8CBAEF "description" (print "Le marchand n'achète pas ce genre d'objet...")) }}
 	{{else if ge (toInt ($inv.Get $initem)) $amount}}
 		{{$bal = add $bal (mult $item.sellprice $amount)}}
 		{{$userEco.Set "balance" $bal}}
@@ -72,7 +76,7 @@
 		{{$items.Set $initem $item}}
 		{{$serverEco.Set "Items" $items}}
 		{{$user = joinStr " " "Vente |" (title $user)}}
-		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png") "color" 0x8CBAEF "description" (print "Vous avez vendu " $amount " " $initem " pour " (mult $item.sellprice $amount) " " $symbol " .")) }}
+		{{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" $icon) "color" 0x8CBAEF "description" (print "Vous avez vendu " $amount " " $initem " pour " (mult $item.sellprice $amount) " " $symbol " .")) }}
 	{{else}}
 		**ERREUR** : Quantité supérieure à celle possédée.
 	{{end}}
@@ -80,7 +84,7 @@
 {{else}}
 	{{$user = joinStr " " "Vente impossible |" (title $user)}}
 		{{$embed := cembed
-		"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9HnsF14.png")
+		"author" (sdict "name" $user "icon_url" $icon)
 		"description" "Le magasin est actuellement indisponible, vous ne pouvez rien vendre. "
 	"color" 0x8CBAEF}}
 	{{sendMessage nil $embed}}

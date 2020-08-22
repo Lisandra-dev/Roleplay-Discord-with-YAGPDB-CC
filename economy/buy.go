@@ -1,3 +1,4 @@
+{{$img := "https://i.imgur.com/3uiVkvv.png"}}
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
@@ -100,7 +101,7 @@
 		      {{if not .reply}}
 					{{$user = joinStr " " "Achat | " (title $user)}}
 		        {{sendMessage nil (cembed
-		          "author" (sdict "name" $user "icon_url" "https://i.imgur.com/3uiVkvv.png")
+		          "author" (sdict "name" $user "icon_url" $img)
 		          "description" (print "Vous avez acheté " $amount " " $initem " pour " (mult .buyprice $amount) " " $symbol ".")
 		          "color" 0x8CBAEF)}}
 		      {{end}}
@@ -118,7 +119,7 @@
 {{else}}
 {{$user = joinStr " " "Achat impossible | " (title $user)}}
 	{{sendMessage nil (cembed
-		"author" (sdict "name" $user "icon_url" "https://i.imgur.com/3uiVkvv.png")
+		"author" (sdict "name" $user "icon_url" $img)
 		"description" "La boutique est actuellement indisponible ! Vous ne pouvez rien acheter. "
 		"color" 0x8CBAEF)}}
 {{end}}

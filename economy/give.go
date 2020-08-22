@@ -1,3 +1,18 @@
+{{/* Variable definition */}}
+{{$targetEco := sdict}}
+{{$cible := ""}}
+{{$invtarget := sdict }}
+{{$inv := ""}}
+{{$idtarget := 0}}
+{{$desc := "Erreur inconnue"}}
+{{$arrow := "<:next:723131844643651655>" }}
+{{/* Symbol */}}
+{{$mon := ""}}
+{{if $serverEco.Get "symbol"}}
+	{{$mon = $serverEco.Get "symbol"}}
+{{end}}
+
+
 {{/* Give color */}}
 {{$col := 16777215}}
 {{$p := 0}}
@@ -8,7 +23,6 @@
 	{{$col = .Color}}
 	{{end}}
 {{end}}
-
 
 {{/* DB */}}
 {{$serverEco := sdict}}
@@ -37,13 +51,6 @@
 	{{$userEco = sdict .Value}}
 {{end}}
 
-{{$targetEco := sdict}}
-{{$cible := ""}}
-{{$invtarget := sdict }}
-{{$inv := ""}}
-{{$idtarget := 0}}
-{{$desc := "Erreur inconnue"}}
-
 {{if .CmdArgs}}
 	{{$idtarget := .User.ID }}
 	{{if (reFind `(\&\S*)` (index .CmdArgs 0))}}
@@ -65,11 +72,11 @@
 	{{else}}
 		{{$desc = "ERREUR : Mauvaise cible."}}
 	{{end}}
-	
+
 	{{with (dbGet $idtarget "economy")}}
 		{{$targetEco = sdict .Value}}
 	{{end}}
-		
+
 	{{if eq (index .CmdArgs 1) "-money"}}
 		{{$value := toInt (index .CmdArgs 2)}}
 		{{$bal := toInt ($userEco.Get "balance")}}
@@ -78,13 +85,13 @@
 		{{else}}
 			{{$newbal := add $value (toInt ($targetEco.Get "balance"))}}
 			{{$oldbal := sub $bal $value }}
-			{{$desc = joinStr " " $value "<:klix:724739705954107405> \n\n <:next:723131844643651655>" $cible "a maintenant" $newbal "<:klix:724739705954107405> sur son compte. \n <:next:723131844643651655>" $user "a maintenant" $oldbal "<:klix:724739705954107405> sur son compte."}}
+			{{$desc = joinStr " " $value $mon "\n\n" $arrow  $cible "a maintenant" $newbal $mon "sur son compte. \n" $arrow  $user "a maintenant" $oldbal $mon " sur son compte."}}
 			{{$userEco.Set "balance" $oldbal}}
 			{{$targetEco.Set "balance" $newbal}}
 			{{dbSet $idtarget "economy" $targetEco}}
 			{{dbSet $id "economy" $userEco}}
 		{{end}}
-		
+
 	{{else if eq (index .CmdArgs 2) "-money"}}
 		{{$value := toInt (index .CmdArgs 3)}}
 		{{$bal := toInt ($userEco.Get "balance")}}
@@ -93,20 +100,20 @@
 		{{else}}
 			{{$newbal := add $value (toInt ($targetEco.Get "balance"))}}
 			{{$oldbal := sub $bal $value }}
-			{{$desc = joinStr " " $value "<:klix:724739705954107405> \n\n <:next:723131844643651655>" $cible "a maintenant" $newbal "<:klix:724739705954107405> sur son compte. \n <:next:723131844643651655>" $user "a maintenant" $oldbal "<:klix:724739705954107405> sur son compte."}}
+			{{$desc = joinStr " " $value $mon " \n\n"$arrow  $cible "a maintenant" $newbal $mon " sur son compte. \n"$arrow  $user "a maintenant" $oldbal $mon " sur son compte."}}
 			{{$userEco.Set "balance" $oldbal}}
 			{{$targetEco.Set "balance" $newbal}}
 			{{dbSet $idtarget "economy" $targetEco}}
 			{{dbSet $id "economy" $userEco}}
 		{{end}}
-	
+
 	{{else if eq (index .CmdArgs 1) "-item" "-items"}}
 		{{$amount :=1}}
 		{{$item := title (index .CmdArgs 2)}}
 		{{if reFind `-q` (index .CmdArgs 3)}}
 			{{$amount = toInt (index .CmdArgs 4)}}
 		{{end}}
-		
+
 		{{with ($userEco.Get "Inventory")}}
 			{{$inv = sdict .}}
 		{{end}}
@@ -131,24 +138,24 @@
 			{{$targetEco.Set "Inventory" $invtarget}}
 			{{dbSet $id "economy" $userEco}}
 			{{dbSet $idtarget "economy" $targetEco}}
-			{{$desc = joinStr "" $amount " " $item}}
+			{{$desc = joinStr "" $amount"" $item}}
 		{{end}}
-	
+
 	{{else if eq (index .CmdArgs 2) "-item" "-items"}}
 		{{$amount :=1}}
 		{{$item := title (index .CmdArgs 3)}}
 		{{if reFind `-q` (index .CmdArgs 4)}}
 			{{$amount = toInt (index .CmdArgs 5)}}
 		{{end}}
-		
+
 		{{with ($userEco.Get "Inventory")}}
 			{{$inv = sdict .}}
 		{{end}}
-		
+
 		{{with ($targetEco.Get "Inventory")}}
 			{{$invtarget = sdict .}}
 		{{end}}
-		
+
 		{{if not ($inv.Get $item)}}
 			{{$desc = "Objet introuvable dans l'inventaire"}}
 		{{else if gt $amount (toInt ($inv.Get $item))}}
@@ -167,20 +174,20 @@
 			{{$targetEco.Set "Inventory" $invtarget}}
 			{{dbSet $id "economy" $userEco}}
 			{{dbSet $idtarget "economy" $targetEco}}
-			{{$desc = joinStr "" $amount " " $item}}
+			{{$desc = joinStr "" $amount"" $item}}
 		{{end}}
-	
-	
-	
+
+
+
 	{{else}}
-	{{$desc = "**Usage** :\n- `$give <cible> -money <valeur>`\n- `$give <cible> -item <nom> (-q <valeur)`\n > Note : `-q` permet d'indiquer une quantité. Cet argument est optionnel."}} 
+	{{$desc = "**Usage** :\n- `$give <cible> -money <valeur>`\n- `$give <cible> -item <nom> (-q <valeur)`\n > Note : `-q` permet d'indiquer une quantité. Cet argument est optionnel."}}
 	{{end}}
 {{end}}
 
 {{$embed := cembed
 "author" (sdict "name" (joinStr " " $user "donne") "icon_url" "https://i.imgur.com/DwoqSFH.png")
 "description" $desc
-"footer" (sdict "text" (joinStr "" "À " $cible) "icon_url" "https://i.imgur.com/WoypxHH.png")
+"footer" (sdict "text" (joinStr "" "À"$cible) "icon_url" "https://i.imgur.com/WoypxHH.png")
 "color" $col }}
 {{sendMessage nil $embed}}
 {{deleteTrigger 1}}

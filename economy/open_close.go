@@ -1,5 +1,12 @@
 {{$matches := reFind `\$(open|close)` .Message.Content}}
 
+{{/* User variable */}}
+{{$author := "Sola-UI"}}
+{{$chan := "701395027896565810"}}
+{{$avatar := "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png"}}
+{{$msg_ouvert := "Un vaisseau marchand vous contacte sur la ligne de communication. Il vous ouvre sa boutique dans un canal privé, n'hésitez pas à aller leur répondre."}}
+{{$msg_close := "Le vaisseau marchand vient de partir."}}
+
 {{/* Databases */}}
 {{$serverEco := sdict}}
 {{with (dbGet .Server.ID "economy")}}
@@ -35,7 +42,7 @@
 				{{else}}
 					{{$sellprice = randInt (toInt $smin) (toInt $smax)}}
 				{{end}}
-								
+
 				{{$stock := "♾️"}}
 				{{$rstock := randInt 0 100}}
 				{{if le $rstock 10}}
@@ -49,25 +56,25 @@
 				{{$items.Set $k $i}}
 			{{end}}
 		{{end}}
-		
+
 		{{$serverEco.Set "Items" $items}}
 		{{dbSet .Server.ID "economy" $serverEco}}
-		
+
 	{{if not .CmdArgs}}
 		{{$embed := cembed
-		"author" (sdict "name" "Sola-UI" "icon_url" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png")
-		"description" "Un vaisseau marchand vous contacte sur la ligne de communication. Il vous ouvre sa boutique dans un canal privé, n'hésitez pas à aller leur répondre."
+		"author" (sdict "name" $author "icon_url" $avatar)
+		"description" $msg_ouvert
 		"color" 0xD5B882}}
-		{{sendMessage 701395027896565810 $embed}}
+		{{sendMessage $chan $embed}}
 	{{end}}
-	
+
 	{{else}}
 	**FERMÉ**
 		{{dbSet .Server.ID "store" "close"}}
 		{{$embed := cembed
-		"author" (sdict "name" "Sola-UI" "icon_url" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png")
-		"description" "Le vaisseau marchand vient de partir."
+		"author" (sdict "name" $author "icon_url" $avatar)
+		"description" $msg_close
 		"color" 0xD5B882}}
-		{{sendMessage 701395027896565810 $embed}}
+		{{sendMessage $chan $embed}}
 	{{end}}
 {{deleteTrigger 1}}
