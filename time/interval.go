@@ -1,6 +1,9 @@
 {{/*Cycles counter*/}}
-{{$time := "time"}}
+{{$time := sdict }}
+{{with (dbGet 0 "time")}}
+	{{$time = sdict .Value}}
+{{end}}
+{{$cycle := $time.Get "cycle"}}
 {{/*Get amound of cycles*/}}
-{{$number:= (dbGet 0 $time).Value}}
-{{ editChannelName 716988208205791342 (joinStr "" "Cycle " (toString (toInt $number)) ".") }}
-{{/* Don't forget the channel ID !}}
+{{ editChannelName 716988208205791342 (joinStr " " "Cycle" (toString (toInt $cycle))) }}
+{{/* Don't forget the channel ID !*/}}

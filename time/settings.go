@@ -1,7 +1,12 @@
-{{$msg:= (toString (toInt (dbGet 0 "count").Value))}}
-{{$cycle := (toString (toInt (dbGet 0 "time").Value))}}
-{{$day := (toString (toInt (dbGet 0 "jour").Value))}}
-{{$speed := (toString (toInt (dbGet 0 "mgsc").Value))}}
+{{$time := sdict }}
+{{with (dbGet 0 "time")}}
+	{{$time = sdict .Value}}
+{{end}}
+
+{{$msg:= toString (toInt ($time.Get "message"))}}
+{{$cycle := toString (toInt ($time.Get "cycle"))}}
+{{$day := toString (toInt ($time.Get "jour"))}}
+{{$speed := toString (toInt ($time.Get "mgsc"))}}
 
 {{$embed := cembed
 "title" "Paramètre actuel des cycles"

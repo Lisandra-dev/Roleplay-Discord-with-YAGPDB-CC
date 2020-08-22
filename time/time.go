@@ -1,20 +1,23 @@
-{{$message := "message"}}
-{{$time := "time"}}
-{{$jour := "jour"}}
-{{$number:= (dbGet 0 $time).Value}}
+{{/*All message database counter*/}}
+{{$time := sdict }}
+{{with (dbGet 0 "time")}}
+	{{$time = sdict .Value}}
+{{end}}
 
-{{$msgc := (toFloat (dbGet 0 "mgsc").Value)}}
+{{$number:= ($time.Get "cycle")}}
+
+{{$msgc := (toFloat ($time.Get "mgsc"))}}
 {{$pourcent := div $msgc 100}}
 {{if lt $pourcent (toFloat 1)}}
 	{{$pourcent = (toFloat 1)}}
 {{end}}
-{{ $msg := (json (div (dbGet 0 $message).Value $pourcent)) }}
+{{ $msg := (json (div ($time.Get "message") $pourcent)) }}
 
 
-{{$y := (toFloat (dbGet 0 $time).Value)}}
-{{$txt := (dbGet 0 $message).Value }}
+{{$y := (toFloat ($time.Get "cycle"))}}
+{{$txt := ($time.Get "message") }}
 {{$val := (joinStr " " (toString (toInt $txt)) "message(s) dans le cycle")}} {{/* Footer message */}}
-{{$day := (toString (toInt (dbGet 0 $jour).Value))}}
+{{$day := (toString (toInt ($time.Get "jour")))}}
 
 {{/* Thumbnail */}}
 {{$nuit:="https://i.imgur.com/e04keB7.png"}}

@@ -1,7 +1,10 @@
-{{$c := "count"}}
-{{$t := "time"}}
-{{$message := "message"}}
-{{$amount := (toFloat (dbGet 0 "mgsc").Value)}}
+{{/*All message database counter*/}}
+{{$time := sdict }}
+{{with (dbGet 0 "time")}}
+	{{$time = sdict .Value}}
+{{end}}
+
+{{$amount := toFloat ($time.Get "mgsc")}}
 
 {{if .CmdArgs}}
 
@@ -9,9 +12,9 @@
         {{if eq (len .CmdArgs) 2}}
             {{$floatArg := (toFloat (index .CmdArgs 1)) }}
             {{$arg1 := (toFloat (index .CmdArgs 1)) }}
-            {{if ge (toFloat 4) $floatArg  }}
-                {{dbSet 0 $t $arg1}}
-                Nous sommes actuellement au cycle  `{{(dbGet 0 $t).Value}}`.
+            {{if ge (toFloat 4) $floatArg }}
+                {{$time.Set "cycle" $arg1}}
+                Nous sommes actuellement au cycle  `{{$time.Get "cycle"}}`.
             {{else}}
               Le nombre est supérieur à 4.
             {{end}}
@@ -21,7 +24,7 @@
 
     {{else if eq (index .CmdArgs 0) "speed"}}
       {{if eq (len .CmdArgs) 2}}
-          {{dbSet 0 "mgsc" (index .CmdArgs 1)}}
+          {{$time.Set "mgsc" (index .CmdArgs 1)}}
           Le nombre de message pour passer un cycle est maintenant fixé à : `{{(index .CmdArgs 1)}}`.
       {{else}}
           **Usage** : timer <number>
@@ -30,8 +33,8 @@
     {{else if eq (index .CmdArgs 0) "day"}}
       {{if eq (len .CmdArgs) 2}}
         {{$floatArg := (toFloat (index .CmdArgs 1)) }}
-        {{dbSet 0 "jour" (toFloat (index .CmdArgs 1)) }}
-        {{$jour := (toString (toInt (dbGet 0 "jour").Value))}}
+        {{$time.Set "jour" (toFloat (index .CmdArgs 1)) }}
+        {{$jour := (toString (toInt ($time.Get "jour")))}}
         Nous sommes maintenant au jour : `{{$jour}}`.
       {{else}}
         **Usage** day <number>
@@ -42,9 +45,9 @@
             {{$floatArg := (toFloat (index .CmdArgs 1)) }}
             {{$arg1 := (toFloat (index .CmdArgs 1)) }}
             {{if ge $amount $floatArg  }}
-              {{dbSet 0 $c $arg1}}
-	            {{dbSet 0 $message $arg1}}
-              Il y a actuellement `{{(dbGet 0 $c).Value}}` messages dans le cycle.
+              {{$time.Set "count" $arg1}}
+	            {{$time.Set "message" $arg1}}
+              Il y a actuellement `{{$time.Get "count"}}` messages dans le cycle.
             {{else}}
             Nombre supérieur au nombre de message fixé.
             {{end}}
@@ -55,3 +58,4 @@
 {{else}}
 **Usage:** <cycle|msg|day|speed> <number>
 {{end}}
+{{dbSet 0 "time" $time}}
