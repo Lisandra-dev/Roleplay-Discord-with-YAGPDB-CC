@@ -8,9 +8,6 @@
 {{$arrow := "<:next:723131844643651655>" }}
 {{/* Symbol */}}
 {{$mon := ""}}
-{{if $serverEco.Get "symbol"}}
-	{{$mon = $serverEco.Get "symbol"}}
-{{end}}
 
 
 {{/* Give color */}}
@@ -29,6 +26,11 @@
 {{with (dbGet .Server.ID "economy")}}
 	{{$serverEco = sdict .Value}}
 {{end}}
+
+{{if $serverEco.Get "symbol"}}
+	{{$mon = $serverEco.Get "symbol"}}
+{{end}}
+
 
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
@@ -100,7 +102,7 @@
 		{{else}}
 			{{$newbal := add $value (toInt ($targetEco.Get "balance"))}}
 			{{$oldbal := sub $bal $value }}
-			{{$desc = joinStr " " $value $mon " \n\n"$arrow  $cible "a maintenant" $newbal $mon " sur son compte. \n"$arrow  $user "a maintenant" $oldbal $mon " sur son compte."}}
+			{{$desc = joinStr " " $value $mon " \n\n" $arrow  $cible "a maintenant" $newbal $mon " sur son compte. \n" $arrow  $user "a maintenant" $oldbal $mon " sur son compte."}}
 			{{$userEco.Set "balance" $oldbal}}
 			{{$targetEco.Set "balance" $newbal}}
 			{{dbSet $idtarget "economy" $targetEco}}
@@ -110,6 +112,27 @@
 	{{else if eq (index .CmdArgs 1) "-item" "-items"}}
 		{{$amount :=1}}
 		{{$item := title (index .CmdArgs 2)}}
+		{{$chargeur := reFind `(?i)chargeur` $item}}
+		{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+		{{if $compo}}
+			{{if eq $compo "bc" "BC" "Bc"}}
+				{{$item = "[C] Biocomposant"}}
+			{{else if eq $compo "lc" "LC" "Lc"}}
+				{{$item = "[C] Liquide Cytomorphe"}}
+			{{else if eq $compo "cb" "CB" "Cb"}}
+				{{$item = "[C] Cellule Bionotropique"}}
+			{{else if eq $compo "sf" "SF" "Sf"}}
+				{{$item = "[C] Substrat Ferreux"}}
+			{{else if eq $compo "cu" "CU" "Cu"}}
+				{{$item = "[C] Composant Universel"}}
+			{{end}}
+		{{end}}
+
+		{{if $chargeur}}
+			{{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
+			{{$item = print "[CHARGEUR] " $item}}
+		{{end}}
+
 		{{if reFind `-q` (index .CmdArgs 3)}}
 			{{$amount = toInt (index .CmdArgs 4)}}
 		{{end}}
@@ -120,6 +143,7 @@
 		{{with ($targetEco.Get "Inventory")}}
 			{{$invtarget = sdict .}}
 		{{end}}
+
 		{{if not ($inv.Get $item)}}
 			{{$desc = "Objet introuvable dans l'inventaire"}}
 		{{else if gt $amount (toInt ($inv.Get $item))}}
@@ -138,7 +162,7 @@
 			{{$targetEco.Set "Inventory" $invtarget}}
 			{{dbSet $id "economy" $userEco}}
 			{{dbSet $idtarget "economy" $targetEco}}
-			{{$desc = joinStr "" $amount"" $item}}
+			{{$desc = joinStr "" $amount " " $item}}
 		{{end}}
 
 	{{else if eq (index .CmdArgs 2) "-item" "-items"}}
@@ -174,7 +198,7 @@
 			{{$targetEco.Set "Inventory" $invtarget}}
 			{{dbSet $id "economy" $userEco}}
 			{{dbSet $idtarget "economy" $targetEco}}
-			{{$desc = joinStr "" $amount"" $item}}
+			{{$desc = joinStr "" $amount " " $item}}
 		{{end}}
 
 
@@ -187,7 +211,7 @@
 {{$embed := cembed
 "author" (sdict "name" (joinStr " " $user "donne") "icon_url" "https://i.imgur.com/DwoqSFH.png")
 "description" $desc
-"footer" (sdict "text" (joinStr "" "À"$cible) "icon_url" "https://i.imgur.com/WoypxHH.png")
+"footer" (sdict "text" (joinStr "" "À" $cible) "icon_url" "https://i.imgur.com/WoypxHH.png")
 "color" $col }}
 {{sendMessage nil $embed}}
 {{deleteTrigger 1}}

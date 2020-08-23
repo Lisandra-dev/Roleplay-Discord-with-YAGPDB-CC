@@ -47,6 +47,27 @@
 		{{end}}
 	{{end}}
 
+	{{$chargeur := reFind `(?i)chargeur` $initem}}
+	{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $initem}}
+	{{if $compo}}
+		{{if eq $compo "bc" "BC" "Bc"}}
+			{{$initem = "[C] Biocomposant"}}
+		{{else if eq $compo "lc" "LC" "Lc"}}
+			{{$initem = "[C] Liquide Cytomorphe"}}
+		{{else if eq $compo "cb" "CB" "Cb"}}
+			{{$initem = "[C] Cellule Bionotropique"}}
+		{{else if eq $compo "sf" "SF" "Sf"}}
+			{{$initem = "[C] Substrat Ferreux"}}
+		{{else if eq $compo "cu" "CU" "Cu"}}
+			{{$initem = "[C] Composant Universel"}}
+		{{end}}
+	{{end}}
+
+	{{if $chargeur}}
+		{{$initem = reFind `(?i)(fusil|pistolet|canon)` $initem}}
+		{{$initem = print "[CHARGEUR] " $initem}}
+	{{end}}
+
 	{{$item := sdict}}
 	{{with $items.Get $initem}}
 		{{$item = sdict .}}

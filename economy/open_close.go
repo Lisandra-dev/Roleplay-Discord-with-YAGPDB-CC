@@ -50,6 +50,13 @@
 				{{else if and (ge $rstock 11) (le $rstock 30)}}
 					{{$stock  = randInt 1 5}}
 				{{end}}
+				{{if eq ($i.Get "rare") "⭐" "⭐⭐" }}
+					{{if le $rstock 10}}
+						{{$stock = randInt 1 10}}
+					{{else if and (ge $rstock 11) (le $rstock 30)}}
+						{{$stock  = randInt 10 20}}
+					{{end}}
+				{{end}}
 				{{$i.Set "buyprice" $buyprice}}
 				{{$i.Set "sellprice" $sellprice}}
 				{{$i.Set "stock" $stock}}

@@ -55,11 +55,28 @@
 					{{end}}
 				{{end}}
 			{{end}}
+
 			{{$chargeur := reFind `(?i)chargeur` $item}}
+			{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+			{{if $compo}}
+				{{if eq $compo "bc" "BC" "Bc"}}
+					{{$item = "[C] Biocomposant"}}
+				{{else if eq $compo "lc" "LC" "Lc"}}
+					{{$item = "[C] Liquide Cytomorphe"}}
+				{{else if eq $compo "cb" "CB" "Cb"}}
+					{{$item = "[C] Cellule Bionotropique"}}
+				{{else if eq $compo "sf" "SF" "Sf"}}
+					{{$item = "[C] Substrat Ferreux"}}
+				{{else if eq $compo "cu" "CU" "Cu"}}
+					{{$item = "[C] Composant Universel"}}
+				{{end}}
+			{{end}}
+
 			{{if $chargeur}}
 				{{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
 				{{$item = print "[CHARGEUR] " $item}}
 			{{end}}
+
 			{{if $inv.Get $item}}
 				{{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
 			{{else}}
@@ -118,25 +135,40 @@
 					{{end}}
 				{{end}}
 			{{end}}
+			{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+			{{if $compo}}
+				{{if eq $compo "bc" "BC" "Bc"}}
+					{{$item = "[C] Biocomposant"}}
+				{{else if eq $compo "lc" "LC" "Lc"}}
+					{{$item = "[C] Liquide Cytomorphe"}}
+				{{else if eq $compo "cb" "CB" "Cb"}}
+					{{$item = "[C] Cellule Bionotropique"}}
+				{{else if eq $compo "sf" "SF" "Sf"}}
+					{{$item = "[C] Substrat Ferreux"}}
+				{{else if eq $compo "cu" "CU" "Cu"}}
+					{{$item = "[C] Composant Universel"}}
+				{{end}}
+			{{end}}
+
 			{{if $inv.Get $item}}
 				{{$value := $inv.Get $item}}
-				{{if and (ne (toInt $amount) (toInt $value)) (ne (toInt $amount) 0)}}
+				{{if gt (toInt $amount) (toInt $value)}}
+					{{$mention}} : Vous n'avez pas assez de {{$item}} pour faire cela.
+				{{else}}
 					{{if lt (toInt $amount) (toInt $value)}}
 						{{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
-					{{else}}
-						{{$inv.Set $item (toInt $amount)}}
+					{{else if eq (toInt $amount) (toInt $value)}}
+						{{$inv.Del $item}}
+					{{else if eq $amount "all"}}
+						{{$inv.Del $item}}
 					{{end}}
-				{{else if eq (toInt $amount) (toInt $value)}}
-					{{$inv.Del $item}}
-				{{else if eq $amount "all"}}
-					{{$inv.Del $item}}
+					{{$userEco.Set "Inventory" $inv}}
+					{{if eq (str $amount) "all"}}
+						{{$amount = "tous les"}}
+					{{end}}
+					{{$mention}} a utilisé {{$amount}} {{$item}} de son inventaire.
+					{{dbSet $target "economy" $userEco}}
 				{{end}}
-				{{$userEco.Set "Inventory" $inv}}
-				{{if eq (str $amount) "all"}}
-					{{$amount = "tous les"}}
-				{{end}}
-				{{$mention}} a utilisé {{$amount}} {{$item}} de son inventaire.
-				{{dbSet $target "economy" $userEco}}
 			{{else}}
 				{{$mention}} : cet objet n'est pas présent dans votre inventaire : vous ne pouvez donc pas l'utiliser.
 			{{end}}
