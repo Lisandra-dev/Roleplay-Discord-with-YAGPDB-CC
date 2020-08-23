@@ -55,7 +55,7 @@
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $arme)
 				"color" 0x6CAB8E
-			"description" (joinStr " " "Il y a encore" ($weapon.Get "fusil") "charges dans le fusil.")}}
+			"description" (joinStr " " "Il y a encore" ($weapon.Get "fusil") "balles dans le fusil.")}}
 				{{ $idM := sendMessageRetID nil $embed }}
 				{{deleteMessage nil $idM 30}}
 			{{end}}
@@ -82,7 +82,7 @@
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $arme)
 				"color" 0x6CAB8E
-				"description" (joinStr " " "Il y a encore" ($weapon.Get "fusil2") "charges dans le fusil secondaire.")}}
+				"description" (joinStr " " "Il y a encore" ($weapon.Get "fusil2") "balles dans le fusil secondaire.")}}
 				{{ $idM := sendMessageRetID nil $embed }}
 				{{deleteMessage nil $idM 30}}
 			{{end}}
@@ -109,7 +109,7 @@
 				{{$embed := cembed
 					"author" (sdict "name" $user "icon_url" $arme)
 					"color" 0x6CAB8E
-					"description" (joinStr " " "Il y a encore" ($weapon.Get "pistol") "charges dans le pistolet.")}}
+					"description" (joinStr " " "Il y a encore" ($weapon.Get "pistol") "balles dans le pistolet.")}}
 		  	{{ $idM := sendMessageRetID nil $embed }}
 		    {{deleteMessage nil $idM 30}}
 			{{end}}
@@ -135,7 +135,7 @@
 				{{$embed := cembed
 					"author" (sdict "name" $user "icon_url" $arme)
 					"color" 0x6CAB8E
-					"description" (joinStr " " "Il y a encore" ($weapon.Get "pistol2") "charges dans le pistolet secondaire.")}}
+					"description" (joinStr " " "Il y a encore" ($weapon.Get "pistol2") "balles dans le pistolet secondaire.")}}
 				{{ $idM := sendMessageRetID nil $embed }}
 		    {{deleteMessage nil $idM 30}}
 			{{end}}
@@ -162,7 +162,7 @@
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" $arme)
 					"color" 0x6CAB8E
-					"description" (joinStr " " "Il y a encore" ($weapon.Get "canon") "charges dans le canon.")}}
+					"description" (joinStr " " "Il y a encore" ($weapon.Get "canon") "balles dans le canon.")}}
 					{{ $idM := sendMessageRetID nil $embed }}
 				{{deleteMessage nil $idM 30}}
 			{{end}}

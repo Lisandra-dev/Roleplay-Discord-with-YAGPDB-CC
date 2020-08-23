@@ -19,8 +19,13 @@
 	{{$module = cslice}}
 {{end}}
 
+{{$chargeur := sdict}}
+{{with (dbGet 0 "chargeur_Multi")}}
+	{{$chargeur = sdict .Value}}
+{{end}}
+
 {{$flag2 := reFind `-(add|use)` .Message.Content}}
-{{$flag := reFind `\-(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu)` .Message.Content}}
+{{$flag := reFind `\-(?i)(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
 
 {{if .CmdArgs}}
 	{{if eq $flag2 "-add"}}
@@ -62,6 +67,13 @@
 			{{$cu := add $value $x}}
 			{{$compo.Set "universel" $cu}}
 			{{dbSet .Server.ID "compo" $compo}}
+		{{else if "-chargeur" "-Chargeur"}}
+			{{$balle := reFind `(?i)(fusil|pistolet|canon)` .CmdArgs}}
+			{{$item := print "Chargeur : " $item}}
+			{{$value := $chargeur.get $item}}
+			{{$x := add $value (toInt (index .CmdArgs 2))}}
+			{{$chargeur.Set $item $x}}
+			{{dbSet 0 "chargeur_Multi" $chargeur}}
 		{{else}}
 		**Usage** : `$vn -add -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu) <valeur>`
 		Pour les armes : Donnez le nom.
@@ -132,6 +144,16 @@
 			{{end}}
 			{{$compo.Set "universel" $cu}}
 			{{dbSet .Server.ID "compo" $compo}}
+		{{else if "-chargeur" "-Chargeur"}}
+			{{$balle := reFind `(?i)(fusil|pistolet|canon)` .CmdArgs}}
+			{{$item := print "Chargeur : " $item}}
+			{{$value := $chargeur.get $item}}
+			{{$x := sub $value (toInt (index .CmdArgs 2))}}
+			{{if lt $x (toInt 0)}}
+				{{$x = 0}}
+			{{end}}
+			{{$chargeur.Set $item $x}}
+			{{dbSet 0 "chargeur_Multi" $chargeur}}
 		{{else}}
 		**Usage** : `$vn -use -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu) <valeur>`
 		Pour les armes : Donnez le nom.

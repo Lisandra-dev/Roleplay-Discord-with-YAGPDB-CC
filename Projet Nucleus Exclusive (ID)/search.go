@@ -32,11 +32,11 @@
 
 {{$di:="**Huile digestive** : Une arme très redoutable, composée d'une protéase qui digère les armures. (Annule l'armure sur tout le combat)"}}
 
-{{$cr := "**Charge creuse** : Charge ayant l'effet d'un burst, avec les mêmes limitations."}}
-{{$cp := "**Charge perforante** : Charge ayant l'effet d'une attaque perforante, avec les mêmes limitations."}}
-{{$ce := "**Charge explosive** : Inflige des dégâts normaux sur tout le rang."}}
-{{$cd := "**Charge dégénérescente** : Charge ayant l'effet d'une altération de statistiques."}}
-{{$cg := "**Charge gangrenante** : Charge ayant l'effet d'un poison, avec les mêmes limitations."}}
+{{$cr := "**Balle creuse** : Balle ayant l'effet d'un burst, avec les mêmes limitations."}}
+{{$cp := "**Balle perforante** : Balle ayant l'effet d'une attaque perforante, avec les mêmes limitations."}}
+{{$ce := "**Balle explosive** : Inflige des dégâts normaux sur tout le rang."}}
+{{$cd := "**Balle dégénérescente** : Balle ayant l'effet d'une altération de statistiques."}}
+{{$cg := "**Balle gangrenante** : Balle ayant l'effet d'un poison, avec les mêmes limitations."}}
 
 {{$d:=""}}
 {{$v:="722755391498485800"}}
@@ -131,19 +131,19 @@
 		{{$m =(index $msg.Embeds 0).Description}}
 		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
-	{{else if eq $i "charge" "charges"}}
+	{{else if eq $i "Balle" "Balles"}}
 		{{$id ="736006005355315200"}}
 		{{$msg:=getMessage $v $id}}
 		{{$m =(index $msg.Embeds 0).Description}}
 		{{$k:=(print "(https://discordapp.com/channels/" .Guild.ID "/" $v "/" $id ")")}}
 		{{$d =(joinStr "" $m )}}
-	{{else if eq $i "charge creuse" "creuse"}}
+	{{else if eq $i "Balle creuse" "creuse"}}
 		{{$d =$cr}}
-	{{else if eq $i "charge perforante" "perforante"}}
+	{{else if eq $i "Balle perforante" "perforante"}}
 		{{$d =$cp}}
-	{{else if eq $i "charge dégénérescente" "charge poison" "dégénérescente" "poison" }}
+	{{else if eq $i "Balle dégénérescente" "Balle poison" "dégénérescente" "poison" }}
 		{{$d =$cd}}
-	{{else if eq $i "charge gangrénante" "gangrénante"}}
+	{{else if eq $i "Balle gangrénante" "gangrénante"}}
 		{{$d =$cg}}
 
 	{{else}}
@@ -167,7 +167,7 @@
 	{{$embed:=cembed
 		"author" (sdict "name" "[Sola-UI] BDD : Objet | ERREUR" "icon_url" $a)
 		"thumbnail" (sdict "url" $l)
-		"description" (joinStr " " $d "\n\n Voici les commandes : \n▫️ **Inventaire** : `?search inventaire` \n▫️ **Composant** : `?search composant`\n▫️ **Analgésique** : `?search analgésique`\n▫️ **Armes biologiques** : `?search \"Arme biologique\"`\n▫️ **Armes** : `?search arme`\n▫️ **Modules** : `?search module`\n▫️ **Implants** : `?search implants`\n▫️ **Charges** : `?search charge`")
+		"description" (joinStr " " $d "\n\n Voici les commandes : \n▫️ **Inventaire** : `?search inventaire` \n▫️ **Composant** : `?search composant`\n▫️ **Analgésique** : `?search analgésique`\n▫️ **Armes biologiques** : `?search \"Arme biologique\"`\n▫️ **Armes** : `?search arme`\n▫️ **Modules** : `?search module`\n▫️ **Implants** : `?search implants`\n▫️ **Balles** : `?search Balle`")
 		"fields" (cslice
 			(sdict "name" "_ _" "value" "_ _" "inline" false)
 			(sdict "name" "Composants" "value" "▫️ **Biocomposant** : `?search bc`\n▫️ **Cellule bionotropique** : `?search cb`\n▫️ **Cellule cytomorphe** : `?search lc`\n▫️ **Substrat ferreux** : `?search sf`\n▫️ **Composant universel** : `?search cu`" "inline" false)
@@ -176,7 +176,7 @@
 			(sdict "name" "_ _" "value" "_ _" "inline" false)
 			(sdict "name" "Armes biologiques" "value" "▫️ **Grenade Nécrotique :** `?search (grenade|grenade nécrotique|nécro)`\n▫️ **Liquide antifongique :**`?search (antifongique|liquide|\"liquide antifongique\")`\n▫️ **Gaz anesthésiant de combat :** `?search (anesthésiant|gaz|\"gaz anesthésiant\")`\n▫️ **Sang Etherique :** `?search (\"sang éthérique\"|sang|éthérique)`\n▫️ **Huile carotoxinique :** `?search (huile|carotonixique|caro|\"huile carotoxinique\")`\n▫️ **Huile digestive :**  `?search (huile|digestive|huile digestive`" "inline" false)
 			(sdict "name" "_ _" "value" "_ _" "inline" false)
-			(sdict "name" "Charges" "value" "▫️**Charge creuse** : `?search (\"charge creuse\"|creuse)`\n▫️**Charge perforante** : `?search (\"charge perforante\"|perforante)`\n▫️**Charge dégénérescente** : `?search (\"charge dégénérescente\"|charge poison|dégénérescente|poison)`\n▫️**Charge gangrénante** : `?search (\"charge gangrénante\"|gangrénante)`" "inline" false))
+			(sdict "name" "Balles" "value" "▫️**Balle creuse** : `?search (\"Balle creuse\"|creuse)`\n▫️**Balle perforante** : `?search (\"Balle perforante\"|perforante)`\n▫️**Balle dégénérescente** : `?search (\"Balle dégénérescente\"|Balle poison|dégénérescente|poison)`\n▫️**Balle gangrénante** : `?search (\"Balle gangrénante\"|gangrénante)`" "inline" false))
 		"footer" (sdict "text" $f )
 		"color" 0xA75454}}
 		{{sendMessage nil $embed}}

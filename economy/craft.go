@@ -55,6 +55,11 @@
 					{{end}}
 				{{end}}
 			{{end}}
+			{{$chargeur := reFind `(?i)chargeur` $item}}
+			{{if $chargeur}}
+				{{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
+				{{$item = print "[CHARGEUR] " $item}}
+			{{end}}
 			{{if $inv.Get $item}}
 				{{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
 			{{else}}

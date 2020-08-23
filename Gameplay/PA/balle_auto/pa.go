@@ -42,7 +42,7 @@
 	{{$arme = sdict .Value}}
 {{end}}
 
-{{/* Recharge des armes*/}}
+{{/* recharge des armes*/}}
 {{$recharge := sdict}}
 {{with (dbGet $id "recharge")}}
 	{{$recharge = sdict .Value}}

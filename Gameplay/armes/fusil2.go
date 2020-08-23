@@ -45,25 +45,16 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{/* Function */}}
 {{if gt $pa 0}}
 	{{if not ($arme.Get "fusil2")}}
-		{{$arme.Set "fusil2" 0}}
-	 	{{$arme.Set "fusil2" (add ($arme.Get "fusil2") 1)}}
-		{{$y := $arme.Get "fusil2"}}
-		{{$x := sub 12 $y}}
-		{{if lt (toFloat $y) (toFloat 12)}}
-			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 charges dans le fusil secondaire. ")}}
-		{{else if eq (toFloat $y) 0}}
-			{{$desc = "Dernière charge utilisée."}}
-		{{else}}
-			{{ $desc = "Fusil secondaire vide."}}
-		{{end}}
+	 	{{$arme.Set "fusil2" 1}}
+		{{ $desc = (joinStr "" "Il reste 11/12 balles dans le fusil secondaire. ")}}
 	{{else}}
 		{{$arme.Set "fusil2" (add ($arme.Get "fusil2") 1)}}
 		{{$y := $arme.Get "fusil2"}}
 		{{$x := sub 12 $y}}
 		{{if lt (toFloat $y) (toFloat 12)}}
-			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 charges dans le fusil secondaire. !")}}
-		{{else if eq (toFloat $y) 0}}
-			{{$desc = "Dernière charge utilisée."}}
+			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 balles dans le fusil secondaire. ")}}
+		{{else if eq (toFloat $y) (toFloat 12)}}
+			{{$desc = "Dernière balle utilisée."}}
 		{{else}}
 			{{ $desc = "Fusil secondaire vide."}}
 		{{end}}

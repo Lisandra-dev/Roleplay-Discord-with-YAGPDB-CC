@@ -42,23 +42,15 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{if gt $pa 0}}
 	{{if not ($arme.Get "pistol")}}
 		{{$arme.Set "pistol" 1}}
-		{{$y := $arme.Get "pistol"}}
-	  {{$x := sub 8 $y}}
-	    {{if lt (toFloat $y) (toFloat 7)}}
-				{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/8 charges de pistolet.")}}
-			{{else if eq (toFloat $y) 0}}
-				{{$desc = "Dernière charge utilisée."}}
-	  {{else}}
-			{{ $desc = "Pistolet vide."}}
-	  {{end}}
+		{{ $desc = (joinStr "" "Il reste 7/8 balles de pistolet.")}}
 	{{else}}
 		{{$arme.Set "pistol" (add ($arme.Get "pistol") 1)}}
 		{{$y := $arme.Get "pistol"}}
 	  {{$x := sub 8 $y}}
 	  {{if lt (toFloat $y) (toFloat 8)}}
-			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/8 charges de pistolet.")}}
-		{{else if eq (toFloat $y) 0}}
-			{{$desc = "Dernière charge utilisée."}}
+			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/8 balles de pistolet.")}}
+		{{else if eq (toFloat $y) (toFloat 12)}}
+			{{$desc = "Dernière balle utilisée."}}
 	  {{else}}
 			{{ $desc = "Pistolet vide."}}
 	  {{end}}

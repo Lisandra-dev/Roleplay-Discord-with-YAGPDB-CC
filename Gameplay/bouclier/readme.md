@@ -8,7 +8,7 @@ Le bouclier fonctionne un peu comme le temps : il va compter les messages envoyÃ
 
 > Le bot commence un compte de message pour recharger le bouclier.  
 
-# Recharge
+# recharge
 
 **Trigger :** Regex `.*`
 

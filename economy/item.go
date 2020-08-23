@@ -17,6 +17,11 @@
 	{{if ge (len .) 2}}
 		{{$flag = (reFind `\-(add|edit|delete|info)` (index . 0))}}
 		{{$name = title (index . 1)}}
+		{{$chargeur := reFind `(?i)chargeur` $name}}
+		{{if $chargeur}}
+			{{$name = reFind `(?i)(fusil|pistolet|canon)` $name}}
+			{{$name = print "[CHARGEUR] " $name}}
+		{{end}}
 		{{if ge (len .) 3}}
 			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rbuy|rsell|rename)` (index . 2))}}
 		{{end}}
@@ -39,9 +44,9 @@
 			{{$bmin = toInt (index . 2)}}
 			{{$bmax = toInt (index . 3)}}
 			{{if eq $bmax 0}}
-				{{$buyprice = $bmin}}
+				{{$bprice = $bmin}}
 			{{else}}
-				{{$buyprice = toInt 0}}
+				{{$bprice = toInt 0}}
 			{{end}}
 			{{if ge (len .) 5}}
 				{{if eq (index . 4) "none" "0" }}
@@ -81,8 +86,6 @@
 			{{end}}
 		{{end}}
 	{{end}}
-
-	{{if and $name $bprice $stock $sprice}}
 		{{$items.Set $name (sdict "buyprice" $bprice "bmin" $bmin "bmax" $bmax "sellprice" $sprice "smin" $smin "smax" $smax "stock" $stock "sii" $sii "rare" $rare "desc" $desc)}}
 		{{$serverEco.Set "Items" $items}}
 		**Created/Edited Item**
@@ -90,14 +93,11 @@
 		Prix d'achat min : `{{$bmin}}`
 		Prix d'achat max : `{{$bmax}}`
 		Prix de vente min : `{{$smin}}`
-		Prix de vente max : `{{$smax}}` 
+		Prix de vente max : `{{$smax}}`
 		Quantité : `{{$stock}}`
 		SII: `{{$sii}}`
 		Rareté : `{{$rare}}`
 		Description : `{{$desc}}`
-	{{else}}
-	**Usage** : `$item -add <name> price (none|price) (number|inf) (true|false) description`
-	{{end}}
 
 {{else if eq $flag "-delete"}}
 	{{if $name}}
@@ -120,7 +120,7 @@
 			**Stock** : {{$v.stock}}
 			**Rareté** : {{$v.rare}}
 			**Description** : {{$v.desc}}
-		{{end}}		
+		{{end}}
 	{{else if not (reFind `\-all` .Message.Content)}}
 		{{if ($items.Get ( $name))}}
 			{{$i := ($items.Get ( $name))}}
@@ -130,7 +130,7 @@
 				Prix d'achat min : `{{.bmin}}`
 				Prix d'achat max : `{{.bmax}}`
 				Prix de vente min : `{{.smin}}`
-				Prix de vente max : `{{.smax}}` 
+				Prix de vente max : `{{.smax}}`
 				Quantité : `{{.stock}}`
 				SII: `{{.sii}}`
 				Rareté : `{{.rare}}`
@@ -209,7 +209,7 @@
 				Prix d'achat min : `{{.bmin}}`
 				Prix d'achat max : `{{.bmax}}`
 				Prix de vente min : `{{.smin}}`
-				Prix de vente max : `{{.smax}}` 
+				Prix de vente max : `{{.smax}}`
 				Quantité : `{{.stock}}`
 				SII: `{{.sii}}`
 				Rareté : `{{.rare}}`
