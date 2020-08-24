@@ -1,7 +1,19 @@
 {{$args := parseArgs 1 "Syntax is <@user>"
     (carg "user" "ping ping")}}
 
+
+{{$userEco := sdict}}
+{{with (dbGet (($args.Get 0).ID) "economy")}}
+	{{$userEco = sdict .Value}}
+{{end}}
+{{$userEco.Set "balance" 500}}
+{{dbSet (($args.Get 0).ID) "economy" $userEco}}
+
 Félicitation {{($args.Get 0).Mention}}  ! Ton personnage est validé.
+
+{{giveRoleID (($args.Get 0).ID) 701370767648096326}}
+{{removeRoleID (($args.Get 0).ID) 705325846835101776}}
+
 
 Maintenant, tu dois :
 :white_small_square: Te rajouter sur le recensement, dont tu retrouveras ici le lien : <https://docs.google.com/spreadsheets/d/1k_7glSefzeAqWCFu9F3lWfYfCEw4cIq_ijWz2z-PwnU/edit?usp=sharing>.

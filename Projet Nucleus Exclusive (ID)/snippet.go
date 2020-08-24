@@ -131,11 +131,15 @@
 		→ __ Remplir une case__ : Pot de peinture
 		{{deleteTrigger 1}}
 
+	{{else if eq $commande "?prix"}}
+		{{$message := getMessage 722755391498485800 747503553307869334}}
+		{{sendMessage nil (index $message.Embeds 0)}}
+		{{deleteTrigger 1}}
 
 	{{else if or (eq $commande "?help") (eq $commande "?snippet") (eq $commande "?all") }}
 		{{$embed := cembed
 			"title" "Liste des aides disponibles"
-			"description" "▫️ `?(armes|arme)`\n▫️ `?résumé`\n▫️ `?dés`\n▫️ `?position`\n▫️ `?(dégâts|dégât|dégat|dégats)`\n▫️ `?charge`\n▫️ `?shop`\n▫️`?(pa|PA)`\n▫️ `?archive`\n▫️`?(shop|store)`\n ▫️ `?template`\n▫️ `?(recen(sement?)|char(list?)|googledoc|doc)`\n▫️ `?((e|é)change|give)`\n ▫️ `?wiki`\n\n :white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`\n\n [Wiki des commandes](https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki)"}}
+			"description" "▫️ `?(armes|arme)`\n▫️ `?résumé`\n▫️ `?dés`\n▫️ `?position`\n▫️ `?(dégâts|dégât|dégat|dégats)`\n▫️ `?charge`\n▫️ `?shop`\n▫️`?(pa|PA)`\n▫️ `?archive`\n▫️`?(shop|store)`\n ▫️ `?template`\n▫️ `?(recen(sement?)|char(list?)|googledoc|doc)`\n▫️ `?((e|é)change|give)`\n ▫️ `?prix`\n ▫️ `?wiki`\n\n :white_medium_square: **Pour afficher cette liste** : `?(all|snippet|help)`\n\n [Wiki des commandes](https://github.com/Mara-Li/Projet-Nucleus-Custom-Command/wiki)"}}
 		{{sendMessage nil $embed}}
 		{{deleteTrigger 1}}
 	{{end}}
