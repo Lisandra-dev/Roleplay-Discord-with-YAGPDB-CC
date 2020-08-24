@@ -2,6 +2,8 @@
 It will also count the number of balls used, and will return this message to tell the user that it has no more balls.
 
 If you change the value of the if, you must change the value in the "$x := sub".  */}}
+{{$img := "https://i.imgur.com/YeIsRmw.png"}}
+
 {{/* Groupe dictionnaire */}}
 {{$groupe := sdict}}
 {{with (dbGet .Server.ID "groupe")}}
@@ -24,11 +26,15 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{end}}
 {{$user = title $user}}
 
-{{$img := "https://i.imgur.com/YeIsRmw.png"}}
+
+{{/* get PA */}}
 {{$pa := $groupe.Get (str $id)}}
 {{if not $pa}}
 	{{$groupe.Set (str $id) 4}}
+	{{$pa = $groupe.Get (str $id)}}
 {{end}}
+{{dbSet .Server.ID "groupe" $groupe}}
+
 
 {{/* Dict for weapon */}}
 {{$arme := sdict}}
