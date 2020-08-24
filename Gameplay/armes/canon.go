@@ -33,7 +33,6 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$pa := $groupe.Get (str $id)}}
 {{if not $pa}}
 	{{$groupe.Set (str $id) 4}}
-	{{$pa = $groupe.Get (str $id)}}
 {{end}}
 {{dbSet .Server.ID "groupe" $groupe}}
 
