@@ -6,6 +6,7 @@
 {{/* Tour count :Incr each call unless CmdArgs = reset */}}
 {{if .CmdArgs}}
 	{{dbSet 0 "turn" 1}}
+	{{dbDel .Server.ID "groupe"}}
 {{else}}
 	{{$x := dbIncr 0 "turn" 1}}
 {{end}}

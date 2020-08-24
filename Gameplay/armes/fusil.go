@@ -31,7 +31,6 @@ If you change the value of the if, you must change the value in the "$x := sub".
 {{$pa := $groupe.Get (str $id)}}
 {{if not $pa}}
 	{{$groupe.Set (str $id) 4}}
-	{{$pa = $groupe.Get (str $id)}}
 {{end}}
 {{dbSet .Server.ID "groupe" $groupe}}
 
@@ -43,8 +42,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 {{$desc := ""}}
 
-
-{{if gt (toInt $pa) 0}}
+{{if gt $pa 0}}
 	{{if not ($arme.Get "fusil")}}
 		{{$arme.Set "fusil" 1}}
 		{{ $desc = (joinStr "" "Il reste 11/12 balles de fusil.")}}
@@ -61,7 +59,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 		{{end}}
 	{{end}}
 {{else}}
-	{{$desc = "PA insuffisants pour réaliser l'action."}}
+	{{$desc = "PA INSUFFISANTS POUR RÉALISER L'ACTION."}}
 {{end}}
 
 {{$embed := cembed

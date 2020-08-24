@@ -83,46 +83,42 @@
 
 	{{else}}
 		{{$j := $groupe.Get $idict}}
-		{{if eq $j 2}}
-			{{$j = 2}}
-			{{$desc = "0 PA RESTANTS"}}
-		{{else}}
-			{{$j = sub $j 2}}
-			{{if gt $j 0}}
-				{{$desc = joinStr " " $j "PA RESTANT(S)"}}
-				{{if $nameatq}}
-				{{if lt $atq 8}}
-					{{$x:= dbIncr $id $nameatq 2}}
-				{{else if eq $atq 4}}
-					{{dbDel $id "cdatq"}}
-					{{ $embed := cembed
-						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-						"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
-						"color" 0xDFAA58}}
-					{{ $idM := sendMessageRetID $chan $embed }}
-					{{dbDel $id $atq}}
-				{{end}}
+		{{$j = sub $j 2}}
+		{{if ge $j 0}}
+			{{$desc = joinStr " " $j "PA RESTANT(S)"}}
+			{{if $nameatq}}
+			{{if lt $atq 8}}
+				{{$x:= dbIncr $id $nameatq 2}}
+			{{else if eq $atq 4}}
+				{{dbDel $id "cdatq"}}
+				{{ $embed := cembed
+					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
+					"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
+					"color" 0xDFAA58}}
+				{{ $idM := sendMessageRetID $chan $embed }}
+				{{dbDel $id $atq}}
 			{{end}}
-			{{if $namesupp}}
-				{{if lt $supp 8}}
-					{{$x := dbIncr $id $namesupp 2}}
-				{{else if eq $supp 8}}
-					{{dbDel $id "cdsupp"}}
-					{{ $embed := cembed
-						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-						"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
-						"color" 0xDFAA58}}
-					{{ $idM := sendMessageRetID $chan $embed }}
-					{{dbDel $id $supp}}
-				{{end}}
-			{{end}}
-			{{else if le $j 0}}
-			{{$j = 0}}
-			{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION. "}}
 		{{end}}
-		{{$groupe.Set $idict $j}}
+		{{if $namesupp}}
+			{{if lt $supp 8}}
+				{{$x := dbIncr $id $namesupp 2}}
+			{{else if eq $supp 8}}
+				{{dbDel $id "cdsupp"}}
+				{{ $embed := cembed
+					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
+					"color" 0xDFAA58}}
+				{{ $idM := sendMessageRetID $chan $embed }}
+				{{dbDel $id $supp}}
+			{{end}}
+		{{end}}
+	{{else if lt $j 0}}
+		{{$j = 0}}
+		{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION. "}}
 	{{end}}
+	{{$groupe.Set $idict $j}}
 {{end}}
+
 
 {{$embed := cembed
 	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")

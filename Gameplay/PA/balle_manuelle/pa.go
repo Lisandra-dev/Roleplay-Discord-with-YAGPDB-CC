@@ -83,12 +83,9 @@
 
 	{{else}}
 		{{$j := $groupe.Get $idict}}
-		{{if eq $j 1}}
-			{{$j = 1}}
-			{{$desc = "0 PA RESTANTS."}}
-		{{else}}
-			{{$j = sub $j 2}}
-			{{if gt $j 0}}
+		{{$j = sub $j 1}}
+		
+			{{if ge $j 0}}
 				{{$desc = joinStr " " $j "PA RESTANT(S)."}}
 				{{if $nameatq}}
 				{{if lt $atq 8}}
@@ -116,13 +113,12 @@
 					{{dbDel $id $supp}}
 				{{end}}
 			{{end}}
-			{{else if le $j 0}}
+			{{else if lt $j 0}}
 			{{$j = 0}}
 			{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION."}}
 		{{end}}
 		{{$groupe.Set $idict $j}}
 	{{end}}
-{{end}}
 
 {{$embed := cembed
 	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
