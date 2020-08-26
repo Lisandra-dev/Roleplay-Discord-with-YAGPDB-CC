@@ -60,7 +60,7 @@
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-				"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
+				"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID $chan $embed }}
 			{{dbDel $id $atq}}
@@ -70,11 +70,18 @@
 	{{if $namesupp}}
 		{{if lt $supp 8}}
 			{{$x := dbIncr $id $supp 2}}
+		{{else if eq $supp 4}}
+				{{ $embed := cembed
+					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					"description" (joinStr "" "Support : " $namesupp " terminé.")
+					"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+					"color" 0xDFAA58}}
+				{{ $idM := sendMessageRetID $chan $embed }}
 		{{else if ge $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-				"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
+				"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID $chan $embed }}
 			{{dbDel $id $supp}}
@@ -93,7 +100,7 @@
 				{{dbDel $id "cdatq"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-					"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
+					"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID $chan $embed }}
 				{{dbDel $id $atq}}
@@ -102,11 +109,18 @@
 		{{if $namesupp}}
 			{{if lt $supp 8}}
 				{{$x := dbIncr $id $namesupp 2}}
+			{{else if eq $supp 4}}
+				{{ $embed := cembed
+					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					"description" (joinStr "" "Support : " $namesupp " terminé.")
+					"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+					"color" 0xDFAA58}}
+				{{ $idM := sendMessageRetID $chan $embed }}
 			{{else if eq $supp 8}}
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-					"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
+					"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID $chan $embed }}
 				{{dbDel $id $supp}}

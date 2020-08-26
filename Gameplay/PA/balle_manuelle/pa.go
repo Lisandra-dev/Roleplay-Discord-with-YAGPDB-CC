@@ -54,13 +54,13 @@
 	{{$groupe.Set $idict 3}}
 	{{$desc = joinStr " " "3 PA RESTANTS."}}
 	{{if $nameatq}}
-		{{if lt $atq 8}}
+		{{if lt $atq 4}}
 			{{$x:= dbIncr $id $atq 1}}
 		{{else if ge $atq 4}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-				"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
+				"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID $chan $embed }}
 			{{dbDel $id $atq}}
@@ -70,11 +70,18 @@
 	{{if $namesupp}}
 		{{if lt $supp 8}}
 			{{$x := dbIncr $id $supp 1}}
+		{{else if eq $supp 4}}
+		{{ $embed := cembed
+			"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+			"description" (joinStr "" "Support : " $namesupp " terminé.")
+			"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+			"color" 0xDFAA58}}
+		{{ $idM := sendMessageRetID $chan $embed }}
 		{{else if ge $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-				"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
+				"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID $chan $embed }}
 			{{dbDel $id $supp}}
@@ -84,7 +91,7 @@
 	{{else}}
 		{{$j := $groupe.Get $idict}}
 		{{$j = sub $j 1}}
-		
+
 			{{if ge $j 0}}
 				{{$desc = joinStr " " $j "PA RESTANT(S)."}}
 				{{if $nameatq}}
@@ -94,7 +101,7 @@
 					{{dbDel $id "cdatq"}}
 					{{ $embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-						"description" (joinStr "" "Compétence " $nameatq " de nouveau utilisable")
+						"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 						"color" 0xDFAA58}}
 					{{ $idM := sendMessageRetID $chan $embed }}
 					{{dbDel $id $atq}}
@@ -103,11 +110,18 @@
 			{{if $namesupp}}
 				{{if lt $supp 8}}
 					{{$x := dbIncr $id $namesupp 1}}
+				{{else if eq $supp 4}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+						"description" (joinStr "" "Support : " $namesupp " terminé.")
+						"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID $chan $embed }}
 				{{else if ge $supp 8}}
 					{{dbDel $id "cdsupp"}}
 					{{ $embed := cembed
 						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-						"description" (joinStr "" "Compétence " $namesupp " de nouveau utilisable")
+						"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
 						"color" 0xDFAA58}}
 					{{ $idM := sendMessageRetID $chan $embed }}
 					{{dbDel $id $supp}}
