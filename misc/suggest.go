@@ -48,7 +48,7 @@
 
 			{{range .Message.Attachments}}{{if and (not $Img_Set) .Width}}{{$Img_Set =true}}{{$embed.Set "image" (sdict "url" .ProxyURL)}}{{else}}{{$Attachments =print $Attachments "\n[" .Filename "](" .ProxyURL ")"}}{{end}}{{end}}
 			{{if $Attachments}}{{$embed.Set "description" (print $embed.description "\n\n**__Attachments:__**" $Attachments)}}{{end}}
-			{{$ID:=sendMessageNoEscapeRetID $Suggestion_Channel (complexMessage "content" (joinStr "" (mentionRoleName "Membres") ": Vous avez une nouvelle suggestion ! \n > Vous pouvez en discuter dans le channel <#741808846473003088> en précisant le numéro de la suggestion") "embed" $embed)}}
+			{{$ID:=sendMessageNoEscapeRetID $Suggestion_Channel (complexMessage "content" (joinStr "" (mentionRoleName "News") ": Vous avez une nouvelle suggestion ! \n > Vous pouvez en discuter dans le channel <#741808846473003088> en précisant le numéro de la suggestion") "embed" $embed)}}
 			{{addMessageReactions $Suggestion_Channel $ID $Upvote $neutral $Downvote }}
 			{{addReactions $Upvote}}
 		{{end}}
@@ -153,13 +153,13 @@
 				{{template "handle-comments" (sdict "embed" $embed "comment" $rest "user" $.User)}}
 				{{$embed.Footer.Set "Text" (print $command " Par : " .User.Username " - " .User.ID " ● " $embed.Footer.Text)}}
 				{{deleteMessage $channel $message.ID 0}}
-				{{if ne $send_chan $Logging_Channel}}{{sendMessage  $send_chan (cembed $embed)}}{{end}}
+				{{if ne $send_chan $Logging_Channel}}{{sendMessage 701792582362988615 (complexMessage "content" (print print "<@" $authorID "> | La suggestion suivante a été implémentée \n" $co) "embed" $embed)}}{{end}}
+				{{$chan := $send_chan}}
 				{{if eq $send_chan $Implemented_Channel}}
-				{{$chan := $Implemented_Channel}}
+					{{$chan = $Implemented_Channel}}
 				{{else}}
-					{{$chan := $Logging_Channel}}
+					{{$chan = $Logging_Channel}}
 				{{end}}
-				{{sendMessage $chan (complexMessage "content" (print print "<@" $authorID "> | La suggestion suivante a été " $command "\n" $co) "embed" $embed)}}
 			{{end}}
 		{{else}}
 			{{$error ="Vous devez être un modérateur ou un admin pour utiliser les commandes d'administrations."}}
