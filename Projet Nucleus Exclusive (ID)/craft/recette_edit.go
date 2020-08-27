@@ -54,3 +54,4 @@
 Pas d'arguments
 {{end}}
 {{dbSet 0 "recipe" $recipe}}
+{{deleteTrigger 1}}

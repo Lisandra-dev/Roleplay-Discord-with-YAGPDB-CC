@@ -80,3 +80,4 @@
 **Usage** : `$recipe "nom" -(bc|lc|sf|cb) (-(bc|lc|sf|cb)) (-(bc|lc|sf|cb)) (-(bc|lc|sf|cb)) (-bdg)`
 {{end}}
 {{dbSet 0 "recipe" $recipe}}
+{{deleteTrigger 1}}

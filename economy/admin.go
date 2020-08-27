@@ -1,4 +1,9 @@
 {{/* Symbol */}}
+{{$serverEco := sdict}}
+{{with (dbGet .Server.ID "economy")}}
+	{{$serverEco = sdict .Value}}
+{{end}}
+
 {{$mon := ""}}
 {{if $serverEco.Get "symbol"}}
 	{{$mon = $serverEco.Get "symbol"}}
@@ -77,7 +82,7 @@
 				{{$bal = sub $bal $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " " $mention " a perdu" $amount $mon"\n Vous avez donc actuellement" $bal $mon "")
+				"description" (joinStr " " $mention " a perdu" $amount $mon "\n Vous avez donc actuellement" $bal $mon ".")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -144,6 +149,10 @@
 			{{end}}
 				{{if ge (len .) 3}}
 					{{$item = title (index . 2)}}
+					{{if (reFind `(?i)chargeur` $item)}}
+						{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
+						{{$item = print "[CHARGEUR] " (title (lower $weap))}}
+					{{end}}
 					{{if ge (len .) 4}}
 						{{$amount = or (toInt (index . 3)) 1}}
 					{{end}}

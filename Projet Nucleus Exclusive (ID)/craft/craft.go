@@ -308,3 +308,4 @@
 {{dbSet .Server.ID "compo" $compo}}
 {{$chan := 735938256038002818}}
 {{sendMessage $chan $log}}
+{{deleteTrigger 1}}

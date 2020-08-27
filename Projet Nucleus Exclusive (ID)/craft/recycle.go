@@ -90,26 +90,26 @@
 			{{if eq ($inv.Get $item) 0}}
 				{{$inv.Del $item}}
 			{{end}}
-			{{$inv.Set "[C] Biocomposant" $bc}}
-			{{$inv.Set "[C] Substrat Ferreux" $sf}}
-			{{$inv.Set "[C] Liquide Cytomorphe" $lc}}
-			{{$inv.Set "[C] Cellule Bionotropique" $cb}}
+			{{$inv.Set "[C] Biocomposant" (div $bc 2)}}
+			{{$inv.Set "[C] Substrat Ferreux" (div $sf 2)}}
+			{{$inv.Set "[C] Liquide Cytomorphe" (div $lc 2)}}
+			{{$inv.Set "[C] Cellule Bionotropique" (div $cb 2)}}
 			{{$user}} a recyclé {{$q}} {{$item}} et obtenu :
-			▫️ Biocomposant : {{$bc}}
-			▫️ Substrat Ferreux : {{$sf}}
-			▫️ Liquide Cytomorphe : {{$lc}}
-			▫️ Cellule Bionotropique : {{$cb}}
+			▫️ Biocomposant : {{div $bc 2}}
+			▫️ Substrat Ferreux : {{div $sf 2}}
+			▫️ Liquide Cytomorphe : {{div $lc 2}}
+			▫️ Cellule Bionotropique : {{div $cb 2}}
 
 		{{else if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q) $choice}}
 			{{$inv.Set $item (sub ($inv.Get $item) $q)}}
 			{{if eq ($inv.Get $item) 0}}
 				{{$inv.Del $item}}
 			{{end}}
-			{{$compo.Set "biocomposant" $bc}}
-			{{$compo.Set "ferreux" $sf}}
-			{{$compo.Set "cytomorphe" $lc}}
-			{{$compo.Set "bionotropique" $cb}}
-			{{$log = joinStr " " $user "a recyclé" $q $item "et obtenu :\n ▫️ Biocomposant :" $bc "\n▫️ Substrat Ferreux :" $sf "\n▫️ Liquide Cytomorphe :" $lc "\n▫️ Cellule Bionotropique :" $cb}}
+			{{$compo.Set "biocomposant" (div $bc 2)}}
+			{{$compo.Set "ferreux" (div $sf)}}
+			{{$compo.Set "cytomorphe" (div $lc 2)}}
+			{{$compo.Set "bionotropique" (div $cb)}}
+			{{$log = joinStr " " $user "a recyclé" $q $item "et obtenu :\n ▫️ Biocomposant :" (div $bc) "\n▫️ Substrat Ferreux :" (div $sf 2) "\n▫️ Liquide Cytomorphe :" (div $lc) "\n▫️ Cellule Bionotropique :" (div $cb)}}
 		{{else}}
 			{{$user}} ne possède pas {{$item}} en quantité suffisante ({{$q}}) pour faire le recyclage.
 		{{end}}
@@ -136,3 +136,4 @@
 {{dbSet 0 "compo" $compo}}
 {{$userEco.Set "Inventory" $inv}}
 {{dbSet $id "economy" $userEco}}
+{{deleteTrigger 1}}

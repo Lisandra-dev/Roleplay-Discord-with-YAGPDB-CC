@@ -252,3 +252,4 @@
 {{sendMessage $chan $log}}
 {{$userEco.Set "Inventory" $inv}}
 {{dbSet $id "economy" $userEco}}
+{{deleteTrigger 1}}
