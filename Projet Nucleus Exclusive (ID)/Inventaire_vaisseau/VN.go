@@ -1,12 +1,11 @@
-{{$weapon := ""}}
-{{$modu := ""}}
-{{$imp := (dbGet 0 "implant").Value}}
-{{range $imp}}
-	{{- $imp = (print  $imp "▫️" . "\n")}}
+{{$imp := ""}}
+{{range $k, $v := (dbGet .Server.ID "implant")}}
+	{{- $imp = (print  $imp "▫️" $k " : " $v "\n")}}
 {{- end}}
-{{$modval := (dbGet .Server.ID "module").Value}}
-{{range $modval}}
-	{{- $modu = (print $modu "▫️" . "\n")}}
+
+{{$modu := ""}}
+{{range $k, $v := (dbGet .Server.ID "module" )}}
+	{{- $modu = (print $modu "▫️" $k " : " $v "\n")}}
 {{- end}}
 
 {{$weapon := ""}}
@@ -30,10 +29,25 @@
 {{end}}
 
 {{$bioc := $compo.Get "biocomposant"}}
+{{if not $bioc}}
+	{{$bioc = 0}}
+{{end}}
 {{$cyto := $compo.Get "cytomorphe"}}
+{{if not $cyto}}
+	{{$cyto = 0}}
+{{end}}
 {{$biono := $compo.Get "bionotropique"}}
+{{if not $biono}}
+	{{$biono = 0}}
+{{end}}
 {{$ferreux := $compo.Get "ferreux"}}
+{{if not $ferreux}}
+	{{$ferreux = 0}}
+{{end}}
 {{$univ := $compo.Get "universel"}}
+{{if not $univ}}
+	{{$univ = 0}}
+{{end}}
 {{$fusil := $chargeur.Get "[CHARGEUR] Fusil"}}
 {{if not $fusil}}
 	{{$fusil = 0}}

@@ -8,20 +8,14 @@
 	{{$armes = sdict .Value}}
 {{end}}
 
-{{$modulist := (dbGet .Server.ID "module")}}
-{{$module := cslice}}
-{{if $modulist}}
-	{{$module = (cslice).AppendSlice $modulist.Value}}
-{{else}}
-	{{$module = cslice}}
+{{$module := sdict}}
+{{with (dbGet .Server.ID "module")}}
+	{{$module = sdict .Value}}
 {{end}}
 
-{{$implist := dbGet 0 "implant"}}
-{{$implant := cslice}}
-{{if $implist}}
-	{{$implant = (cslice).AppendSlice $implist.Value}}
-{{else}}
-	{{$implant = cslice}}
+{{$implant := sdict }}
+{{with (dbGet .Server.ID "implant")}}
+	{{$implant = sdict .Value}}
 {{end}}
 
 {{$chargeur := sdict}}
@@ -71,21 +65,23 @@
 {{/* Fonction */}}
 
 {{$flag := reFind `\-(?i)(armes?|modules?|implant(s)|soin(s)|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
+{{$log := ""}}
 
 {{if .CmdArgs}}
 		{{if or (eq $flag "-arme") (eq $flag "-armes")}}
 			{{$item := title (index .CmdArgs 1)}}
+			{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
 			{{if $inv.Get $item}}
 				{{$inv.Set $item (sub ($inv.Get $item) 1)}}
 				{{if $armes.Get $item}}
-					{{$armes.Set (add ($armes.Get $item) 1)}}
+					{{$armes.Set $item (add ($armes.Get $item) 1)}}
 				{{else}}
 					{{$armes.Set $item 1}}
 				{{end}}
 				{{if eq ($inv.Get $item) 0}}
 					{{$inv.Del $item}}
 				{{end}}
-				{{$user}} a posé {{$item}} dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
 				{{dbSet 0 "armelist" $armes}}
 			{{else}}
 				{{$user}} ne possède pas {{$item}}.
@@ -103,7 +99,7 @@
 				{{if eq ($inv.Get $item) 0}}
 					{{$inv.Del $item}}
 				{{end}}
-				{{$user}} a posé {{$item}} dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
 				{{dbSet 0 "soin" $soin}}
 			{{else}}
 				{{$user}} ne possède pas {{$item}}.
@@ -111,28 +107,30 @@
 
 		{{else if or (eq $flag "-module") (eq $flag "-modules")}}
 			{{$item := title (index .CmdArgs 1)}}
+			{{$type := title (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content)}}
 			{{if $inv.Get $item}}
 				{{$inv.Set $item (sub ($inv.Get $item) 1)}}
 				{{if eq ($inv.Get $item) 0}}
 					{{$inv.Del $item}}
 				{{end}}
-				{{$module = $module.Append $item}}
+				{{$module.Set $item (add ($module.Get $item) 1)}}
 				{{dbSet .Server.ID "module" $module}}
-				{{$user}} a posé {{$item}} dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
 			{{else}}
 				{{$user}} ne possède pas {{$item}}.
 			{{end}}
 
 			{{else if eq $flag "-implant" "-implants"}}
 				{{$item := title (index .CmdArgs 1)}}
+				{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
 				{{if $inv.Get $item}}
 					{{$inv.Set $item (sub ($inv.Get $item) 1)}}
 					{{if eq ($inv.Get $item) 0}}
 						{{$inv.Del $item}}
 					{{end}}
-					{{$implant = $implant.Append $item}}
-					{{dbSet 0 "implant" $implant}}
-					{{$user}} a posé {{$item}} dans l'inventaire du Nucleus.
+					{{$implant.Set $item (add ($implant.Get $item) 1)}}
+					{{dbSet .Server.ID "implant" $implant}}
+					{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
 				{{else}}
 					{{$user}} ne possède pas {{$item}}.
 				{{end}}
@@ -148,7 +146,7 @@
 				{{if eq ($inv.Get "[C] Biocomposant") 0}}
 					{{$inv.Del "[C] Biocomposant"}}
 				{{end}}
-					{{$user}} a posé {{$x}} biocomposant(s) dans l'inventaire du Nucleus.
+					{{$log = joinStr " " $user "a posé" $x "biocomposant(s) dans l'inventaire du Nucleus."}}
 			{{else}}
 				{{$user}} n'a pas assez de biocomposants pour faire cela.
 			{{end}}
@@ -164,9 +162,9 @@
 				{{if eq ($inv.Get "[C] Liquide Cytomorphe") 0}}
 					{{$inv.Del "[C] Liquide Cytomorphe"}}
 				{{end}}
-				{{$user}} a posé {{$x}} liquide cytomorphe dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $x "liquide(s) cytomorphe dans l'inventaire du Nucleus."}}
 			{{else}}
-				{{$user}} n'a pas assez de liquide(s) cytomorphe(s) pour faire cela.
+				{{$user}} n'a pas assez de liquide(s) cytomorphe pour faire cela.
 			{{end}}
 
 		{{else if or (eq $flag "-CB") (eq $flag "-cb")}}
@@ -180,9 +178,9 @@
 				{{if eq ($inv.Get "[C] Cellule Bionotropique") 0}}
 					{{$inv.Del "[C] Cellule Bionotropique"}}
 				{{end}}
-				{{$user}} a posé {{$x}} cellule bionotropique dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $x "cellule(s) bionotropique dans l'inventaire du Nucleus."}}
 			{{else}}
-				{{$user}} n'a pas assez de cellule(s) bionotropique(s) pour faire cela.
+				{{$user}} n'a pas assez de cellule(s) bionotropique pour faire cela.
 			{{end}}
 
 		{{else if or (eq $flag "-sf") (eq $flag "-SF")}}
@@ -196,7 +194,7 @@
 				{{if eq ($inv.Get "[C] Substrat Ferreux") 0}}
 					{{$inv.Del "[C] Substrat Ferreux"}}
 				{{end}}
-				{{$user}} a posé {{$x}} substrat(s) ferreux dans l'inventaire du Nucleus.
+				{{$log = joinStr "" $user "a posé" $x "substrat(s) ferreux dans l'inventaire du Nucleus."}}
 			{{else}}
 				{{$user}} n'a pas assez de substrats ferreux pour faire cela.
 			{{end}}
@@ -212,9 +210,9 @@
 				{{if eq ($inv.Get "[C] Composant universel") 0}}
 					{{$inv.Del "[C] Composant universel"}}
 				{{end}}
-				{{$user}} a posé {{$x}} composant(s) universel(s) dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $x "composant(s) universel dans l'inventaire du Nucleus."}}
 			{{else}}
-				{{$user}} n'a pas assez de composants universels pour faire cela.
+				{{$user}} n'a pas assez de composants universel pour faire cela.
 			{{end}}
 
 		{{else if eq $flag "-chargeur" "-Chargeur"}}
@@ -231,7 +229,7 @@
 				{{if eq ($inv.Get $item) 0}}
 					{{$inv.Del $item}}
 				{{end}}
-				{{$user}} a posé {{$q}} {{$item}} dans l'inventaire du Nucleus.
+				{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 			{{else}}
 				{{$user}} n'a pas assez de {{$item}} pour faire cela.
 			{{end}}
@@ -240,3 +238,8 @@
 		**Usage** : `$vn -add -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur>`
 		{{end}}
 	{{end}}
+
+{{$chan := 735938256038002818}}
+{{sendMessage $chan $log}}
+{{$userEco.Set "Inventory" $inv}}
+{{dbSet $id "economy" $userEco}}

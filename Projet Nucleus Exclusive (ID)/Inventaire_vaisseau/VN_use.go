@@ -8,20 +8,14 @@
 	{{$armes = sdict .Value}}
 {{end}}
 
-{{$modulist := (dbGet .Server.ID "module")}}
-{{$module := cslice}}
-{{if $modulist}}
-	{{$module = (cslice).AppendSlice $modulist.Value}}
-{{else}}
-	{{$module = cslice}}
+{{$module := sdict}}
+{{with (dbGet .Server.ID "module")}}
+	{{$module = sdict .Value}}
 {{end}}
 
-{{$implist := dbGet 0 "implant"}}
-{{$implant := cslice}}
-{{if $implist}}
-	{{$implant = (cslice).AppendSlice $implist.Value}}
-{{else}}
-	{{$implant = cslice}}
+{{$implant := sdict }}
+{{with (dbGet .Server.ID "implant")}}
+	{{$implant = sdict .Value}}
 {{end}}
 
 {{$chargeur := sdict}}
@@ -68,22 +62,25 @@
 	{{$inv = sdict ($userEco.Get "Inventory")}}
 {{end}}
 
-{{/* Fonction */}}
+	{{/* Fonction */}}
 
 {{$flag := reFind `\-(?i)(armes?|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
+{{$bdg := reFind `-bdg` .Message.Content}}
+{{$log := ""}}
 
 {{if .CmdArgs}}
 	{{if or (eq $flag "-arme") (eq $flag "-armes")}}
 		{{$item := title (index .CmdArgs 1)}}
+		{{$type := title (reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content)}}
 		{{if $armes.Get $item}}
 			{{$armes.Set $item (sub ($armes.Get $item) 1)}}
 			{{if le ($armes.Get $item) 0}}
 				{{$armes.Del $item}}
 			{{end}}
 			{{dbSet 0 "armelist" $armes}}
-			{{$user}} a retiré {{$item}} de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucleus."}}
 			{{if $inv.Get $item}}
-				{{$inv.Set (add ($inv.Get $item) 1)}}
+				{{$inv.Set $item (add ($inv.Get $item) 1)}}
 			{{else}}
 				{{$inv.Set $item 1}}
 			{{end}}
@@ -99,7 +96,7 @@
 				{{$soin.Del $item}}
 			{{end}}
 			{{dbSet 0 "soin" $soin}}
-			{{$user}} a retiré {{$item}} de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucleus."}}
 			{{if $inv.Get $item}}
 				{{$inv.Set (add ($inv.Get $item) 1)}}
 			{{else}}
@@ -110,30 +107,42 @@
 		{{end}}
 
 	{{else if or (eq $flag "-module") (eq $flag "-modules")}}
-		{{$mod := title (index .CmdArgs 1)}}
-		{{$newmod := cslice}}
-		{{range $module}}
-			{{- if ne . $mod }}
-				{{- $newmod = $newmod.Append .}}
-			{{- else if eq . $mod}}
-				{{- $inv.Set $mod (add ($inv.Get $mod) 1)}}
-				{{$user}} a retiré {{$mod}} de l'inventaire du Nucleus.
-			{{- end}}
-		{{- end}}
-		{{dbSet .Server.ID "module" $newmod}}
+		{{$item := title (index .CmdArgs 1)}}
+		{{$type := title (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content)}}
+		{{if $module.Get $item}}
+			{{$module.Set $item (sub ($module.Get $item) 1)}}
+			{{if le ($module.Get $item) 0}}
+				{{$module.Del $item}}
+			{{end}}
+			{{dbSet .Server.ID "module" $module}}
+			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucléus"}}
+			{{if $inv.Get $item}}
+				{{$inv.Set (add ($inv.Get $item) 1)}}
+			{{else}}
+				{{$inv.Set $item 1}}
+			{{end}}
+		{{else}}
+			{{$item}} ne fait pas parti de l'inventaire du Nucléus.
+		{{end}}
 
-		{{else if or (eq $flag "-implant") (eq $flag "-implants")}}
-			{{$item := title (index .CmdArgs 1)}}
-			{{$newplant := cslice}}
-			{{range $implant}}
-				{{- if ne . $item }}
-					{{- $newplant = $newplant.Append .}}
-				{{- else if eq . $item}}
-					{{- $inv.Set $item (add ($inv.Get $item) 1)}}
-					{{$user}} a retiré {{$item}} de l'inventaire du Nucleus.
-				{{- end}}
-			{{- end}}
-			{{dbSet 0 "implant" $newplant}}
+	{{else if or (eq $flag "-implant") (eq $flag "-implants")}}
+		{{$item := title (index .CmdArgs 1)}}
+		{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
+		{{if $implant.Get $item}}
+			{{$implant.Set $item (sub ($implant.Get $item) 1)}}
+			{{if le ($implant.Get $item) 0}}
+				{{$implant.Del $item}}
+			{{end}}
+			{{dbSet .Server.ID "implant" $implant}}
+			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucléus"}}
+			{{if $inv.Get $item}}
+				{{$inv.Set (add ($inv.Get $item) 1)}}
+			{{else}}
+				{{$inv.Set $item 1}}
+			{{end}}
+		{{else}}
+			{{$item}} ne fait pas parti de l'inventaire du Nucléus.
+		{{end}}
 
 	{{else if or (eq $flag "-bc") (eq $flag "-BC")}}
 		{{$x := (toInt (index .CmdArgs 1))}}
@@ -146,7 +155,7 @@
 			{{$compo.Set "biocomposant" $bc}}
 			{{$inv.Set "[C] Biocomposant" (add $x ($inv.Get "[C] Biocomposant"))}}
 			{{dbSet .Server.ID "compo" $compo}}
-			{{$user}} a retiré {{$x}} biocomposant(s) de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $x "biocomposant(s) de l'inventaire du Nucleus."}}
 		{{else}}
 			Il n'y a pas assez de biocomposants sur le vaisseau pour faire cela.
 		{{end}}
@@ -162,7 +171,7 @@
 			{{$inv.Set "[C] Liquide Cytomorphe" (add $x ($inv.Get "[C] Liquide Cytomorphe"))}}
 			{{$compo.Set "cytomorphe" $lc}}
 			{{dbSet .Server.ID "compo" $compo}}
-			{{$user}} a retiré {{$x}} liquide(s) cytomorphe(s) de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $x "liquide(s) cytomorphe(s) de l'inventaire du Nucleus."}}
 		{{else}}
 			Il n'y a pas assez de liquide cytomorphe sur le vaisseau pour faire cela.
 		{{end}}
@@ -178,7 +187,7 @@
 			{{$compo.Set "bionotropique" $cb}}
 			{{$inv.Set "[C] Cellule Bionotropique" (add $x ($inv.Get "[C] Cellule Bionotropique"))}}
 			{{dbSet .Server.ID "compo" $compo}}
-			{{$user}} a retiré {{$x}} cellule(s) bionotropique(s) de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $x "cellule(s) bionotropique(s) de l'inventaire du Nucleus."}}
 		{{else}}
 			Il n'y a pas assez de cellule bionotropique sur le vaisseau pour faire cela.
 		{{end}}
@@ -194,7 +203,7 @@
 			{{$compo.Set "ferreux" $sf}}
 			{{dbSet .Server.ID "compo" $compo}}
 			{{$inv.Set "[C] Substrat Ferreux" (add $x ($inv.Get "[C] Substrat Ferreux"))}}
-			{{$user}} a retiré {{$x}} substrat(s) ferreux de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $x "substrat(s) ferreux de l'inventaire du Nucleus."}}
 		{{else}}
 			Il n'y a pas assez de substrat ferreux sur le vaisseau pour faire cela.
 		{{end}}
@@ -210,7 +219,7 @@
 			{{$compo.Set "universel" $cu}}
 			{{$inv.Set "[C] Composant Universel" (add $x ($inv.Get "[C] Composant Universel"))}}
 			{{dbSet .Server.ID "compo" $compo}}
-			{{$user}} a retiré {{$x}} composant(s) universel(s) de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" $x "composant(s) universel(s) de l'inventaire du Nucleus."}}
 		{{else}}
 			Il n'y a pas assez de composant universel sur le vaisseau pour faire cela.
 		{{end}}
@@ -227,14 +236,19 @@
 			{{$chargeur.Set $item $x}}
 			{{$inv.Set $item (add ($inv.Get $item) (toInt (index .CmdArgs 1)))}}
 			{{dbSet 0 "chargeur_Multi" $chargeur}}
-			{{$user}} a retiré {{index .CmdArgs 1}} {{$item}} de l'inventaire du Nucleus.
+			{{$log = joinStr " " $user "a retiré" (index .CmdArgs 1) $item "de l'inventaire du Nucleus."}}
 		{{else}}
 			Il n'y a pas assez de {{$item}} sur le vaisseau pour faire cela.
 		{{end}}
 
 	{{else}}
-	**Usage** : `$vn -use -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|-chargeur) <valeur>`
+		**Usage** : `$vn -use -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|-chargeur) <valeur>`
 	{{end}}
 {{else}}
 	**Usage** : `$vn -(add|use) -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu) <valeur>`
 {{end}}
+
+{{$chan := 735938256038002818}}
+{{sendMessage $chan $log}}
+{{$userEco.Set "Inventory" $inv}}
+{{dbSet $id "economy" $userEco}}

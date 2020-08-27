@@ -3,32 +3,6 @@
 	{{$recipe = sdict .Value}}
 {{end}}
 
-{{$soin := sdict}}
-{{with ($recipe.Get "Soin")}}
-	{{$soin = sdict .}}
-{{end}}
-
-{{$bio := sdict}}
-{{with ($recipe.Get "arme_bio")}}
-	{{$bio = sdict .}}
-{{end}}
-
-{{$arme := sdict}}
-{{with ($recipe.Get "arme_metal")}}
-	{{$arme = sdict .}}
-{{end}}
-
-{{$module := sdict}}
-{{with ($recipe.Get "module")}}
-	{{$module = sdict .}}
-{{end}}
-
-{{$implant := sdict}}
-{{with ($recipe.Get "implant")}}
-	{{$implant = sdict .}}
-{{end}}
-{{$flag := reFind `-(soin|armebio|arme|module|implant)` .Message.Content}}
-
 {{$bc := 0}}
 {{$lc := 0}}
 {{$sf := 0}}
@@ -38,8 +12,16 @@
 
 {{if .CmdArgs}}
 	{{$item := title (index .CmdArgs 0)}}
+	{{if (reFind "-bdg" .Message.Content)}}
+		{{$item = print "[BDG] " $item}}
+	{{end}}
+	{{$balle := reFind `(?i)chargeur` .Message.Content}}
+	{{if $balle}}
+		{{$weap := reFind `(?i)(fusil|canon|pistolet)` $item}}
+		{{$item = print "[CHARGEUR] " (title $weap)}}
+	{{end}}
 	{{if ($recipe.Get $item)}}
-		{{$i = sdict $soin.Get $item}}
+		{{$i := sdict ($recipe.Get $item)}}
 		{{$bc = $i.Get "Biocomposant"}}
 		{{$lc = $i.Get "Liquide Cytomorphe"}}
 		{{$sf = $i.Get "Substrat Ferreux"}}
@@ -61,6 +43,9 @@
 				{{$cu = (index .CmdArgs 2)}}
 			{{end}}
 			{{$recipe.Set $item (sdict "Biocomposant" $bc "Substrat Ferreux" $sf "Liquide Cytomorphe" $lc "Cellule Bionotropique" $cb "Composant universel" $cu)}}
+			{{with ($recipe.Get $item)}}
+				{{print .}}
+			{{end}}
 		{{end}}
 	{{else}}
 		Objet non reconnu.

@@ -9,32 +9,74 @@
 {{$cb := 0}}
 {{$cu := 0}}
 {{$item := ""}}
-{{$i := sdict}}
 
 {{if .CmdArgs}}
 	{{if ge (len .CmdArgs) 1}}
 		{{$item = title (index .CmdArgs 0)}}
 		{{if ge (len .CmdArgs) 2}}
-			{{$bc = index .CmdArgs 1}}
-			{{if (ge (len .CmdArgs) 3)}}
-				{{$sf = add $sf (index .CmdArgs 2)}}
-				{{if (ge (len .CmdArgs) 4)}}
-					{{$lc = add $lc (index .CmdArgs 3)}}
-					{{if (ge (len .CmdArgs) 5)}}
-						{{$cb = add $cb (index .CmdArgs 4)}}
-						{{if (ge (len .CmdArgs) 6)}}
-							{{$cu = add $cu (index .CmdArgs 5)}}
+			{{$compo := reFindAll `-(bc|sf|lc|cb)` .Message.Content}}
+			{{if eq "-bc" (index $compo 0)}}
+				{{$bc = index .CmdArgs 2}}
+			{{else if eq "-sf" (index $compo 0)}}
+				{{$sf = index .CmdArgs 2}}
+			{{else if eq "-lc" (index $compo 0)}}
+				{{$lc = index .CmdArgs 2}}
+			{{else if eq "-cb" (index $compo 0)}}
+				{{$cb = index .CmdArgs 2}}
+			{{end}}
+			{{if and (ge (len .CmdArgs) 4) (ge (len $compo) 2)}}
+				{{if eq "-bc" (index $compo 1)}}
+					{{$bc = index .CmdArgs 4}}
+				{{else if eq "-sf" (index $compo 1)}}
+					{{$sf = index .CmdArgs 4}}
+				{{else if eq "-lc" (index $compo 1)}}
+					{{$lc = index .CmdArgs 4}}
+				{{else if eq "-cb" (index $compo 1)}}
+					{{$cb = index .CmdArgs 4}}
+				{{end}}
+				{{if and (ge (len .CmdArgs) 6) (ge (len $compo) 3) }}
+					{{if eq "-bc" (index $compo 2)}}
+						{{$bc = index .CmdArgs 6}}
+					{{else if eq "-sf" (index $compo 2)}}
+						{{$sf = index .CmdArgs 6}}
+					{{else if eq "-lc" (index $compo 2)}}
+						{{$lc = index .CmdArgs 6}}
+					{{else if eq "-cb" (index $compo 2)}}
+						{{$cb = index .CmdArgs 6}}
+					{{end}}
+					{{if and (ge (len .CmdArgs) 8) (ge (len $compo) 4)}}
+						{{if eq "-bc" (index $compo 3)}}
+							{{$bc = index .CmdArgs 8}}
+						{{else if eq "-sf" (index $compo 3)}}
+							{{$sf = index .CmdArgs 8}}
+						{{else if eq "-lc" (index $compo 3)}}
+							{{$lc = index .CmdArgs 8}}
+						{{else if eq "-cb" (index $compo 3)}}
+							{{$cb = index .CmdArgs 8}}
 						{{end}}
 					{{end}}
 				{{end}}
 			{{end}}
+		{{else}}
+			Merci d'indiquer au moins un composant.
 		{{end}}
 	{{else}}
 		Merci d'indiquer un nom
 	{{end}}
-	{{$recipe.Set $item (sdict "Biocomposant" $bc "Substrat Ferreux" $sf "Liquide Cytomorphe" $lc "Cellule Bionotropique" $cb "Composant universel" $cu)}}
-	{{$recipe}}
+	{{if (reFind "-bdg" .Message.Content)}}
+		{{$item = print "[BDG] " $item}}
+	{{end}}
+	{{$balle := reFind `(?i)chargeur` .Message.Content}}
+	{{if $balle}}
+		{{$weap := reFind `(?i)(pistolet|fusil|canon)` $item}}
+		{{$item = print "[CHARGEUR] " (title $weap)}}
+	{{end}}
+	{{$recipe.Set $item (sdict "Biocomposant" $bc "Substrat Ferreux" $sf "Liquide Cytomorphe" $lc "Cellule Bionotropique" $cb)}}
+	{{$item}}
+	{{range $k, $v := ($recipe.Get $item)}}
+		{{print $k " : " $v}}
+	{{end}}
 {{else}}
-Les arguments ???
+**Usage** : `$recipe "nom" -(bc|lc|sf|cb) (-(bc|lc|sf|cb)) (-(bc|lc|sf|cb)) (-(bc|lc|sf|cb)) (-bdg)`
 {{end}}
 {{dbSet 0 "recipe" $recipe}}
