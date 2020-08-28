@@ -153,7 +153,7 @@
 				{{template "handle-comments" (sdict "embed" $embed "comment" $rest "user" $.User)}}
 				{{$embed.Footer.Set "Text" (print $command " Par : " .User.Username " - " .User.ID " ● " $embed.Footer.Text)}}
 				{{deleteMessage $channel $message.ID 0}}
-				{{if ne $send_chan $Logging_Channel}}{{sendMessage 701792582362988615 (complexMessage "content" (print print "<@" $authorID "> | La suggestion suivante a été implémentée \n" $co) "embed" $embed)}}{{end}}
+				{{if ne $send_chan $Logging_Channel}}{{sendMessage 701792582362988615 (complexMessage "content" (print "La suggestion suivante a été implémentée \n" $co) "embed" $embed)}}{{end}}
 				{{$chan := $send_chan}}
 				{{if eq $send_chan $Implemented_Channel}}
 					{{$chan = $Implemented_Channel}}
