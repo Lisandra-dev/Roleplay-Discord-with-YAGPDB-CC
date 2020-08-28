@@ -63,6 +63,7 @@
 	{{if eq $balle "chargeur" "CHARGEUR" "Chargeur"}}
 		{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
 		{{$item = print "[CHARGEUR] " (title $weap)}}
+		{{$reci = $item}}
 	{{else if eq $balle "module" "Module" "MODULE"}}
 		{{$type := reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` $item}}
 		{{$reci = title (lower $type)}}
@@ -77,44 +78,68 @@
 	{{if $bdg}}
 		{{$reci = print "[BDG] " (joinStr "" (split $reci "[BDG]"))}}
 	{{end}}
-
 	{{if $recipe.Get $reci}}
 		{{$i := sdict ($recipe.Get $reci)}}
 		{{$bc := mult ($i.Get "Biocomposant") $q}}
+		{{if gt $bc 1}}
+			{{$bc = randInt 1 $bc}}
+		{{end}}
 		{{$sf := mult ($i.Get "Substrat Ferreux") $q}}
+		{{if gt $sf 1}}
+			{{$sf = randInt 1 $sf}}
+		{{end}}
 		{{$lc := mult ($i.Get "Liquide Cytomorphe") $q}}
+		{{if gt $lc 1}}
+			{{$lc = randInt 1 $lc}}
+		{{end}}
 		{{$cb := mult ($i.Get "Cellule Bionotropique") $q}}
+		{{if gt $cb 1}}
+			{{$cb = randInt 1 $cb}}
+		{{end}}
+		{{$cu := randInt 1 100}}
+		{{if le $cu 10}}
+			{{$cu = $q}}
+		{{end}}
+
 
 		{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
 			{{$inv.Set $item (sub ($inv.Get $item) $q)}}
 			{{if eq ($inv.Get $item) 0}}
 				{{$inv.Del $item}}
 			{{end}}
-			{{$inv.Set "[C] Biocomposant" (div $bc 2)}}
-			{{$inv.Set "[C] Substrat Ferreux" (div $sf 2)}}
-			{{$inv.Set "[C] Liquide Cytomorphe" (div $lc 2)}}
-			{{$inv.Set "[C] Cellule Bionotropique" (div $cb 2)}}
+			{{$inv.Set "[C] Biocomposant" $bc}}
+			{{$inv.Set "[C] Substrat Ferreux" $sf }}
+			{{$inv.Set "[C] Liquide Cytomorphe" $lc }}
+			{{$inv.Set "[C] Cellule Bionotropique" $cb }}
+			{{$inv.Set "[C] Composant Universel" $cu }}
 			{{$user}} a recyclé {{$q}} {{$item}} et obtenu :
-			▫️ Biocomposant : {{div $bc 2}}
-			▫️ Substrat Ferreux : {{div $sf 2}}
-			▫️ Liquide Cytomorphe : {{div $lc 2}}
-			▫️ Cellule Bionotropique : {{div $cb 2}}
+			▫️ Biocomposant : {{$bc}}
+			▫️ Substrat Ferreux : {{$sf}}
+			▫️ Liquide Cytomorphe : {{$lc}}
+			▫️ Cellule Bionotropique : {{$cb}}
+			{{if eq $cu 1}}
+			▫️ Composant Universel : {{$cu}}
+			{{end}}
 
 		{{else if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q) $choice}}
 			{{$inv.Set $item (sub ($inv.Get $item) $q)}}
 			{{if eq ($inv.Get $item) 0}}
 				{{$inv.Del $item}}
 			{{end}}
-			{{$compo.Set "biocomposant" (div $bc 2)}}
-			{{$compo.Set "ferreux" (div $sf)}}
-			{{$compo.Set "cytomorphe" (div $lc 2)}}
-			{{$compo.Set "bionotropique" (div $cb)}}
-			{{$log = joinStr " " $user "a recyclé" $q $item "et obtenu :\n ▫️ Biocomposant :" (div $bc) "\n▫️ Substrat Ferreux :" (div $sf 2) "\n▫️ Liquide Cytomorphe :" (div $lc) "\n▫️ Cellule Bionotropique :" (div $cb)}}
+			{{$compo.Set "biocomposant" $bc}}
+			{{$compo.Set "ferreux" $sf}}
+			{{$compo.Set "cytomorphe" $lc}}
+			{{$compo.Set "bionotropique" $cb}}
+			{{$compo.Set "universel" $cu}}
+			{{$log = joinStr " " $user "a recyclé" $q $item "et obtenu :\n ▫️ Biocomposant :" $bc "\n▫️ Substrat Ferreux :" $sf 2 "\n▫️ Liquide Cytomorphe :" $lc "\n▫️ Cellule Bionotropique :" $cb}}
+			{{if eq $cu 1}}
+				{{$log = joinStr " " $log "\n ▫️ Composant Universel :" $cu }}
+			{{end}}
 		{{else}}
-			{{$user}} ne possède pas {{$item}} en quantité suffisante ({{$q}}) pour faire le recyclage.
+			{{$user}} ne possède pas {{$item}} en quantité suffisante (Minimum : {{$q}}) pour faire le recyclage.
 		{{end}}
 	{{else}}
-		{{$item}} n'a pas recette attitré.
+		`{{$item}}` n'a pas recette attitré.
 	{{end}}
 {{else}}
 	**Usage** : `$recycle "objet" (q[1-100]) (+VN) (-bdg)`
@@ -131,6 +156,10 @@
 {{end}}
 {{if eq (toInt ($inv.Get "[C] Cellule Bionotropique")) 0}}
 	{{$inv.Del "[C] Cellule Bionotropique"}}
+{{end}}
+
+{{if eq (toInt ($inv.Get "[C] Composant Universel")) 0}}
+	{{$inv.Del "[C] Composant Universel"}}
 {{end}}
 
 {{dbSet 0 "compo" $compo}}

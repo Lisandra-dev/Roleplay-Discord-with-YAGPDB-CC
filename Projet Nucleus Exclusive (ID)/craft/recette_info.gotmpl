@@ -12,7 +12,7 @@
 	{{end}}
 	{{$balle := reFind `(?i)chargeur` .Message.Content}}
 	{{if $balle}}
-		{{$weap := reFind `(?i)(fusil|canon|pistolet)`}}
+		{{$weap := reFind `(?i)(fusil|canon|pistolet)` .Message.Content}}
 		{{$item = print "[CHARGEUR] " (title $weap)}}
 	{{end}}
 	{{if ($recipe.Get $item)}}
