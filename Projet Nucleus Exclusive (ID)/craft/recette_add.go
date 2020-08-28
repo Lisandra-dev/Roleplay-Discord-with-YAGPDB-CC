@@ -1,3 +1,12 @@
+{{/* To adapt, change the text for the composant.
+	Name used in :
+	-> Inventory dict : [C] items
+	-> Compo dict : diminutif without majuscule
+	-> recipe : Complete name with majuscule
+	- You can add more component with adding more loop
+	- You can change the option with changing the ReFind. */}}
+
+
 {{$recipe := sdict}}
 {{with (dbGet 0 "recipe")}}
 	{{$recipe = sdict .Value}}

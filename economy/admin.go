@@ -70,7 +70,7 @@
 				{{$bal = add $bal $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " " $mention " a gagné" $amount $mon "\n Vous avez donc actuellement" $bal $mon "")
+				"description" (joinStr " " $mention " a gagné" $amount $mon "\n Somme actualisée :" $bal $mon "")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -82,7 +82,7 @@
 				{{$bal = sub $bal $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " " $mention " a perdu" $amount $mon "\n Vous avez donc actuellement" $bal $mon ".")
+				"description" (joinStr " " $mention " a perdu" $amount $mon "\n Somme actualisée :" $bal $mon ".")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -97,7 +97,7 @@
 				{{$bal = $amount}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/ATSj8fe.png")
-				"description" (joinStr " "  "La balance de" $mention "a été fixé à :" $amount $mon "\n Vous avez donc actuellement" $bal $mon "")
+				"description" (joinStr " "  "La balance de" $mention "a été fixé à :" $amount $mon "\n Somme actualisée :" $bal $mon "")
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -274,3 +274,4 @@
 
 {{/* Database Updates */}}
 {{dbSet .Guild.ID "economy" $serverEco}}
+{{deleteTrigger 1}}

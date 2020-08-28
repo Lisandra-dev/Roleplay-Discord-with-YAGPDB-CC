@@ -1,3 +1,10 @@
+{{/* To adapt, change the text for the composant.
+	Name used in :
+	-> Inventory dict : [C] items
+	-> Compo dict : diminutif without majuscule
+	-> recipe : Complete name with majuscule
+	You can use the function without using the compo dictionnary, delete just the "VN reFind" or, if you want to keep place, delete all text in relation with.  */}}
+
 {{/* Dictionnaire d'Item */}}
 	{{/* Recette */}}
 {{$recipe := sdict}}

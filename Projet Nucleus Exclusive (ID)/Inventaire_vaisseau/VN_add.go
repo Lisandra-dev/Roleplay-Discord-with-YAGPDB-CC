@@ -1,3 +1,12 @@
+{{/* Here its more an example and cannot really be used on another roleplay, but you can using it like a base. You can change the name for dictionnary, componant... You can change all name. Just don't forget that if you change the name here, you must change it everywhere.
+
+	Name used in :
+	-> Inventory dict : [C] items
+	-> Compo dict : diminutif without majuscule
+	-> recipe : Complete name with majuscule
+	You can use the function without using the compo dictionnary, delete just the "VN reFind" or, if you want to keep place, delete all text in relation with.  */}}
+
+
 {{$compo := sdict}}
 {{with (dbGet .Server.ID "compo")}}
 	{{$compo = sdict .Value}}
