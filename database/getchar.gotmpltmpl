@@ -11,6 +11,7 @@
 	{{end}}
 {{end}}
 
+
 {{$stats := sdict}}
 {{with (dbGet $user "stats")}}
 	{{$stats = sdict .Value}}
@@ -66,7 +67,22 @@
 	:white_small_square: Agilité : {{$iagi}}
 	:white_small_square: Précision : {{$ipreci}}
 	:white_small_square: Intelligence : {{$iintel}}
+	
+	{{else}}
+	**Statistiques de <@{{$user}}>**
+		:white_small_square: Force : {{$force}}
+		:white_small_square: Endurance : {{$endurance}}
+		:white_small_square: Agilité : {{$agi}}
+		:white_small_square: Précision : {{$preci}}
+		:white_small_square: Intelligence : {{$intel}}
+		:white_small_square: Karma : {{$karma}}
 
+	**Implants de <@{{$user}}>** :
+		:white_small_square: Force : {{$iforce}}
+		:white_small_square: Endurance : {{$iendu}}
+		:white_small_square: Agilité : {{$iagi}}
+		:white_small_square: Précision : {{$ipreci}}
+		:white_small_square: Intelligence : {{$iintel}}
 	{{end}}
 
 {{else}}
