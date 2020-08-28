@@ -50,6 +50,7 @@
 
 	{{$chargeur := reFind `(?i)chargeur` $initem}}
 	{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $initem}}
+	{{$letter := reFind `(?i)^(e|m)` $initem}}
 	{{if $compo}}
 		{{if eq $compo "bc" "BC" "Bc"}}
 			{{$initem = "[C] Biocomposant"}}
@@ -62,11 +63,11 @@
 		{{else if eq $compo "cu" "CU" "Cu"}}
 			{{$initem = "[C] Composant Universel"}}
 		{{end}}
-	{{end}}
-
-	{{if $chargeur}}
+	{{else if $chargeur}}
 		{{$initem = reFind `(?i)(fusil|pistolet|canon)` $initem}}
 		{{$initem = print "[CHARGEUR] " $initem}}
+	{{else if $letter}}
+		{{$initem = print "[" (upper $letter) "] " $initem }}
 	{{end}}
 
 	{{$item := sdict}}
