@@ -73,78 +73,98 @@
 
 {{/* Fonction */}}
 
-{{$flag := reFind `\-(?i)(armes?|modules?|implant(s)|soin(s)|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
+{{$flag := reFind `\-(?i)(armes?|modules?|implants?|soins?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
+{{$flag := lower $flag}}
 {{$log := ""}}
+{{$q := 1}}
+{{$item := ""}}
 
 {{if .CmdArgs}}
-		{{if or (eq $flag "-arme") (eq $flag "-armes")}}
-			{{$item := title (index .CmdArgs 1)}}
+	{{if eq (len .CmdArgs) 1}}
+		N'oubliez pas le nom de l'item !
+	{{else if ge (len .CmdArgs) 2}}
+		{{$item = title (index .CmdArgs 1)}}
+		
+		{{if eq (len .CmdArgs) 3}}
+			{{$q = toInt (index .Cmdargs 2)}}
+		{{end}}
+		
+		{{if eq $flag "-arme" "-armes"}}
 			{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
-			{{if $inv.Get $item}}
-				{{$inv.Set $item (sub ($inv.Get $item) 1)}}
-				{{if $armes.Get $item}}
-					{{$armes.Set $item (add ($armes.Get $item) 1)}}
-				{{else}}
-					{{$armes.Set $item 1}}
-				{{end}}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
-				{{end}}
-				{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
-				{{dbSet 0 "armelist" $armes}}
+			{{if not $type}}
+				Erreur : vous devez indiquer le type d'arme}}
 			{{else}}
-				{{$user}} ne possède pas {{$item}}.
-			{{end}}
-
-		{{else if eq $flag "-soin" "-soins"}}
-			{{$item := title (index .CmdArgs 1)}}
-			{{if $inv.Get $item}}
-				{{$inv.Set $item (sub ($inv.Get $item) 1)}}
-				{{if $soin.Get $item}}
-					{{$soin.Set (add ($soin.Get $item) 1)}}
-				{{else}}
-					{{$soin.Set $item 1}}
-				{{end}}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
-				{{end}}
-				{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
-				{{dbSet 0 "soin" $soin}}
-			{{else}}
-				{{$user}} ne possède pas {{$item}}.
-			{{end}}
-
-		{{else if or (eq $flag "-module") (eq $flag "-modules")}}
-			{{$item := title (index .CmdArgs 1)}}
-			{{$type := title (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content)}}
-			{{if $inv.Get $item}}
-				{{$inv.Set $item (sub ($inv.Get $item) 1)}}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
-				{{end}}
-				{{$module.Set $item (add ($module.Get $item) 1)}}
-				{{dbSet .Server.ID "module" $module}}
-				{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
-			{{else}}
-				{{$user}} ne possède pas {{$item}}.
-			{{end}}
-
-			{{else if eq $flag "-implant" "-implants"}}
-				{{$item := title (index .CmdArgs 1)}}
-				{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
-				{{if $inv.Get $item}}
-					{{$inv.Set $item (sub ($inv.Get $item) 1)}}
+				{{if and ($inv.Get $item}} (eq ($inv.Get $item) $q)}}
+					{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+					{{if $armes.Get $item}}
+						{{$armes.Set $item (add ($armes.Get $item) $q)}}
+					{{else}}
+						{{$armes.Set $item $q}}
+					{{end}}
 					{{if eq ($inv.Get $item) 0}}
 						{{$inv.Del $item}}
 					{{end}}
-					{{$implant.Set $item (add ($implant.Get $item) 1)}}
-					{{dbSet .Server.ID "implant" $implant}}
-					{{$log = joinStr " " $user "a posé" $item "dans l'inventaire du Nucleus."}}
+					{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
+					{{dbSet 0 "armelist" $armes}}
 				{{else}}
-					{{$user}} ne possède pas {{$item}}.
+					{{$user}} ne possède pas {{$q}} {{$item}}.
+				{{end}}
+			{{end}}
+
+		{{else if eq $flag "-soin" "-soins"}}
+			{{if and ($inv.Get $item) (eq ($inv.Get $item) $q) }}
+				{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+				{{if ($soin.Get $item)}}
+					{{$soin.Set (add ($soin.Get $item) $q)}}
+				{{else}}
+					{{$soin.Set $item $q}}
+				{{end}}
+				{{if eq ($inv.Get $item) 0}}
+					{{$inv.Del $item}}
+				{{end}}
+				{{$log = joinStr " " $user "a posé" "$q" $item "dans l'inventaire du Nucleus."}}
+				{{dbSet 0 "soin" $soin}}
+			{{else}}
+				{{$user}} ne possède pas {{$q}} {{$item}}.
+			{{end}}
+
+		{{else if eq $flag "-module" "-modules"}}
+			{{$type := title (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content)}}
+			{{if not $type}}
+		Erreur : Vous devez indiquer le type de modules.
+			{{else}}
+				{{if and ($inv.Get $item) (ge ($inv.Get $item) $q)}}
+					{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+					{{if eq ($inv.Get $item) 0}}
+						{{$inv.Del $item}}
+					{{end}}
+					{{$module.Set $item (add ($module.Get $item) 1)}}
+					{{dbSet .Server.ID "module" $module}}
+					{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
+				{{else}}
+					{{$user}} ne possède pas {{$q}} {{$item}}.
+				{{end}}
+			{{end}}
+
+			{{else if eq $flag "-implant" "-implants"}}
+				{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
+				{{if not $type}}
+				Erreur : Vous devez indiquer le type d'implants.
+				{{else}}		
+					{{if and ($inv.Get $item) (ge ($inv.Get $item) $q)}}
+						{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+						{{if eq ($inv.Get $item) 0}}
+							{{$inv.Del $item}}
+						{{end}}
+						{{$implant.Set $item (add ($implant.Get $item) $q)}}
+						{{dbSet .Server.ID "implant" $implant}}
+						{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
+					{{else}}
+						{{$user}} ne possède pas {{$q}} {{$item}}.
+					{{end}}
 				{{end}}
 
-		{{else if or (eq $flag "-bc") (eq $flag "-BC")}}
+		{{else if $flag "-bc"}}
 			{{$x := (toInt (index .CmdArgs 1))}}
 			{{$value := $compo.Get "biocomposant"}}
 			{{$bc := add $value $x}}
@@ -160,7 +180,7 @@
 				{{$user}} n'a pas assez de biocomposants pour faire cela.
 			{{end}}
 
-		{{else if or (eq $flag "-LC") (eq $flag "-lc")}}
+		{{else if eq $flag "-lc"}}
 			{{$x := (toInt (index .CmdArgs 1))}}
 			{{$value := $compo.Get "cytomorphe"}}
 			{{$lc := add $value $x}}
@@ -176,7 +196,7 @@
 				{{$user}} n'a pas assez de liquide(s) cytomorphe pour faire cela.
 			{{end}}
 
-		{{else if or (eq $flag "-CB") (eq $flag "-cb")}}
+		{{else if eq $flag "-cb"}}
 			{{$value := $compo.Get "bionotropique"}}
 			{{$x := (toInt (index .CmdArgs 1))}}
 			{{$cb := add $value $x}}
@@ -192,7 +212,7 @@
 				{{$user}} n'a pas assez de cellule(s) bionotropique pour faire cela.
 			{{end}}
 
-		{{else if or (eq $flag "-sf") (eq $flag "-SF")}}
+		{{else if eq $flag "-sf"}}
 			{{$value := $compo.Get "ferreux"}}
 			{{$x := (toInt (index .CmdArgs 1))}}
 			{{$sf := add $value $x}}
@@ -208,7 +228,7 @@
 				{{$user}} n'a pas assez de substrats ferreux pour faire cela.
 			{{end}}
 
-		{{else if or (eq $flag "-CU") (eq $flag "-cu")}}
+		{{else if eq $flag "-cu"}}
 			{{$value := $compo.Get "universel"}}
 			{{$x := (toInt (index .CmdArgs 1))}}
 			{{$cu := add $value $x}}
@@ -224,7 +244,7 @@
 				{{$user}} n'a pas assez de composants universel pour faire cela.
 			{{end}}
 
-		{{else if eq $flag "-chargeur" "-Chargeur"}}
+		{{else if eq $flag "-chargeur"}}
 			{{$balle := reFind `(?i)(fusil|pistolet|canon)` .Message.Content}}
 			{{$item := print "[CHARGEUR] " (title $balle)}}
 			{{$value := $chargeur.Get $item}}
@@ -247,7 +267,7 @@
 		**Usage** : `$vn -add -(armes?|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur>`
 		{{end}}
 	{{end}}
-
+{{end}}
 {{$chan := 735938256038002818}}
 {{sendMessage $chan $log}}
 {{$userEco.Set "Inventory" $inv}}

@@ -74,84 +74,102 @@
 	{{/* Fonction */}}
 
 {{$flag := reFind `\-(?i)(armes?|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
+{{$flag = lower $flag}}
 {{$bdg := reFind `-bdg` .Message.Content}}
 {{$log := ""}}
 
 {{if .CmdArgs}}
-	{{if or (eq $flag "-arme") (eq $flag "-armes")}}
-		{{$item := title (index .CmdArgs 1)}}
+	{{if eq (len .CmdArgs) 1}}
+		N'oubliez pas le nom de l'item !
+	{{else if ge (len .CmdArgs) 2}}
+		{{$item = title (index .CmdArgs 1)}}
+		
+		{{if eq (len .CmdArgs) 3}}
+			{{$q = toInt (index .Cmdargs 2)}}
+		{{end}}
+
+	{{if eq $flag "-arme "-armes")}}
+
 		{{$type := title (reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content)}}
-		{{if $armes.Get $item}}
-			{{$armes.Set $item (sub ($armes.Get $item) 1)}}
+	{{if not $type}}
+		Erreur : Vous devez indiquer le type d'arme.
+	{{else}}
+		{{if and ($armes.Get $item) (ge ($arme.Get $item) $q)}}
+			{{$armes.Set $item (sub ($armes.Get $item) $q)}}
 			{{if le ($armes.Get $item) 0}}
 				{{$armes.Del $item}}
 			{{end}}
 			{{dbSet 0 "armelist" $armes}}
-			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucleus."}}
+			{{$log = joinStr " " $user "a retiré" $q $item "de l'inventaire du Nucleus."}}
 			{{if $inv.Get $item}}
-				{{$inv.Set $item (add ($inv.Get $item) 1)}}
+				{{$inv.Set $item (add ($inv.Get $item) $q)}}
 			{{else}}
-				{{$inv.Set $item 1}}
+				{{$inv.Set $item $q}}
 			{{end}}
 		{{else}}
-			{{$item}} ne fait pas parti de l'inventaire du Nucleus.
+			{{$q}} {{$item}} ne fait pas parti de l'inventaire du Nucleus.
 		{{end}}
+	{{end}}
 
-	{{else if or (eq $flag "-soin") (eq $flag "-soins")}}
-		{{$item := title (index .CmdArgs 1)}}
-		{{if $soin.Get $item}}
-			{{$soin.Set $item (sub ($soin.Get $item) 1)}}
+	{{else if eq $flag "-soin" "-soins")}}
+		{{if and ($soin.Get $item) (ge ($soin.Get $item) $q}}
+			{{$soin.Set $item (sub ($soin.Get $item) $q)}}
 			{{if le ($soin.Get $item) 0}}
 				{{$soin.Del $item}}
 			{{end}}
 			{{dbSet 0 "soin" $soin}}
-			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucleus."}}
+			{{$log = joinStr " " $user "a retiré" $q $item "de l'inventaire du Nucleus."}}
 			{{if $inv.Get $item}}
-				{{$inv.Set (add ($inv.Get $item) 1)}}
+				{{$inv.Set (add ($inv.Get $item) $q)}}
 			{{else}}
-				{{$inv.Set $item 1}}
+				{{$inv.Set $item $q}}
 			{{end}}
 		{{else}}
-			{{$item}} ne fait pas parti de l'inventaire du Nucleus.
+			{{$q}} {{$item}} ne fait pas parti de l'inventaire du Nucleus.
 		{{end}}
 
-	{{else if or (eq $flag "-module") (eq $flag "-modules")}}
-		{{$item := title (index .CmdArgs 1)}}
+	{{else if eq $flag "-module" "-modules"}}
 		{{$type := title (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content)}}
-		{{if $module.Get $item}}
-			{{$module.Set $item (sub ($module.Get $item) 1)}}
+	{{if not $type}}
+		Erreur : Vous devez indiquer indiquer le type de module.
+	{{else}}
+		{{if and ($module.Get $item) (ge ($module.Get $item) $q)}}
+			{{$module.Set $item (sub ($module.Get $item) $q)}}
 			{{if le ($module.Get $item) 0}}
 				{{$module.Del $item}}
 			{{end}}
 			{{dbSet .Server.ID "module" $module}}
-			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucléus"}}
+			{{$log = joinStr " " $user "a retiré" "$q" $item "de l'inventaire du Nucléus"}}
 			{{if $inv.Get $item}}
-				{{$inv.Set (add ($inv.Get $item) 1)}}
+				{{$inv.Set (add ($inv.Get $item) $q)}}
 			{{else}}
-				{{$inv.Set $item 1}}
+				{{$inv.Set $item $q}}
 			{{end}}
 		{{else}}
 			{{$item}} ne fait pas parti de l'inventaire du Nucléus.
 		{{end}}
+	{{end}}
 
-	{{else if or (eq $flag "-implant") (eq $flag "-implants")}}
-		{{$item := title (index .CmdArgs 1)}}
+	{{else if eq $flag "-implant" "-implants"}}
 		{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
-		{{if $implant.Get $item}}
-			{{$implant.Set $item (sub ($implant.Get $item) 1)}}
-			{{if le ($implant.Get $item) 0}}
-				{{$implant.Del $item}}
-			{{end}}
-			{{dbSet .Server.ID "implant" $implant}}
-			{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucléus"}}
-			{{if $inv.Get $item}}
-				{{$inv.Set (add ($inv.Get $item) 1)}}
-			{{else}}
-				{{$inv.Set $item 1}}
-			{{end}}
+		{{if not $type}}
+			Erreur : Vous devez indiquer le type d'implants.
 		{{else}}
-			{{$item}} ne fait pas parti de l'inventaire du Nucléus.
-		{{end}}
+			{{if $implant.Get $item}}
+				{{$implant.Set $item (sub ($implant.Get $item) 1)}}
+				{{if le ($implant.Get $item) 0}}
+					{{$implant.Del $item}}
+				{{end}}
+				{{dbSet .Server.ID "implant" $implant}}
+				{{$log = joinStr " " $user "a retiré" $item "de l'inventaire du Nucléus"}}
+				{{if $inv.Get $item}}
+					{{$inv.Set (add ($inv.Get $item) 1)}}
+				{{else}}
+					{{$inv.Set $item 1}}
+				{{end}}
+			{{else}}
+				{{$item}} ne fait pas parti de l'inventaire du Nucléus.
+			{{end}}
 
 	{{else if or (eq $flag "-bc") (eq $flag "-BC")}}
 		{{$x := (toInt (index .CmdArgs 1))}}
