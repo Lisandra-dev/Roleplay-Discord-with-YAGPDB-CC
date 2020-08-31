@@ -22,7 +22,7 @@
 
 
 {{if .CmdArgs}}
-	{{if $craft}}
+	{{if and $craft (hasRoleID 701368588690522112)}}
 		{{if $name}}
 			{{$target = $id}}
 			{{$user = $name}}
@@ -153,7 +153,7 @@
 			{{if $inv.Get $item}}
 				{{$value := $inv.Get $item}}
 				{{if gt (toInt $amount) (toInt $value)}}
-					{{$mention}} : Vous n'avez pas assez de {{$item}} pour faire cela.
+					{{$mention}} n'a pas assez de {{$item}} pour faire cela.
 				{{else}}
 					{{if lt (toInt $amount) (toInt $value)}}
 						{{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
@@ -166,11 +166,11 @@
 					{{if eq (str $amount) "all"}}
 						{{$amount = "tous les"}}
 					{{end}}
-					{{$mention}} a utilisé {{$amount}} {{$item}} de son inventaire.
+					{{$mention}} a utilisé : {{$amount}} {{$item}}.
 					{{dbSet $target "economy" $userEco}}
 				{{end}}
 			{{else}}
-				{{$mention}} : cet objet n'est pas présent dans votre inventaire : vous ne pouvez donc pas l'utiliser.
+				{{$mention}} : cet objet n'est pas présent dans l'inventaire : vous ne pouvez donc pas l'utiliser.
 			{{end}}
 		{{end}}
 	{{end}}

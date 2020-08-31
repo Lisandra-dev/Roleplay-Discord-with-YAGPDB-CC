@@ -1,10 +1,10 @@
 {{$imp := ""}}
-{{range $k, $v := (dbGet .Server.ID "implant")}}
+{{range $k, $v := (dbGet .Server.ID "implant").Value}}
 	{{- $imp = (print  $imp "▫️" $k " : " $v "\n")}}
 {{- end}}
 
 {{$modu := ""}}
-{{range $k, $v := (dbGet .Server.ID "module" )}}
+{{range $k, $v := (dbGet .Server.ID "module").Value}}
 	{{- $modu = (print $modu "▫️" $k " : " $v "\n")}}
 {{- end}}
 
@@ -66,7 +66,7 @@
 "title" "Inventaire du Nucleus"
 "thumbnail" (sdict "url" "https://i.imgur.com/Zt2aZl4.png")
 "author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon)
-"description" (joinStr " " "**Composant** \n ▫️ Biocomposant : " $bioc "\n▫️ Liquide cytomorphe :" $cyto "\n▫️ Cellule bionotropique :" $biono "\n ▫️ Substrat ferreux :" $ferreux "\n ▫️ Composant universel :" $univ "\n\n **Armes libres** :\n" $weapon "\n\n **Modules libres :**\n" $modu "\n\n **Soin** :" $soin " \n\n **Chargeurs disponibles : **\n ▫️ Pistolet : " $pistolet "\n ▫️ Fusil : " $fusil "\n ▫️ Canon : " $canon "\n\n **Implants disponibles :**" $imp )
+"description" (joinStr " " "**Composant** \n ▫️ Biocomposant : " $bioc "\n▫️ Liquide cytomorphe :" $cyto "\n▫️ Cellule bionotropique :" $biono "\n ▫️ Substrat ferreux :" $ferreux "\n ▫️ Composant universel :" $univ "\n\n **Armes libres** :\n" $weapon "\n\n **Modules libres :**\n" $modu "\n\n **Soin** : \n" $soin " \n\n **Chargeurs disponibles : **\n ▫️ Pistolet : " $pistolet "\n ▫️ Fusil : " $fusil "\n ▫️ Canon : " $canon "\n\n **Implants disponibles :**" $imp )
 "timestamp" currentTime
 "color" 0x8CBAEF}}
 
