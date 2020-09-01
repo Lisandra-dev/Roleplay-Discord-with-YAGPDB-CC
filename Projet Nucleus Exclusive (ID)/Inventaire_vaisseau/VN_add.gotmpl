@@ -81,19 +81,17 @@
 
 {{if .CmdArgs}}
 	{{if eq (len .CmdArgs) 1}}
-Erreur : Nombre d'argument invalide. 
+Erreur : Nombre d'argument invalide.
 > N'oublier pas le nom de l'objet !
 	{{else if ge (len .CmdArgs) 2}}
 		{{$item = title (index .CmdArgs 1)}}
-		
 		{{if eq (len .CmdArgs) 3}}
 			{{$q = toInt (index .CmdArgs 2)}}
 		{{end}}
-		
 		{{if eq $flag "-arme" "-armes"}}
 			{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
 			{{if not $type}}
-                Erreur : Oublie du type d'arme
+        Erreur : Oublie du type d'arme
 			{{else}}
 				{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
 					{{$inv.Set $item (sub ($inv.Get $item) $q)}}
@@ -108,7 +106,7 @@ Erreur : Nombre d'argument invalide.
 					{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 					{{dbSet 0 "armelist" $armes}}
 				{{else}}
-					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela. 
+					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
 				{{end}}
 			{{end}}
 
@@ -126,7 +124,7 @@ Erreur : Nombre d'argument invalide.
 				{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 				{{dbSet 0 "soin" $soin}}
 			{{else}}
-					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela. 
+					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
 			{{end}}
 
 		{{else if eq $flag "-module" "-modules"}}
@@ -143,7 +141,7 @@ Erreur : Nombre d'argument invalide.
 					{{dbSet .Server.ID "module" $module}}
 					{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 				{{else}}
-					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela. 
+					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
 				{{end}}
 			{{end}}
 
@@ -151,7 +149,7 @@ Erreur : Nombre d'argument invalide.
 				{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
 				{{if not $type}}
 				Erreur : Vous devez indiquer le type d'implants.
-				{{else}}		
+				{{else}}
 					{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
 						{{$inv.Set $item (sub ($inv.Get $item) $q)}}
 						{{if eq ($inv.Get $item) 0}}
@@ -161,7 +159,7 @@ Erreur : Nombre d'argument invalide.
 						{{dbSet .Server.ID "implant" $implant}}
 						{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 					{{else}}
-					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela. 
+					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
 					{{end}}
 				{{end}}
 
@@ -248,7 +246,7 @@ Erreur : Nombre d'argument invalide.
 		{{else if eq $flag "-chargeur"}}
 			{{$balle := reFind `(?i)(fusil|pistolet|canon)` .Message.Content}}
 			{{if not $balle}}
-				Erreur : VOus devez indiquer l'arme liée au chargeur. 
+				Erreur : VOus devez indiquer l'arme liée au chargeur.
 			{{else}}
 			{{$item = print "[CHARGEUR] " (title $balle)}}
 				{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
@@ -264,7 +262,7 @@ Erreur : Nombre d'argument invalide.
 				{{end}}
 				{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 			{{else}}
-					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela. 
+					{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
 		{{end}}
 	{{end}}
 
