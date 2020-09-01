@@ -51,6 +51,8 @@
 	{{$chargeur := reFind `(?i)chargeur` $initem}}
 	{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $initem}}
 	{{$letter := reFind `(?i)^(e|m)` $initem}}
+	{{$vn := reFind `(?i)(\+vn)` .Message.Content}}
+	{{$vn = lower $vn}}
 	{{if $compo}}
 		{{if eq $compo "bc" "BC" "Bc"}}
 			{{$initem = "[C] Biocomposant"}}
@@ -85,11 +87,6 @@
 		{{$inv = sdict .}}
 	{{end}}
 
-	{{$info := sdict}}
-	{{with ($userEco.Get "desc")}}
-		{{$info = sdict .}}
-	{{end}}
-
 	{{if not $item}}
 		{{sendMessage nil "L'objet n'existe pas."}}
 	{{else}}
@@ -113,12 +110,33 @@
 					 	{{$item.Set "stock" (sub $stock $amount)}}
 					{{end}}
 					{{if .sii}}
-						{{$i := ($items.Get ( $initem))}}
-						{{with $i}}
-							{{$desc = .desc}}
+						{{if not $vn}}
+							{{$inv.Set $initem (add (toInt ($inv.Get $initem)) $amount)}}
+							{{$userEco.Set "Inventory" $inv}}
+						{{else}}
+							{{if $chargeur}}
+								{{$bullet := sdict}}
+								{{with (dbGet 0 "chargeur_Multi")}}
+									{{$bullet = sdict .Value}}
+								{{end}}
+								{{$bullet.Set $initem (add (toInt ($bullet.Get $initem)) $amount)}}
+								{{dbSet 0 "chargeur_Multi" $bullet}}
+							{{else if $compo}}
+								{{$elem := sdict}}
+								{{with (dbGet .Server.ID "compo")}}
+									{{$elem = sdict .Value}}
+								{{end}}
+								{{$elem.Set $initem (add (toInt ($elem.Get $initem)) $amount)}}
+								{{dbSet .Server.ID "compo" $elem}}
+							{{else if $letter}}
+								{{$stuff := sdict}}
+								{{with (dbGet 0 "stuff")}}
+									{{$stuff := sdict .Value}}
+								{{end}}
+								{{$stuff.Set $initem (add (toInt ($stuff.Get $initem)) $amount)}}
+								{{dbSet 0 "stuff" $stuff}}
+							{{end}}
 						{{end}}
-						{{$inv.Set $initem (add (toInt ($inv.Get $initem)) $amount)}}
-						{{$info.Set (joinStr " " $initem) $desc}}
 					{{end}}
 		      {{if not .reply}}
 					{{$user = joinStr " " "Achat | " (title $user)}}
@@ -130,7 +148,6 @@
 		      {{$items.Set $initem $item}}
 		      {{$serverEco.Set "Items" $items}}
 		      {{$userEco.Set "balance" $bal}}
-		      {{$userEco.Set "Inventory" $inv}}
 				{{end}}
 	    {{end}}
 	  {{end}}
