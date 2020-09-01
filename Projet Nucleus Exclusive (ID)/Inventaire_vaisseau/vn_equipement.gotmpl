@@ -1,2 +1,96 @@
 {{/* This function exist simply because of the longer of vn add/use.
    Regex : `^(vnuse|vnadd) -stuff` */}}
+{{$stuff := sdict }}
+{{with (dbGet 0 "stuff")}}
+	{{$stuff := sdict .Value}}
+{{end}}
+
+{{/* Inventaire personnel */}}
+
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+	{{dbSetExpire $id "rerollName" $name 3600}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$user = title $user}}
+
+{{$userEco := sdict}}
+{{with (dbGet $id "economy")}}
+	{{$userEco = sdict .Value}}
+{{end}}
+
+{{$serverEco := sdict}}
+{{with (dbGet .Server.ID "economy")}}
+	{{$serverEco = sdict .Value}}
+{{end}}
+
+{{/* Inventory */}}
+{{$inv := sdict}}
+{{if ($userEco.Get "Inventory")}}
+	{{$inv = sdict ($userEco.Get "Inventory")}}
+{{end}}
+
+{{/* Function */}}
+{{$flag := reFind `(i?)\$(vnuse|vnadd)` .Message.Content}}
+{{$flag = lower $flag}}
+{{$log := ""}}
+{{$q := 1}}
+{{$item := ""}}
+
+{{if .CmdArgs}}
+	{{if le (len .CmdArgs) 1}}
+		Erreur : Nombre d'argument invalide.
+		> N'oublier pas le nom de l'objet ! 
+	{{else if ge (len .CmdArgs) 2}}
+      {{$item = title (index .CmdArgs 1)}}
+		{{if eq (len .CmdArgs) 3}}
+			{{$q = toInt (index .CmdArgs 2)}}
+		{{end}}
+
+		{{if eq $flag "$vnadd"}}
+			{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
+				{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+				{{if ($stuff.Get $item)}}
+					{{$stuff.Set $item (add ($stuff.Get $item) $q)}}
+				{{else}}
+					{{$stuff.Set $item $q}}
+				{{end}}
+				{{if eq ($inv.Get $item) 0}}
+					{{$inv.Del $item}}
+				{{end}}
+				{{$log = joinStr " " $user " a posé" $q $item "dans l'inventaire du Nucleus" }}
+				{{dbSet 0 "stuff" $stuff}}
+			{{else}}
+				{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
+			{{end}}
+
+		{{else if eq $flag "$vnuse"}}
+			{{if and ($stuff.Get $item) (ge (toInt ($stuff.Get $item)) $q)}}
+				{{$stuff.Set $item (sub ($stuff.Get $item) $q)}}
+				{{if le ($stuff.Get $item) 0}}
+					{{$stuff.Del $item}}
+				{{end}}
+				{{dbSet 0 "stuff" $stuff}}
+				{{$log = joinStr " " $user "a retiré" $q $item "de l'inventaire du Nucleus."}}
+				{{if $inv.Get $item}}
+					{{$inv.Set $item (add ($inv.Get $item) $q)}}
+				{{else}}
+					{{$inv.Set $item $q}}
+				{{end}}
+			{{else}}
+				{{$q}} {{$item}} ne fait pas parti de l'inventaire du Nucleus.
+			{{end}}
+		{{else}}
+			**Usage** : `$(vnuse|vnadd) -(armes?|equip|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur/nom> (quantité si nom)`
+		{{end}}
+	{{end}}
+{{end}}
