@@ -15,12 +15,12 @@
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
 {{if $embed.Author.Name}}
-	{{$check = reFind `casier` $embed.Author.Name}}
+	{{$check = reFind `Casier` $embed.Author.Name}}
 {{end}}
-{{ if and (eq $check "casier") $embed.Footer}} {{/* More checks */}}
+{{ if and (eq $check "Casier") $embed.Footer}} {{/* More checks */}}
 	{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
 	{{ $isValid = true }} {{/* Yay, it is valid */}}
-{{else if and (eq $check "casier")}}
+{{else if and (eq $check "Casier")}}
 	{{$isValid = true}}
 	{{$page = 1}}
 {{ end }}

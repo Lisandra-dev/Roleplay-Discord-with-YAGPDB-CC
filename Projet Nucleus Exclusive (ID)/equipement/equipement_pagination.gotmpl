@@ -15,12 +15,12 @@
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
 {{if $embed.Author.Name}}
-	{{$check = reFind `casier` $embed.Author.Name}}
+	{{$check = reFind `(?i)équipement` $embed.Author.Name}}
 {{end}}
-{{ if and (eq $check "casier") $embed.Footer}} {{/* More checks */}}
+{{ if and (eq $check "Équipement") $embed.Footer}} {{/* More checks */}}
 	{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
 	{{ $isValid = true }} {{/* Yay, it is valid */}}
-{{else if and (eq $check "casier")}}
+{{else if and (eq $check "Équipement")}}
 	{{$isValid = true}}
 	{{$page = 1}}
 {{ end }}
@@ -35,22 +35,10 @@
 	{{$user = (dbGet (toInt $id) "rerollName").Value}}
 {{end}}
 
-
-
-{{$userEco := sdict}}
-{{with (dbGet $id "economy")}}
-	{{$userEco = sdict .Value}}
-{{end}}
-
-{{$serverEco := sdict}}
-{{with (dbGet $.Server.ID "economy")}}
-	{{$serverEco = sdict .Value}}
-{{end}}
-
 {{/* Inventory */}}
 {{$equip := sdict}}
-{{if ($userEco.Get "Inventory")}}
-	{{$equip = sdict ($userEco.Get "Inventory")}}
+{{with (dbGet $id "équipement")}}
+	{{$equip = sdict .Value}}
 {{end}}
 
 
@@ -60,7 +48,7 @@
 {{range $k,$v := $equip}}
 	{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v** : [%v]" $k $v)}}
 {{end}}
-{{$author := (joinStr " " "Casier de :" (title $user))}}
+{{$author := (joinStr " " "Équipement de :" (title $user))}}
 
 {{/* Pagination */}}
 		{{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}

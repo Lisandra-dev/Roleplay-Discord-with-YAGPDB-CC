@@ -33,14 +33,9 @@
 
 
 {{/* Inventaire */}}
-{{$userEco := sdict}}
-{{with (dbGet $id "economy")}}
-	{{$userEco = sdict .Value}}
-{{end}}
-
-{{$inv := sdict}}
-{{with ($userEco.Get "Inventory")}}
-	{{$inv = sdict .}}
+{{$equip := sdict}}
+{{with (dbGet $id "équipement")}}
+	{{$equip = sdict .Value}}
 {{end}}
 
 {{/* Msg */}}
@@ -61,7 +56,7 @@
 		{{$item = "Fusil"}}
 	{{end}}
 	{{$item = print "[CHARGEUR] " $item}}
-	{{$char := $inv.Get $item}}
+	{{$char := $equip.Get $item}}
 
 {{/* Fusil */}}
 {{if ge $pa 2}}
@@ -71,10 +66,10 @@
 			{{if gt (toInt $char) 0}}
 				{{$arme.Del "fusil"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set $item $char }}
+				{{$equip.Set $item $char }}
 				{{$desc = joinStr " " "Fusil rechargé.\n Il vous reste" $char "balleurs pleins." }}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
+				{{if eq ($equip.Get $item) 0}}
+					{{$equip.Del $item}}
 				{{end}}
 			{{else}}
 				{{$desc = "Plus de balleur dans l'inventaire."}}
@@ -93,10 +88,10 @@
 			{{if gt (toInt $char) 0}}
 				{{$arme.Del "fusil2"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set $item $char }}
+				{{$equip.Set $item $char }}
 				{{$desc = joinStr " " "Fusil secondaire rechargé.\n Il vous reste" $char "balleurs pleins." }}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
+				{{if eq ($equip.Get $item) 0}}
+					{{$equip.Del $item}}
 				{{end}}
 			{{else}}
 				{{$desc = "Aucun balleur disponible."}}
@@ -116,10 +111,10 @@
 			{{if gt (toInt $char) 0}}
 				{{$arme.Del "pistol"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set $item $char }}
+				{{$equip.Set $item $char }}
 				{{$desc = joinStr " " "Pistolet rechargé.\n Il vous reste" $char "balleurs pleins." }}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
+				{{if eq ($equip.Get $item) 0}}
+					{{$equip.Del $item}}
 				{{end}}
 			{{else}}
 				{{$desc = "Aucun balleur disponible."}}
@@ -138,10 +133,10 @@
 			{{if gt (toInt $char) 0}}
 				{{$arme.Del "pistol2"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set $item $char }}
+				{{$equip.Set $item $char }}
 				{{$desc = joinStr " " "Pistolet secondaire rechargé.\n Il vous reste" $char "balleurs pleins." }}
-				{{if eq ($inv.Get $item) 0}}
-					{{$inv.Del $item}}
+				{{if eq ($equip.Get $item) 0}}
+					{{$equip.Del $item}}
 				{{end}}
 			{{else}}
 				{{$desc = "Aucun balleur disponible."}}
@@ -162,13 +157,13 @@
 			{{if gt (toInt $char) 0}}
 				{{$arme.Del "canon"}}
 				{{$char = sub $char 1}}
-				{{$inv.Set $item $char }}
+				{{$equip.Set $item $char }}
 				{{$desc = joinStr " " "Canon rechargé.\n Il vous reste" $char "balleurs pleins." }}
 			{{else}}
 				{{$desc = "Aucun balleur disponible."}}
 			{{end}}
-			{{if eq ($inv.Get $item) 0}}
-				{{$inv.Del $item}}
+			{{if eq ($equip.Get $item) 0}}
+				{{$equip.Del $item}}
 			{{end}}
 		{{else}}
 			{{if ($arme.Get "canon")}}
@@ -198,5 +193,4 @@
 {{deleteMessage nil $idm 30}}
 {{deleteTrigger 1}}
 {{dbSet $id "arme" $arme}}
-{{$userEco.Set "Inventory" $inv }}
-{{dbSet $id "economy" $userEco}}
+{{dbSet $id "équipement" $equip}}

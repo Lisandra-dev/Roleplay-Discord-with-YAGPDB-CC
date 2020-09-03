@@ -15,20 +15,10 @@
 {{end}}
 {{$user = title $user}}
 
-{{$userEco := sdict}}
-{{with (dbGet $id "economy")}}
-	{{$userEco = sdict .Value}}
-{{end}}
-
-{{$serverEco := sdict}}
-{{with (dbGet .Server.ID "economy")}}
-	{{$serverEco = sdict .Value}}
-{{end}}
-
 {{/* Inventory */}}
 {{$equip := sdict}}
-{{if ($userEco.Get "Inventory")}}
-	{{$equip = sdict ($userEco.Get "Inventory")}}
+{{with (dbGet $id "équipement")}}
+	{{$equip = sdict .Value}}
 {{end}}
 
 

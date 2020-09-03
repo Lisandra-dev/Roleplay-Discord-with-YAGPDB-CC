@@ -55,8 +55,9 @@
 	{{$userEco = sdict .Value}}
 {{end}}
 
-{{with ($userEco.Get "Inventory")}}
-	{{$inv = sdict .}}
+{{$inv := sdict}}
+{{with (dbGet $id "équipement")}}
+	{{$inv = sdict .Value}}
 {{end}}
 
 {{$reroll := false}}
