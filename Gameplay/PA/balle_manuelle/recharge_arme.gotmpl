@@ -1,8 +1,6 @@
 {{$img := "https://i.imgur.com/WNuPWCv.png"}}
 
-
 {{/* Joueur */}}
-
 {{/* Databases */}}
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
