@@ -1,0 +1,72 @@
+{{/* Trigger : Regex : `^\$managestuff -remove`*/}}
+
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$mention := ""}}
+
+{{if .CmdArgs}}
+  {{$target := ""}}
+  {{$item := ""}}
+  {{$amount := 1}}
+  {{if $name}}
+    {{$target = $id}}
+    {{$user = $name}}
+    {{$mention = $name}}
+  {{else}}
+    {{with (userArg (index . 0))}}
+      {{$target = .}}
+      {{$target = $target.ID}}
+      {{$mention = joinStr "" "<@" $target ">"}}
+      {{$user = (getMember $target).Nick}}
+    {{end}}
+  {{end}}
+  {{if ge (len .) 2}}
+		{{$item = title (index . 1)}}
+		{{if (reFind `(?i)chargeur` $item)}}
+			{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
+			{{$item = print "[CHARGEUR] " (title (lower $weap))}}
+		{{end}}
+		{{if ge (len .) 4}}
+			{{$amount = or (toInt (index . 3)) 1}}
+		{{end}}
+	{{end}}
+  {{$equip := sdict}}
+    {{$place := sdict}}
+		{{if $target}}
+      {{with (dbGet $target "équipement")}}
+        {{$equip = sdict .Value}}
+      {{end}}
+      {{with (dbGet $target "place")}}
+        {{$place = sdict .Value}}
+      {{end}}
+    {{$sstuff := $place.Get "s_stuff"}}
+    {{$sconso := $place.Get "s_conso"}}
+    {{$mstuff := $place.Get "max_stuff"}}
+    {{$mconso := $place.Get "max_conso"}}
+
+    {{if $compo}}
+      {{if eq $compo "bc" "BC" "Bc"}}
+        {{$item = "[C] Biocomposant"}}
+      {{else if eq $compo "lc" "LC" "Lc"}}
+        {{$item = "[C] Liquide Cytomorphe"}}
+      {{else if eq $compo "cb" "CB" "Cb"}}
+        {{$item = "[C] Cellule Bionotropique"}}
+      {{else if eq $compo "sf" "SF" "Sf"}}
+        {{$item = "[C] Substrat Ferreux"}}
+      {{else if eq $compo "cu" "CU" "Cu"}}
+        {{$item = "[C] Composant Universel"}}
+      {{end}}
+    {{end}}
+
+    

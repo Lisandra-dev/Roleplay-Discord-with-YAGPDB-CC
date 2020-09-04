@@ -1,3 +1,18 @@
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$mention := ""}}
+
 {{if .CmdArgs}}
   {{$secondflag := ""}}
 	{{$target := ""}}
@@ -5,7 +20,7 @@
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 1}}
-			{{$secondflag = (reFind `\-(add|remove|reset|initialise)` (index . 0))}}
+			{{$secondflag = (reFind `\-(add|reset|init)` (index . 0))}}
 			{{if ge (len .) 2}}
 			{{if $name}}
 				{{$target = $id}}
@@ -43,120 +58,95 @@
       {{end}}
       {{with (dbGet $target "place")}}
         {{$place = sdict .Value}}
-	{{else}}
-		**Usage** : `$managestuff -(add|remove|reset|init) user item amount`
-	{{end}}
-
-  {{if eq $secondflag "-init"}}
-    {{$place.Set "s_conso" 5}}
-    {{$place.Set "s_stuff" 2}}
-    {{$place.Set "max_conso" 5}}
-    {{$place.Set "max_stuff" 2}}
-
-	{{else if eq $secondflag "-reset"}}
-		{{if $target}}
-			{{dbDel $target "équipement"}}
-      {{$place.Set "s_conso" 5}}
-      {{$place.Set "s_stuff" 2}}
-      {{$place.Set "max_conso" 5}}
-      {{$place.Set "max_stuff" 2}}
-			Inventaire de : {{$mention}} Nettoyé !
-		{{end}}
-
-	{{else if eq $secondflag "-add"}}
-  {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
-    {{if $compo}}
-      {{if eq $compo "bc" "BC" "Bc"}}
-        {{$item = "[C] Biocomposant"}}
-      {{else if eq $compo "lc" "LC" "Lc"}}
-        {{$item = "[C] Liquide Cytomorphe"}}
-      {{else if eq $compo "cb" "CB" "Cb"}}
-        {{$item = "[C] Cellule Bionotropique"}}
-      {{else if eq $compo "sf" "SF" "Sf"}}
-        {{$item = "[C] Substrat Ferreux"}}
-      {{else if eq $compo "cu" "CU" "Cu"}}
-        {{$item = "[C] Composant Universel"}}
       {{end}}
-    {{end}}
-    {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-      {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
-        {{if le $amount $sstuff }}
-          {{$place.Set "s_stuff" (sub $amount $sstuff)}}
-          {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-          {{if eq (str $q) "all"}}
-            {{$amount = "tous les"}}
-          {{end}}
-            {{$mention}} a pris {{$amount}} {{$item}} du casier.
-        {{else}}
-          {{$mention}} n'a pas assez de place dans son inventaire.
-        {{end}}
-      {{else}}
-        {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
-          {{$mention}} possède déjà un sac. Merci de retirer l'ancien.
-        {{else}}
-          {{if eq $item "[E] Sac À Dos" }}
-            {{$place.Set "s_stuff" (add $sstuff 3)}}
-            {{$place.Set "s_conso" (add $sconso 9)}}
-            {{$place.Set "max_stuff" (add $sstuff 3)}}
-            {{$place.Set "max_conso" (add $sconso 9)}}
-          {{else if eq $item "[E] Sacoche" }}
-            {{$place.Set "s_stuff" (add $sstuff 2)}}
-            {{$place.Set "s_conso" (add $sconso 6)}}
-            {$place.Set "max_stuff" (add $sstuff 2)}}
-            {{$place.Set "max_conso" (add $sconso 6)}}
-          {{else if eq $item "[E] Sacoche Ceinture"}}
-            {{$place.Set "s_stuff" (add $sstuff 1)}}
-            {{$place.Set "s_conso" (add $sconso 3)}}
-            {{$place.Set "max_stuff" (add $sstuff 1)}}
-            {{$place.Set "max_conso" (add $sconso 3)}}
-          {{end}}
-          {{$equip.Set $item 1}}
-          {{$mention}} a pris {{$item}} du casier.
-        {{end}}
-      {{end}}
-    {{else if not $compo}}
-      {{if and (le $amount (toInt $sconso))}}
-        {{$place.Set "s_conso" (sub $amount $sconso)}}
-        {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-        {{if eq (str $q) "all"}}
-          {{$amount = "tous les"}}
-        {{end}}
-        {{$mention}} a pris {{$amount}} {{$item}} du casier.
-      {{else}}
-        {{$mention}} n'a pas assez de place dans son inventaire.
-      {{end}}
-    {{end}}
-		{{if $equip.Get $item}}
-			{{$equip.Set $item (add (toInt ($equip.Get $item)) $amount)}}
-		{{else}}
-			{{$equip.Set $item $amount}}
-		{{end}}
-		Ajout de : {{$amount}} {{$item}} à l'inventaire de {{$mention}}.
-
-		{{else if eq $secondflag "-remove"}}
-			{{if $target}}
-				{{if $equip.Get $item}}
-					{{$value := (sub (toInt ($equip.Get $item)) $amount)}}
-					{{if ne $value 0}}
-						{{$equip.Set $item $value}}
-					{{else}}
-						{{$equip.Del $item}}
-					{{end}}
-					{{$userEco.Set "Inventory" $equip}}
-					{{$amount}} : {{$item}} de l'inventaire de {{$mention}} a été retiré.
-				{{else}}
-					Cet objet n'existe pas dans l'inventaire cible.
-				{{end}}
-			{{end}}
-			{{if $target}}
-        {{dnSet $target "équipement" $equip}}
+      {{if eq $secondflag "-init"}}
+        {{$place.Set "s_conso" 5}}
+        {{$place.Set "s_stuff" 2}}
+        {{$place.Set "max_conso" 5}}
+        {{$place.Set "max_stuff" 2}}
         {{dbSet $target "place" $place}}
-			{{end}}
-		{{end}}
-	{{else}}
-	**Usage** :
-:white_small_square: __Money__ : `$adminmoney -(add|remove|reset|set) user amount`
-:white_small_square: __Symbol__ : `$symbol <symbol>`
-:white_small_square: __Manage inventory__ : `$manageinv -(add|remove|set) user item amount`
-:white_small_square: __Reset inventory__ : `$manageinv -reset user`
+
+      {{else if eq $secondflag "-reset"}}
+        {{dbDel $target "équipement"}}
+        {{$place.Set "s_conso" 5}}
+        {{$place.Set "s_stuff" 2}}
+        {{$place.Set "max_conso" 5}}
+        {{$place.Set "max_stuff" 2}}
+        Inventaire de : {{$mention}} Nettoyé !
+        {{dbSet $target "place" $place}}
+
+      {{else if eq $secondflag "-add"}}
+        {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+        {{if $compo}}
+          {{if eq $compo "bc" "BC" "Bc"}}
+            {{$item = "[C] Biocomposant"}}
+          {{else if eq $compo "lc" "LC" "Lc"}}
+            {{$item = "[C] Liquide Cytomorphe"}}
+          {{else if eq $compo "cb" "CB" "Cb"}}
+            {{$item = "[C] Cellule Bionotropique"}}
+          {{else if eq $compo "sf" "SF" "Sf"}}
+            {{$item = "[C] Substrat Ferreux"}}
+          {{else if eq $compo "cu" "CU" "Cu"}}
+            {{$item = "[C] Composant Universel"}}
+          {{end}}
+        {{end}}
+        {{$sstuff := $place.Get "s_stuff"}}
+        {{$sconso := $place.Get "s_conso"}}
+        {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
+          {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+          {{if le $amount $sstuff }}
+            {{$place.Set "s_stuff" (sub $sstuff $amount)}}
+            {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+            {{$mention}} a obtenu {{$amount}} {{$item}}.
+          {{else}}
+            {{$mention}} n'a pas assez de place dans son inventaire. 
+          {{end}}
+          {{else}}
+            {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
+              {{$mention}} possède déjà un sac. Merci de retirer l'ancien.
+            {{else}}
+              {{if eq $item "[E] Sac À Dos" }}
+                {{$place.Set "s_stuff" (add $sstuff 3)}}
+                {{$place.Set "s_conso" (add $sconso 9)}}
+                {{$place.Set "max_stuff" (add $sstuff 3)}}
+                {{$place.Set "max_conso" (add $sconso 9)}}
+              {{else if eq $item "[E] Sacoche" }}
+                {{$place.Set "s_stuff" (add $sstuff 2)}}
+                {{$place.Set "s_conso" (add $sconso 6)}}
+                {{$place.Set "max_stuff" (add $sstuff 2)}}
+                {{$place.Set "max_conso" (add $sconso 6)}}
+              {{else if eq $item "[E] Sacoche Ceinture"}}
+                {{$place.Set "s_stuff" (add $sstuff 1)}}
+                {{$place.Set "s_conso" (add $sconso 3)}}
+                {{$place.Set "max_stuff" (add $sstuff 1)}}
+                {{$place.Set "max_conso" (add $sconso 3)}}
+              {{end}}
+              {{$equip.Set $item 1}}
+              {{$mention}} a obtenu {{$item}}.
+            {{end}}
+          {{end}}
+        {{else if not $compo}}
+          {{if and (le $amount (toInt $sconso))}}
+            {{$place.Set "s_conso" (sub $sconso $amount)}}
+            {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+            {{$mention}} a obtenu {{$amount}} {{$item}}.          
+          {{else}}
+            {{$mention}} n'a pas assez de place dans son inventaire.
+          {{end}}
+        {{else if $compo}}
+          {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+          {{$mention}} obtient {{$amount}} {{$item}}, sans prise de place.
+        {{end}}
+        {{if le (toInt ($place.Get "s_stuff")) 0}}
+          {{$place.Set "s_stuff" 0}}
+        {{end}}
+        {{if le (toInt ($place.Get "s_conso")) 0}}
+          {{$place.Set "s_conso" 0}}
+        {{end}}
+        {{dbSet $target "équipement" $equip}}
+        {{dbSet $target "place" $place}}
+        {{$mention}} : Il vous reste {{$place.Get "s_stuff"}} places d'équipements et {{$place.Get "s_conso"}} places de consommables. 
+      {{end}}  
+    {{end}}
+  {{end}}
 {{end}}

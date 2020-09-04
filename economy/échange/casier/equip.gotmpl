@@ -69,6 +69,12 @@
         {{end}}
       {{end}}
     {{end}}
+     {{$chargeur := reFind `(?i)chargeur` $item}}
+    {{if $chargeur}}
+      {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
+      {{$item = print "[CHARGEUR] " $item}}
+    {{end}}
+    
     {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
     {{if $compo}}
       {{if eq $compo "bc" "BC" "Bc"}}
@@ -91,13 +97,13 @@
         {{$amount = $value}}
       {{end}}
       {{if gt (toInt $amount) (toInt $value)}}
-        {{$mention}} n ''a pas assez de {{$item}} pour faire cela.
+        {{$mention}} n 'a pas assez de {{$item}} pour faire cela.
       {{else}}
         {{if le (toInt $amount) (toInt $value)}}
           {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
             {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
               {{if le $amount $sstuff }}
-                {{$place.Set "s_stuff" (sub $amount $sstuff)}}
+                {{$place.Set "s_stuff" (sub $sstuff $amount)}}
                 {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
                 {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
                 {{if eq (str $q) "all"}}
@@ -134,7 +140,7 @@
             {{end}}
           {{else if not $compo}}
             {{if and (le $amount (toInt $sconso))}}
-              {{$place.Set "s_conso" (sub $amount $sconso)}}
+              {{$place.Set "s_conso" (sub $sconso $amount)}}
               {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
               {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
               {{if eq (str $q) "all"}}
@@ -144,6 +150,10 @@
             {{else}}
               {{$mention}} n'a pas assez de place dans son inventaire.
             {{end}}
+          {{else if $compo}}
+            {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+            {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
+            {{$mention}} : Vous rangez dans votre inventaire {{$amount}} {{$item}}, sans prise de place.
           {{end}}
           {{if le (toInt ($inv.Get $item)) 0}}
             {{$inv.Del $item}}
@@ -158,6 +168,7 @@
           {{dbSet $target "economy" $userEco}}
           {{dbSet $target "équipement" $equip}}
           {{dbSet $target "place" $place}}
+          {{$mention}} : Il vous reste {{$place.Get "s_stuff"}} places d'équipements et {{$place.Get "s_conso"}} places de consommables. 
         {{end}}
       {{end}}
     {{else}}
