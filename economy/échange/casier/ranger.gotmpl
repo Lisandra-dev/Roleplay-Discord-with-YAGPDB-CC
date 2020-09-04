@@ -14,6 +14,7 @@
 {{end}}
 {{$target := .User.ID}}
 {{$mention := ""}}
+{{$msg := ""}}
 
 {{if .CmdArgs}}
 	{{if $name}}
@@ -86,8 +87,8 @@
       {{$item = print "[CHARGEUR] " $item}}
     {{end}}
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
-      {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-        {{if not $sac}}
+      {{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
+        {{if and (not $sac)}}
           {{if lt $amount $sstuff}}
             {{$place.Set "s_stuff" (add $sstuff $amount)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -97,19 +98,19 @@
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
             {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
             {{if eq (toInt $amount) 1}}
-        L'objet {{$item}} a été ajouté au casier de {{$mention}}
+        {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de " $mention "."}}
       {{else}}
-        {{$amount}} {{$item}} ont été ajouté au casier de {{$mention}}
+        {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $mention "."}}
       {{end}}
           {{else}}
-            {{$mention}} ne possède la quantité ({{$amount}}) spécifiée pour {{$item}}.
+            {{$msg = joinStr "" $mention " ne possède la quantité (" $amount ")" " spécifiée pour " $item "."}}
           {{end}}
         {{else}}
           {{if eq $item "[E] Sac À Dos" }}
             {{$sstuff = sub $sstuff 3}}
             {{$sconso = sub $sconso 9}}
             {{if or (lt $sstuff 0) (lt $sconso 0)}}
-              {{$mention}} votre {{$item}} est rempli ! Videz le avant de le ranger.
+              {{$msg = joinStr "" $mention " votre " $item " est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}
@@ -120,7 +121,7 @@
             {{$sstuff = sub $sstuff 2}}
             {{$sconso = sub $sconso 6}}
             {{if or (lt $sstuff 0) (lt $sconso 0)}}
-              {{$mention}} votre {{$item}} est rempli ! Videz le avant de le ranger.
+              {{$msg = joinStr "" $mention " votre " $item " est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}
@@ -131,7 +132,7 @@
             {{$sstuff = sub $sstuff 1}}
             {{$sconso = sub $sconso 3}}
             {{if or (lt $sstuff 0) (lt $sconso 0)}}
-              {{$mention}} votre {{$item}} est rempli ! Videz le avant de le ranger.
+              {{$msg = joinStr "" $mention " votre " $item " est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}
@@ -142,9 +143,9 @@
           {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
           {{$equip.Del $item}}
           {{if eq (toInt $amount) 1}}
-        L'objet {{$item}} a été ajouté au casier de {{$mention}}
+        {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $mention"}}
       {{else}}
-        {{$amount}} {{$item}} ont été ajouté au casier de {{$mention}}
+        {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $mention "."}}
       {{end}}
         {{end}}
       {{else if not $compo}}
@@ -157,30 +158,31 @@
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
           {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
           {{if eq (toInt $amount) 1}}
-           L'objet {{$item}} a été ajouté au casier de {{$mention}}.
+            {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $mention"}}
           {{else}}
-            {{$amount}} {{$item}} ont été ajouté au casier de {{$mention}}
+            {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $mention "."}}
           {{end}}
         {{else}}
-         {{$mention}} ne possède pas la quantité spécifiée ({{$amount}}) pour {{$item}}.
+         {{$msg = $mention " ne possède pas la quantité spécifiée (" $amount ") pour " $item "."}}
         {{end}}
       {{else if $compo}}
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
         {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-        {{$mention}} range dans son casier {{$amount}} {{$item}}
+        {{$msg = joinStr "" $mention " range dans son casier " $amount " " $item "."}}
       {{end}}
       {{if eq (toInt ($equip.Get $item)) 0}}
         {{$equip.Del $item}}
       {{end}}
-      {{$mention}} : il vous reste {{$place.Get "s_stuff"}} places d'équipements et {{$place.Get "s_conso"}} places de consommables. 
+     {{$msg = joinStr "" $msg "\n" $mention " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") "places de consommables."}} 
       {{$userEco.Set "Inventory" $inv}}
       {{dbSet $target "economy" $userEco}}
       {{dbSet $target "équipement" $equip }}
       {{dbSet $target "place" $place}}
     {{else}}
-      {{$mention}} : L'objet n'existe pas dans votre équipement, ou vous n'avez pas la quantité ciblée.
+      {{$msg = joinStr "" $mention " : L'objet n'existe pas dans votre équipement, ou vous n'avez pas la quantité ciblée."}}
     {{end}}
   {{end}}
 {{end}}
-
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}
 

@@ -12,11 +12,13 @@
 	{{$user = .User.Username}}
 {{end}}
 {{$mention := ""}}
+{{$msg := ""}}
 
 {{if .CmdArgs}}
   {{$secondflag := ""}}
 	{{$target := ""}}
 	{{$item := ""}}
+  {{$chargeur := ""}}
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 1}}
@@ -36,7 +38,8 @@
 			{{end}}
 				{{if ge (len .) 3}}
 					{{$item = title (index . 2)}}
-					{{if (reFind `(?i)chargeur` $item)}}
+          {{$chargeur = reFind `(?i)chargeur` $item}}
+					{{if $chargeur}}
 						{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
 						{{$item = print "[CHARGEUR] " (title (lower $weap))}}
 					{{end}}
@@ -65,6 +68,7 @@
         {{$place.Set "max_conso" 5}}
         {{$place.Set "max_stuff" 2}}
         {{dbSet $target "place" $place}}
+        Inventaire de {{$mention}} initialisé. 
 
       {{else if eq $secondflag "-reset"}}
         {{dbDel $target "équipement"}}
@@ -96,18 +100,18 @@
         {{end}}
         {{$sstuff := $place.Get "s_stuff"}}
         {{$sconso := $place.Get "s_conso"}}
-        {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-          {{if not $sac}}
-          {{if le $amount $sstuff }}
-            {{$place.Set "s_stuff" (sub $sstuff $amount)}}
-            {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-            {{$mention}} a obtenu {{$amount}} {{$item}}.
-          {{else}}
-            {{$mention}} n'a pas assez de place dans son inventaire. 
-          {{end}}
-          {{else}}
+        {{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
+          {{if and (not $sac)}}
+            {{if le (toInt $amount) (toInt $sstuff) }}
+              {{$place.Set "s_stuff" (sub $sstuff $amount)}}
+              {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+              {{$msg = joinStr "" $mention " a obtenu " $amount " " $item "."}}
+            {{else}}
+              {{$msg = joinStr "" $mention " n'a pas assez de place dans son inventaire." }}
+            {{end}}
+          {{else if $sac}}
             {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
-              {{$mention}} possède déjà un sac. Merci de retirer l'ancien.
+              {{$msg = joinStr "" $mention " possède déjà un sac. Merci de retirer l'ancien."}}
             {{else}}
               {{if eq $item "[E] Sac À Dos" }}
                 {{$place.Set "s_stuff" (add $sstuff 3)}}
@@ -126,20 +130,20 @@
                 {{$place.Set "max_conso" (add $sconso 3)}}
               {{end}}
               {{$equip.Set $item 1}}
-              {{$mention}} a obtenu {{$item}}.
+              {{$msg = joinStr "" $mention " a obtenu " $item "."}}
             {{end}}
           {{end}}
         {{else if not $compo}}
           {{if and (le $amount (toInt $sconso))}}
             {{$place.Set "s_conso" (sub $sconso $amount)}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-            {{$mention}} a obtenu {{$amount}} {{$item}}.          
+            {{$msg = joinStr "" $mention " a obtenu " $amount " " $item "."}}
           {{else}}
-            {{$mention}} n'a pas assez de place dans son inventaire.
+            {{$msg = joinStr "" $mention " n'a pas assez de place dans son inventaire."}}
           {{end}}
         {{else if $compo}}
           {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-          {{$mention}} obtient {{$amount}} {{$item}}, sans prise de place.
+            {{$msg = joinStr "" $mention " a obtenu " $amount " " $item ", sans perte de place."}}
         {{end}}
         {{if le (toInt ($place.Get "s_stuff")) 0}}
           {{$place.Set "s_stuff" 0}}
@@ -149,8 +153,10 @@
         {{end}}
         {{dbSet $target "équipement" $equip}}
         {{dbSet $target "place" $place}}
-        {{$mention}} : Il vous reste {{$place.Get "s_stuff"}} places d'équipements et {{$place.Get "s_conso"}} places de consommables. 
+        {{$msg = joinStr "" $msg "\n" $mention " : Il vous reste" ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables."}} 
       {{end}}  
     {{end}}
   {{end}}
 {{end}}
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}

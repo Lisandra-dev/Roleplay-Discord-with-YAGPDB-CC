@@ -1,5 +1,5 @@
 {{/* Trigger : Regex : `^\$managestuff -remove`*/}}
-
+{{$msg := ""}}
 {{$name := reFind `(\#\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
@@ -80,8 +80,8 @@
     {{end}}
 
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
-      {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-        {{if not $sac}}
+      {{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
+        {{if and (not $sac)}}
           {{if lt $amount $sstuff}}
             {{$place.Set "s_stuff" (add $sstuff $amount)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -89,13 +89,13 @@
             {{$place.Set "s_stuff" $mstuff}}
           {{end}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{$amount}} {{$item}} ont été retiré de l'inventaire de {{$mention}}
+          {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention}}
         {{else}}
           {{if eq $item "[E] Sac À Dos" }}
             {{$sstuff = sub $sstuff 3}}
             {{$sconso = sub $sconso 9}}
             {{if or (lt $sstuff 0) (lt $sconso 0)}}
-              Le {{$item}} de {{$mention}} est rempli ! Videz le avant de le ranger.
+             {{ $msg = joinStr "" "Le " $item " de " $mention "est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}
@@ -106,7 +106,7 @@
             {{$sstuff = sub $sstuff 2}}
             {{$sconso = sub $sconso 6}}
             {{if or (lt $sstuff 0) (lt $sconso 0)}}
-             Le {{$item}} de {{$mention}} est rempli ! Videz le avant de le ranger.
+             {{ $msg = joinStr "" "Le " $item " de " $mention "est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}
@@ -117,7 +117,7 @@
             {{$sstuff = sub $sstuff 1}}
             {{$sconso = sub $sconso 3}}
             {{if or (lt $sstuff 0) (lt $sconso 0)}}
-              Le {{$item}} de {{$mention}} est rempli ! Videz le avant de le ranger.
+             {{ $msg = joinStr "" "Le " $item " de " $mention "est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}
@@ -126,7 +126,7 @@
             {{end}}
           {{end}}
           {{$equip.Del $item}}
-          {{$amount}} {{$item}} ont été retiré de l'inventaire de {{$mention}}.
+          {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
         {{end}}
       {{else if not $compo}}
         {{if lt $amount (toInt $sconso)}}
@@ -135,25 +135,23 @@
         {{else if eq $amount (toInt $sconso)}}
           {{$place.Set "s_conso" $mconso}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{$amount}} {{$item}} ont été rétiré de l'inventaire de {{$mention}}
+          {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
         {{end}}
       {{else if $compo}}
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-        {{$amount}} {{$item}} a/ont été retiré de l'inventaire de {{$mention}}.
+          {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
       {{end}}
 
       {{if eq (toInt ($equip.Get $item)) 0}}
         {{$equip.Del $item}}
       {{end}}
-
-      {{$mention}} : il vous reste {{$place.Get "s_stuff"}} places d'équipements et {{$place.Get "s_conso"}} places de consommables. 
-      
+     {{$msg = joinStr "" $msg "\n" $mention " : il vous reste" ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 
       {{dbSet $target "équipement" $equip }}
       {{dbSet $target "place" $place}}
     {{else}}
-      {{$mention}} : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez. 
+      {{$msg = joinStr "" $mention " : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez." }}
     {{end}}
   {{end}}
 {{end}}
-
-    
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}
