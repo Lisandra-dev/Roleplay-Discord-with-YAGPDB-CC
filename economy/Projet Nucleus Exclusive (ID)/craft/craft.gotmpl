@@ -49,7 +49,7 @@
 {{end}}
 
 {{/* Flag */}}
-{{$choice := reFind `(\+VN|-inv)` .Message.Content }}
+{{$choice := reFind `(\+VN|-case)` .Message.Content }}
 {{$quanti := reFind `q\d+` .Message.Content}}
 {{$univ := reFind `-cu` .Message.Content}}
 {{$bdg := reFind `-bdg` .Message.Content}}
@@ -217,7 +217,7 @@
 				Le vaisseau et {{$user}} n'ont pas les composants nécessaires pour faire {{$item}}
 			{{end}}
 
-		{{else if and (eq $choice "-inv") (not $univ)}}
+		{{else if and (eq $choice "-case") (not $univ)}}
 			{{if and (ge $bc_vn $bc) (ge $sf_vn $sf) (ge $lc_vn $lc) (ge $cb_vn $cb)}}
 				{{if ($inv.Get $item)}}
 					{{$inv.Set $item (add ($compo.Get $item) $q)}}
@@ -270,7 +270,7 @@
 				Le Nucleus et {{$user}} n'ont pas assez de composants universels pour fabriquer {{$q}} {{$item}}.
 			{{end}}
 
-		{{else if and $univ (eq $choice "-inv")}}
+		{{else if and $univ (eq $choice "-case")}}
 			{{if (ge (mult $cu_vn $q) $q)}}
 				{{if ($inv.Get $item)}}
 					{{$inv.Set $item (add ($compo.Get $item) $q)}}
@@ -308,7 +308,7 @@
 		L'objet ne possède pas de recette.
 	{{end}}
 {{else}}
-	**Usage** : `$craft "objet" (q[1-100]) (+VN|-inv) (-bdg) (-cu) (#reroll)`
+	**Usage** : `$craft "objet" (q[1-100]) (+VN|-case) (-bdg) (-cu) (#reroll)`
 {{end}}
 {{$userEco.Set "Inventory" $inv}}
 {{dbSet $id "economy" $userEco}}
