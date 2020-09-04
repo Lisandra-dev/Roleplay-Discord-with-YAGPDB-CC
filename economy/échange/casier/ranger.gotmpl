@@ -76,6 +76,10 @@
         {{$item = "[C] Composant Universel"}}
       {{end}}
     {{end}}
+    {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+    {{if $sac}}
+      {{$item = print "[E]" (title (lower $sac))}}
+    {{end}}
 
     {{if $chargeur}}
       {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
@@ -83,7 +87,7 @@
     {{end}}
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
       {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-        {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+        {{if not $sac}}
           {{if lt $amount $sstuff}}
             {{$place.Set "s_stuff" (add $sstuff $amount)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -163,7 +167,7 @@
       {{else if $compo}}
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
         {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-        {{$mention}} range dans son casier un {{$item}}
+        {{$mention}} range dans son casier {{$amount}} {{$item}}
       {{end}}
       {{if eq (toInt ($equip.Get $item)) 0}}
         {{$equip.Del $item}}

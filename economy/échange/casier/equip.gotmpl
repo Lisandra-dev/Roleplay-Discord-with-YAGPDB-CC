@@ -89,7 +89,10 @@
         {{$item = "[C] Composant Universel"}}
       {{end}}
     {{end}}
-
+    {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+    {{if $sac}}
+      {{$item = print "[E]" (title (lower $sac))}}
+    {{end}}
     {{if $inv.Get $item}}
       {{$value := $inv.Get $item}}
       {{$q := $amount}}
@@ -101,7 +104,7 @@
       {{else}}
         {{if le (toInt $amount) (toInt $value)}}
           {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-            {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+            {{if not $sac }}
               {{if le $amount $sstuff }}
                 {{$place.Set "s_stuff" (sub $sstuff $amount)}}
                 {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}

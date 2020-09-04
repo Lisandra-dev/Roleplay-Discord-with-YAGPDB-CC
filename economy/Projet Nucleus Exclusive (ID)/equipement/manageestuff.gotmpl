@@ -20,7 +20,7 @@
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 1}}
-			{{$secondflag = (reFind `\-(add|reset|init)` (index . 0))}}
+			{{$secondflag = (reFind `\-(add|reset|init|remove)` (index . 0))}}
 			{{if ge (len .) 2}}
 			{{if $name}}
 				{{$target = $id}}
@@ -48,7 +48,7 @@
 		{{end}}
 	{{end}}
 	{{if not $secondflag}}
-		**Usage** : `$managestuff -(add|remove|reset|init) user item amount`
+		**Usage** : `$managestuff -(add|reset|init|remove) user item amount`
 	{{else}}
 		{{$equip := sdict}}
     {{$place := sdict}}
@@ -90,10 +90,14 @@
             {{$item = "[C] Composant Universel"}}
           {{end}}
         {{end}}
+        {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+        {{if $sac}}
+          {{$item = print "[E]" (title (lower $sac))}}
+        {{end}}
         {{$sstuff := $place.Get "s_stuff"}}
         {{$sconso := $place.Get "s_conso"}}
         {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-          {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+          {{if not $sac}}
           {{if le $amount $sstuff }}
             {{$place.Set "s_stuff" (sub $sstuff $amount)}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
