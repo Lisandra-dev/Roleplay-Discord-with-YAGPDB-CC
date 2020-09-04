@@ -21,6 +21,11 @@
 	{{$equip = sdict .Value}}
 {{end}}
 
+{{$place := sdict}}
+{{with (dbGet $id "place")}}
+	{{$place = sdict .Value}}
+{{end}}
+
 
 {{$desc := "Tu n'as rien d'équipé ! N'hésite pas à aller voir ton casier, l'inventaire du Nucleus, ou le shop !"}}
 {{$footer := print "Page: 1 / 1 | #" $id }}
@@ -65,8 +70,13 @@
 
 {{/* hell ends */}}
 {{end}}
-{{$author := (joinStr " " "Équipement de :" (title $user))}}
+{{$sconso := $place.Get "s_conso"}}
+{{$sstuff := $place.Get "s_stuff"}}
+{{$mstuff := $place.Get "max_stuff"}}
+{{$mconso := $place.Get "max_conso"}}
+{{$author := (joinStr "" "Équipement [" $sstuff "/" $mstuff "] | Consommable [" $sconso "/" $mconso "]") }}
+{{$title := (joinStr " " "Équipement de" (title $user))}}
 
-{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
+{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
 {{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
 {{deleteTrigger 1}}

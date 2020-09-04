@@ -94,7 +94,7 @@
         {{$mention}} n ''a pas assez de {{$item}} pour faire cela.
       {{else}}
         {{if le (toInt $amount) (toInt $value)}}
-          {{if or (reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
+          {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
             {{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
               {{if le $amount $sstuff }}
                 {{$place.Set "s_stuff" (sub $amount $sstuff)}}
@@ -114,12 +114,18 @@
                 {{if eq $item "[E] Sac À Dos" }}
                   {{$place.Set "s_stuff" (add $sstuff 3)}}
                   {{$place.Set "s_conso" (add $sconso 9)}}
+                  {{$place.Set "max_stuff" (add $sstuff 3)}}
+                  {{$place.Set "max_conso" (add $sconso 9)}}
                 {{else if eq $item "[E] Sacoche" }}
                   {{$place.Set "s_stuff" (add $sstuff 2)}}
                   {{$place.Set "s_conso" (add $sconso 6)}}
+                  {{$place.Set "max_stuff" (add $sstuff 2)}}
+                  {{$place.Set "max_conso" (add $sconso 6)}}
                 {{else if eq $item "[E] Sacoche Ceinture"}}
                   {{$place.Set "s_stuff" (add $sstuff 1)}}
                   {{$place.Set "s_conso" (add $sconso 3)}}
+                  {{$place.Set "max_stuff" (add $sstuff 1)}}
+                  {{$place.Set "max_conso" (add $sconso 3)}}
                 {{end}}
                 {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
                 {{$equip.Set $item 1}}
