@@ -104,7 +104,7 @@
 
 
 	{{if eq $del false}}
-		{{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
+		{{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/ha7nksE.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
 	{{else}}
 		{{deleteMessage nil $.ReactionMessage.ID 1}}
 		{{dbDel $id "rerollName"}}

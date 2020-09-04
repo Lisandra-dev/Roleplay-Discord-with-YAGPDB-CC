@@ -77,6 +77,6 @@
 {{$author := (joinStr "" "Équipement [" $sstuff "/" $mstuff "] | Consommable [" $sconso "/" $mconso "]") }}
 {{$title := (joinStr " " "Équipement de" (title $user))}}
 
-{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author "icon_url" "https://i.imgur.com/iUmz9Gi.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
+{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/ha7nksE.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
 {{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
 {{deleteTrigger 1}}
