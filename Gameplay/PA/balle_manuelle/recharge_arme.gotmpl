@@ -72,7 +72,7 @@
 				{{$char = sub $char 1}}
 				{{$equip.Set $item $char }}
 				{{$place.Set "s_conso" (add 1 ($sconso))}}
-				{{$desc = joinStr " " "Fusil rechargé.\n Il vous reste" $char "balleurs pleins." }}
+				{{$desc = joinStr " " "Fusil rechargé.\n Il vous reste" $char "chargeurs pleins." }}
 				{{if eq ($equip.Get $item) 0}}
 					{{$equip.Del $item}}
 				{{end}}
@@ -95,7 +95,7 @@
 				{{$char = sub $char 1}}
 				{{$place.Set "s_conso" (add 1 ($sconso))}}
 				{{$equip.Set $item $char }}
-				{{$desc = joinStr " " "Fusil secondaire rechargé.\n Il vous reste" $char "balleurs pleins." }}
+				{{$desc = joinStr " " "Fusil secondaire rechargé.\n Il vous reste" $char "chargeurs pleins." }}
 				{{if eq ($equip.Get $item) 0}}
 					{{$equip.Del $item}}
 				{{end}}
@@ -119,7 +119,7 @@
 				{{$char = sub $char 1}}
 				{{$equip.Set $item $char }}
 				{{$place.Set "s_conso" (add 1 ($sconso))}}
-				{{$desc = joinStr " " "Pistolet rechargé.\n Il vous reste" $char "balleurs pleins." }}
+				{{$desc = joinStr " " "Pistolet rechargé.\n Il vous reste" $char "chargeurs pleins." }}
 				{{if eq ($equip.Get $item) 0}}
 					{{$equip.Del $item}}
 				{{end}}
@@ -142,7 +142,7 @@
 				{{$char = sub $char 1}}
 				{{$place.Set "s_conso" (add 1 ($sconso))}}
 				{{$equip.Set $item $char }}
-				{{$desc = joinStr " " "Pistolet secondaire rechargé.\n Il vous reste" $char "balleurs pleins." }}
+				{{$desc = joinStr " " "Pistolet secondaire rechargé.\n Il vous reste" $char "chargeurs pleins." }}
 				{{if eq ($equip.Get $item) 0}}
 					{{$equip.Del $item}}
 				{{end}}
@@ -167,7 +167,7 @@
 				{{$char = sub $char 1}}
 				{{$place.Set "s_conso" (add 1 ($sconso))}}
 				{{$equip.Set $item $char }}
-				{{$desc = joinStr " " "Canon rechargé.\n Il vous reste" $char "balleurs pleins." }}
+				{{$desc = joinStr " " "Canon rechargé.\n Il vous reste" $char "chargeurs pleins." }}
 			{{else}}
 				{{$desc = "Aucun chargeur disponible."}}
 			{{end}}
@@ -203,3 +203,4 @@
 {{deleteTrigger 1}}
 {{dbSet $id "arme" $arme}}
 {{dbSet $id "équipement" $equip}}
+{{dbSet $id "place" $place}}
