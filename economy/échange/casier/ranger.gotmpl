@@ -87,8 +87,8 @@
       {{$item = print "[CHARGEUR] " $item}}
     {{end}}
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
-      {{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-        {{if and (not $sac)}}
+      {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
+        {{if and (not $sac) (not $chargeur)}}
           {{if lt $amount $sstuff}}
             {{$place.Set "s_stuff" (add $sstuff $amount)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -105,7 +105,7 @@
           {{else}}
             {{$msg = joinStr "" $mention " ne possède la quantité (" $amount ")" " spécifiée pour " $item "."}}
           {{end}}
-        {{else}}
+        {{else if $sac}}
           {{if eq $item "[E] Sac À Dos" }}
             {{$sstuff = sub $sstuff 3}}
             {{$sconso = sub $sconso 9}}

@@ -99,7 +99,7 @@
         {{$lc := mult ($i.Get "Liquide Cytomorphe") $q}}
         {{$cb := mult ($i.Get "Cellule Bionotropique") $q}}
 
-        {{if reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item}}
+        {{if and (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (not (reFind `(?i)chargeur` $item))}}
           {{if le $q $sstuff}}
             {{if and (ge $bcp $bc) (ge $sfp $sf) (ge $lcp $lc) (ge $cbp $cb) (not $u)}}
               {{$bcp = sub $bcp $bc}}

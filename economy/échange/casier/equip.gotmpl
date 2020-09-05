@@ -104,8 +104,8 @@
         {{$msg = joinStr "" $mention " n'a pas assez de " $item " pour faire cela. "}}
       {{else}}
         {{if le (toInt $amount) (toInt $value)}}
-          {{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item) (reFind `^\[E\]` $item)}}
-            {{if and (not $sac) }}
+          {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
+            {{if and (not $sac) (not $chargeur) }}
               {{if le $amount $sstuff }}
                 {{$place.Set "s_stuff" (sub $sstuff $amount)}}
                 {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -117,7 +117,7 @@
               {{else}}
                 {{$msg = joinStr "" $mention " n'a pas assez de place dans son inventaire."}}
               {{end}}
-            {{else}}
+            {{else if $sac}}
               {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
                 {{$msg = joinStr "" $mention " possède déjà un sac. Merci de retirer l'ancien."}}
               {{else}}

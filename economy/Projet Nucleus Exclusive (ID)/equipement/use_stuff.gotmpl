@@ -53,7 +53,7 @@
     {{end}}
     {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
     {{if ($equip.Get $item)}}
-      {{if or (not $compo) (not (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item)) (not (reFind `(?i)chargeur` $item)) (not (reFind `^\[E\]` $item))}}
+      {{if or (not $compo) (not (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item)) (not (reFind `(?i)chargeur` $item)) (not (reFind `^\[E\]` $item))}}
           {{if lt $amount (toInt ($equip.Get $item))}}
             {{$place.Set "s_conso" (add $amount $sconso)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}

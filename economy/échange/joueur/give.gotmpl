@@ -180,14 +180,15 @@
 			{{$tconso := $pt.Get "s_conso"}}
 			{{$tmstuff := $pt.Get "max_stuff"}}
 			{{$tmconso := $pt.Get "max_conso"}}
+			{{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $i)}}
 
 			{{if not ($inv.Get $i)}}
 				{{$desc = "Objet introuvable dans l'inventaire"}}
 			{{else if gt $q ($inv.Get $i)}}
 				{{$desc = "Quantité trop élevé par rapport à la quantité disponible"}}
 			{{else}}
-				{{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $i) (reFind `^\[E\]` $i)}}
-					{{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $i) }}
+				{{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $i) (reFind `^\[E\]` $i)}}
+					{{if (not $sac) (not $chargeur) }}
 						{{if lt $q $tstuff }} {{/* A de la place dans inventaire */}}
 							{{$pt.Set "s_stuff" (sub $tstuff $q)}}
 							{{$place.Set "s_stuff" (sub $sstuff $q)}}
@@ -203,7 +204,7 @@
 						{{else}}
 							{{$desc = joinStr "" $ci " n'a plus de place dans l'inventaire pour recevoir " $i "."}}
 						{{end}}
-					{{else}}
+					{{else if $sac}}
 						{{if eq $i "[E] Sac À Dos" }}
 							{{$sstuff = sub $sstuff 3}}
 							{{$sconso = sub $sconso 9}}
