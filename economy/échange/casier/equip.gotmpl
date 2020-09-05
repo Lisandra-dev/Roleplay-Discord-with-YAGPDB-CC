@@ -92,7 +92,7 @@
     {{end}}
     {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
     {{if $sac}}
-      {{$item = print "[E]" (title (lower $sac))}}
+      {{$item = print "[E] " (title (lower $sac))}}
     {{end}}
     {{if $inv.Get $item}}
       {{$value := $inv.Get $item}}
@@ -140,6 +140,18 @@
                 {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
                 {{$equip.Set $item 1}}
                 {{$msg = joinStr "" $mention " a pris " $item "du casier."}}
+              {{end}}
+            {{else if $chargeur}}
+              {{if and (le $amount (toInt $sconso))}}
+                {{$place.Set "s_conso" (sub $sconso $amount)}}
+                {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+                {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
+                {{if eq (str $q) "all"}}
+                  {{$amount = "tous les"}}
+                {{end}}
+                {{$msg = joinStr "" $mention " a pris " $amount " " $item " du casier."}}
+              {{else}}
+                {{$msg = joinStr " " $mention "n'a pas assez de place dans son inventaire."}}
               {{end}}
             {{end}}
           {{else if not $compo}}
