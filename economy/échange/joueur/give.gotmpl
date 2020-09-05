@@ -1,12 +1,12 @@
 {{/* Variable definition */}}
-{{$targetEco := sdict}}
-{{$cible := ""}}
+{{$tEco := sdict}}
+{{$ci := ""}}
 {{$author := "Erreur"}}
 {{$footer := ""}}
-{{$invtarget := sdict }}
+{{$invt := sdict }}
 {{$inv := ""}}
-{{$idtarget := 0}}
-{{$desc := "**Usage** :\n- `$give <cible> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}
+{{$idt := 0}}
+{{$desc := "**Usage** :\n- `$give <ci> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}
 {{$arrow := "<:next:723131844643651655>" }}
 {{/* Symbol */}}
 {{$mon := ""}}
@@ -34,25 +34,25 @@
 {{end}}
 
 
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
-{{$user := .Member.Nick}}
-{{$id := .User.ID }}
-{{if $name}}
-	{{$user = $name}}
-	{{$idperso := (toRune (lower $name))}}
+{{$n := reFind `(\#\S*)` .Message.Content}}
+{{$n = joinStr "" (split $n "#")}}
+{{$u := .Member.Nick}}
+{{$id := .user.ID }}
+{{if $n}}
+	{{$u = $n}}
+	{{$idperso := (toRune (lower $n))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
 	{{- end}}
-{{else if eq (len $user) 0}}
-	{{$user = .User.Username}}
+{{else if eq (len $u) 0}}
+	{{$u = .User.Username}}
 {{end}}
-{{$user = title $user}}
-{{$target := ""}}
+{{$u = title $u}}
+{{$t := ""}}
 
-{{$userEco := sdict}}
+{{$uEco := sdict}}
 {{with (dbGet $id "economy")}}
-	{{$userEco = sdict .Value}}
+	{{$uEco = sdict .Value}}
 {{end}}
 
 {{$inv := sdict}}
@@ -60,139 +60,237 @@
 	{{$inv = sdict .Value}}
 {{end}}
 
-{{$reroll := false}}
+{{$place := sdict}}
+{{with (dbGet $id "place")}}
+	{{$place = sdict .Value}}
+{{end}}
+
+{{$rr := false}}
 
 {{if .CmdArgs}}
-	{{$idtarget := .User.ID }}
+	{{$idt := .User.ID }}
 	{{if (reFind `(\&\S*)` (index .CmdArgs 0))}}
-		{{$target = joinStr "" (split (index .CmdArgs 0) "&")}}
+		{{$t = joinStr "" (split (index .CmdArgs 0) "&")}}
 		{{with (userArg (index .CmdArgs 1))}}
-			{{$idtarget = .}}
-			{{$idtarget = $idtarget.ID}}
-			{{$reroll = true}}
+			{{$idt = .}}
+			{{$idt = $idt.ID}}
+			{{$rr = true}}
 		{{end}}
-		{{$idC := (toRune (lower $target))}}
+		{{$idC := (toRune (lower $t))}}
 		{{range $idC}}
-			{{- $idtarget = add $idtarget .}}
+			{{- $idt = add $idt .}}
 		{{- end}}
-		{{$cible = title $target}}
+		{{$ci = title $t}}
 	{{else if not (reFind `(\&\S*)` (index .CmdArgs 0))}}
 		{{with (userArg (index .CmdArgs 0))}}
-			{{$target = .}}
-			{{$idtarget = $target.ID}}
-			{{$cible = (getMember $target).Nick}}
+			{{$t = .}}
+			{{$idt = $t.ID}}
+			{{$ci = (getMember $t).Nick}}
 		{{else}}
-			{{$idtarget = 0}}
+			{{$idt = 0}}
 		{{end}}
 	{{else}}
-		{{$idtarget = 0}}
+		{{$idt = 0}}
 	{{end}}
-
-	{{with (dbGet $idtarget "economy")}}
-		{{$targetEco = sdict .Value}}
-	{{end}}
-
 	{{$args := ""}}
+	{{with (dbGet $idt "economy")}}
+		{{$tEco = sdict .Value}}
+	{{end}}
 
-	{{if and (ne $idtarget 0)  (ge (len .CmdArgs) 2)}}
-
-		{{if eq $reroll true }}
+	{{if and (ne $idt 0)  (ge (len .CmdArgs) 2)}}
+		{{if eq $rr true }}
 			{{$args = index .CmdArgs 2}}
-		{{else if eq $reroll false}}
+		{{else if eq $rr false}}
 			{{$args = index .CmdArgs 1}}
 		{{else}}
-		{{$reroll}}
-		{{$args = index .CmdArgs 0}}
+			{{$args = index .CmdArgs 0}}
 		{{end}}
 
 		{{if ne (toInt $args) 0}}
 			{{$value := 0}}
-			{{if eq $reroll false}}
+			{{if eq $rr false}}
 				{{$value = toInt (index .CmdArgs 1)}}
 			{{else}}
 				{{$value = toInt (index .CmdArgs 2)}}
 			{{end}}
-			{{$bal := toInt ($userEco.Get "balance")}}
+			{{$bal := toInt ($uEco.Get "balance")}}
 			{{if gt $value $bal}}
 				{{$desc = "Tu ne peux pas donner autant !"}}
 			{{else}}
-				{{$newbal := add $value (toInt ($targetEco.Get "balance"))}}
+				{{$newbal := add $value (toInt ($tEco.Get "balance"))}}
 				{{$oldbal := sub $bal $value }}
-				{{$desc = joinStr " " $value $mon "\n\n" $arrow  $cible "a maintenant" $newbal $mon "sur son compte. \n" $arrow  $user "a maintenant" $oldbal $mon " sur son compte."}}
-				{{$userEco.Set "balance" $oldbal}}
-				{{$targetEco.Set "balance" $newbal}}
-				{{dbSet $idtarget "economy" $targetEco}}
-				{{dbSet $id "economy" $userEco}}
-				{{$author = joinStr " " $user "donne"}}
-				{{$footer = joinStr " " "A" $cible }}
+				{{$desc = joinStr " " $value $mon "\n\n" $arrow  $ci "a maintenant" $newbal $mon "sur son compte. \n" $arrow  $u "a maintenant" $oldbal $mon " sur son compte."}}
+				{{$uEco.Set "balance" $oldbal}}
+				{{$tEco.Set "balance" $newbal}}
+				{{dbSet $idt "economy" $tEco}}
+				{{dbSet $id "economy" $uEco}}
+				{{$author = joinStr " " $u "donne"}}
+				{{$footer = joinStr " " "A" $ci }}
 			{{end}}
 
 		{{else if (eq (toInt $args) 0)}}
-			{{$amount :=1}}
-			{{$item := ""}}
-			{{if eq $reroll false}}
-				{{$item = title (index .CmdArgs 1)}}
+			{{$q := 1}}
+			{{$i := ""}}
+			{{if eq $rr false}}
+				{{$i = title (index .CmdArgs 1)}}
 			{{else}}
-				{{$item = title (index .CmdArgs 2)}}
+				{{$i = title (index .CmdArgs 2)}}
 			{{end}}
-			{{$chargeur := reFind `(?i)chargeur` $item}}
-			{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+			{{$chargeur := reFind `(?i)chargeur` $i}}
+			{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $i}}
 			{{if $compo}}
 				{{if eq $compo "bc" "BC" "Bc"}}
-					{{$item = "[C] Biocomposant"}}
+					{{$i = "[C] Biocomposant"}}
 				{{else if eq $compo "lc" "LC" "Lc"}}
-					{{$item = "[C] Liquide Cytomorphe"}}
+					{{$i = "[C] Liquide Cytomorphe"}}
 				{{else if eq $compo "cb" "CB" "Cb"}}
-					{{$item = "[C] Cellule Bionotropique"}}
+					{{$i = "[C] Cellule Bionotropique"}}
 				{{else if eq $compo "sf" "SF" "Sf"}}
-					{{$item = "[C] Substrat Ferreux"}}
+					{{$i = "[C] Substrat Ferreux"}}
 				{{else if eq $compo "cu" "CU" "Cu"}}
-					{{$item = "[C] Composant Universel"}}
+					{{$i = "[C] Composant Universel"}}
 				{{end}}
 			{{end}}
 
 			{{if $chargeur}}
-				{{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
-				{{$item = print "[CHARGEUR] " $item}}
+				{{$i = reFind `(?i)(fusil|pistolet|canon)` $i}}
+				{{$i = print "[CHARGEUR] " $i}}
 			{{end}}
 
-			{{if and (ge (len .CmdArgs) 3) (eq $reroll false)}}
-				{{$amount = toInt (index .CmdArgs 2)}}
-			{{else if (ge (len .CmdArgs) 3) (eq $reroll true)}}
-				{{$amount = toInt (index .CmdArgs 3)}}
+			{{if and (ge (len .CmdArgs) 4) (eq $rr false)}}
+				{{$q = toInt (index .CmdArgs 2)}}
+			{{else if (ge (len .CmdArgs) 4) (eq $rr true)}}
+				{{$q = toInt (index .CmdArgs 3)}}
 			{{end}}
 
-			{{with ($targetEco.Get "Inventory")}}
-				{{$invtarget = sdict .}}
+			{{with (dbGet $idt "équipement")}}
+				{{$invt = sdict .Value}}
 			{{end}}
 
-			{{if not ($inv.Get $item)}}
+			{{$pt := sdict}}
+			{{with (dbGet $idt "place")}}
+				{{$pt = sdict .Value}}
+			{{end}}
+
+			{{$sstuff := $place.Get "s_stuff"}}
+    	{{$sconso := $place.Get "s_conso"}}
+    	{{$mstuff := $place.Get "max_stuff"}}
+    	{{$mconso := $place.Get "max_conso"}}
+			{{$tstuff := $pt.Get "s_stuff"}}
+			{{$tconso := $pt.Get "s_conso"}}
+			{{$tmstuff := $pt.Get "max_stuff"}}
+			{{$tmconso := $pt.Get "max_conso"}}
+
+			{{if not ($inv.Get $i)}}
 				{{$desc = "Objet introuvable dans l'inventaire"}}
-			{{else if gt $amount ($inv.Get $item)}}
+			{{else if gt $q ($inv.Get $i)}}
 				{{$desc = "Quantité trop élevé par rapport à la quantité disponible"}}
 			{{else}}
-				{{if ($invtarget.Get $item)}}
-					{{$invtarget.Set $item (add (toInt ($invtarget.Get $item)) $amount)}}
-				{{else}}
-					{{$invtarget.Set $item $amount}}
+				{{if or (reFind `(?:(\[CHARGEUR\]))(?i)(poigne|épée|masse|pistolet|fusil|canon)` $i) (reFind `^\[E\]` $i)}}
+					{{if not (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $i) }}
+						{{if lt $q $tstuff }} {{/* A de la place dans inventaire */}}
+							{{$pt.Set "s_stuff" (sub $tstuff $q)}}
+							{{$place.Set "s_stuff" (sub $sstuff $q)}}
+							{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
+							{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
+							{{$desc = joinStr "" $q " " $i}}
+						{{else if le $q $tstuff}} {{/* Donneur donne tous ses is */}}
+							{{$pt.Set "s_stuff" (sub $tstuff $q)}}
+							{{$place.Set "s_stuff" $mstuff}}
+							{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
+							{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
+							{{$desc = joinStr "" $q " " $i}}
+						{{else}}
+							{{$desc = joinStr "" $ci " n'a plus de place dans l'inventaire pour recevoir " $i "."}}
+						{{end}}
+					{{else}}
+						{{if eq $i "[E] Sac À Dos" }}
+							{{$sstuff = sub $sstuff 3}}
+							{{$sconso = sub $sconso 9}}
+							{{if or (lt $sstuff 0) (lt $sconso 0)}}
+								{{$desc = joinStr "" $u " votre " $i " est rempli ! Videz le avant de le ranger."}}
+							{{else}}
+								{{$place.Set "s_stuff" $sstuff}}
+								{{$place.Set "s_conso" $sconso}}
+								{{$place.Set "max_stuff" 2}}
+								{{$place.Set "max_conso" 5}}
+								{{$pt.Set "s_stuff" (add $tstuff 3)}}
+								{{$pt.Set "s_conso" (add $tconso 9)}}
+								{{$pt.Set "max_stuff" (add $tstuff 3)}}
+								{{$pt.Set "max_conso" (add $tconso 9)}}
+							{{end}}
+						{{else if eq $i "[E] Sacoche" }}
+							{{$sstuff = sub $sstuff 2}}
+							{{$sconso = sub $sconso 6}}
+							{{if or (lt $sstuff 0) (lt $sconso 0)}}
+								{{$desc = joinStr "" $u " votre " $i " est rempli ! Videz le avant de le ranger."}}
+							{{else}}
+								{{$place.Set "s_stuff" $sstuff}}
+								{{$place.Set "s_conso" $sconso}}
+								{{$place.Set "max_stuff" 2}}
+								{{$place.Set "max_conso" 5}}
+								{{$pt.Set "s_stuff" (add $tstuff 2)}}
+								{{$pt.Set "s_conso" (add $tconso 6)}}
+								{{$pt.Set "max_stuff" (add $tstuff 2)}}
+								{{$pt.Set "max_conso" (add $tconso 6)}}
+            	{{end}}
+						{{else if eq $i "[E] Sacoche Ceinture"}}
+							{{$sstuff = sub $sstuff 1}}
+							{{$sconso = sub $sconso 3}}
+							{{if or (lt $sstuff 0) (lt $sconso 0)}}
+								{{$msg = joinStr "" $u " votre " $i " est rempli ! Videz le avant de le ranger."}}
+							{{else}}
+								{{$place.Set "s_stuff" $sstuff}}
+								{{$place.Set "s_conso" $sconso}}
+								{{$place.Set "max_stuff" 2}}
+								{{$place.Set "max_conso" 5}}
+								{{$pt.Set "s_stuff" (add $tstuff 1)}}
+								{{$pt.Set "s_conso" (add $tconso 3)}}
+								{{$pt.Set "max_stuff" (add $tstuff 1)}}
+								{{$pt.Set "max_conso" (add $tconso 3)}}
+							{{end}}
+            {{end}}
+						{{$inv.Del $i}}
+						{{$invt.Set $i 1}}
+						{{$desc = joinStr "" $q " " $i}}
+					{{end}}
+				{{else if not $compo}}
+					{{if lt (toInt $q) (toInt $tconso) }} {{/* A de la place dans inventaire */}}
+						{{$pt.Set "s_conso" (sub $tconso $q)}}
+						{{$place.Set "s_conso" (sub $sconso $q)}}
+						{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
+						{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
+						{{$desc = joinStr "" $q " " $i}}
+					{{else if le (toInt $q) (toInt $tconso)}} {{/* Donneur donne tous ses is */}}
+						{{$pt.Set "s_conso" (sub $tconso $q)}}
+						{{$place.Set "s_conso" $mconso}}
+						{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
+						{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
+						{{$desc = joinStr "" $q " " $i}}
+					{{else}}
+						{{$desc = joinStr "" $ci " n'a plus de place dans l'inventaire pour recevoir" $i "."}}
+					{{end}}
+				{{else if $compo}}
+					{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
+					{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
+					{{$desc = joinStr "" $q " " $i}}
 				{{end}}
-				{{$inv.Set $item (sub (toInt ($inv.Get $item)) $amount)}}
-				{{if eq (toInt ($inv.Get $item)) 0}}
-					{{$inv.Del $item}}
+				
+				{{if le (toInt ($inv.Get $i)) 0}}
+					{{$inv.Del $i}}
 				{{end}}
-				{{$userEco.Set "Inventory" $inv}}
-				{{$targetEco.Set "Inventory" $invtarget}}
-				{{dbSet $id "economy" $userEco}}
-				{{dbSet $idtarget "economy" $targetEco}}
-				{{$desc = joinStr "" $amount " " $item}}
-				{{$author = joinStr " " $user "donne"}}
-				{{$footer = joinStr " " "A" $cible }}
+
+				{{$desc = joinStr "" $desc "\n\n ▫️" $u " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. \n ▫️ " $ci " : il vous reste " ($pt.Get "s_stuff") " places d'équipements et " ($pt.Get "s_conso") " places de consommables. " }}
+				{{$author = joinStr " " $u "donne"}}
+				{{$footer = joinStr " " "A" $ci }}
+				{{dbSet $id "équipement" $inv}}
+				{{dbSet $idt "équipement" $invt}}
 			{{end}}
 		{{else}}
 			{{$desc = "Erreur de cible"}}
 		{{end}}
 	{{else}}
-		{{$desc = "**Usage** :\n- `$give <cible> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}
+		{{$desc = "**Usage** :\n- `$give <ci> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}
 	{{end}}
 {{end}}
 
