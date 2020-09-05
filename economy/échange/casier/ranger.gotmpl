@@ -143,10 +143,10 @@
           {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
           {{$equip.Del $item}}
           {{if eq (toInt $amount) 1}}
-        {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $mention"}}
-      {{else}}
-        {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $mention "."}}
-      {{end}}
+            {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $mention"}}
+          {{else}}
+            {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $mention "."}}
+          {{end}}
         {{end}}
       {{else if not $compo}}
         {{if lt $amount (toInt $sconso)}}
