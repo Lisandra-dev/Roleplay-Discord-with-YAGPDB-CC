@@ -1,8 +1,14 @@
 {{if .CmdArgs}}
+	{{$cmd := index .CmdArgs 1}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user := .User.ID}}
+	{{with (userArg $cmd)}}
+		{{$cmd = index .CmdArgs 2}}
+		{{$user = .}}
+		{{$user = $user.ID}}
+	{{end}}
 	{{range $name}}
-	{{- $user = (add $user .)}}
+		{{- $user = (add $user .)}}
 	{{- end}}
 
 	{{$stats := sdict}}
@@ -10,7 +16,7 @@
 		{{$stats = sdict .Value}}
 	{{end}}
 
-	{{if eq (index .CmdArgs 1) "-all"}}
+	{{if eq $cmd "-all"}}
 		{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
 		{{$stats.Set "i_force" (toInt (index .CmdArgs 3)) }}
 		{{$stats.Set "endurance" (toInt (index .CmdArgs 4))}}
@@ -39,7 +45,7 @@
 	:white_small_square: Précision : {{($stats.Get "i_preci")}}
 	:white_small_square: Intelligence : {{($stats.Get "i_intel")}}
 
-	{{else if eq (index .CmdArgs 1) "-stats"}}
+	{{else if eq $cmd "-stats"}}
 		{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
 		{{$stats.Set "endurance" (toInt (index .CmdArgs 3))}}
 		{{$stats.Set "agi" (toInt (index .CmdArgs 4))}}
@@ -56,7 +62,7 @@
 	:white_small_square: Intelligence : {{($stats.Get "intelligence")}}
 	:white_small_square: Karma : {{($stats.Get "karma")}}
 
-	{{else if eq (index .CmdArgs 1) "-implant"}}
+	{{else if eq $cmd "-implant"}}
 		{{$stats.Set "i_force" (toInt (index .CmdArgs 2)) }}
 		{{$stats.Set "i_endu" (toInt (index .CmdArgs 3))}}
 		{{$stats.Set "i_agi" (toInt (index .CmdArgs 4))}}

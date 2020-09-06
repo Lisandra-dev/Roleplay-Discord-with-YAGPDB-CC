@@ -1,6 +1,15 @@
 {{if .CmdArgs}}
+	{{$cmd = "false"}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user :=.User.ID }}
+	{{if eq (len .CmdArgs) 2}}
+		{{$cmd := index .CmdArgs 1}}
+		{{with (userArg $cmd)}}
+			{{$cmd = index .CmdArgs 2}}
+			{{$user = .}}
+			{{$user = $user.ID}}
+		{{end}}
+	{{end}}
 	{{range $name}}
 		{{- $user = (add $user .)}}
 	{{- end}}
@@ -23,9 +32,8 @@
 	{{$ipreci:=$stats.Get "i_preci"}}
 	{{$iintel:=$stats.Get "i_intel"}}
 
-	{{if eq (len .CmdArgs ) 2}}
-		{{if eq (index .CmdArgs 1) "-stats"}}
-
+	{{if ne $cmd "false"}}
+		{{if eq $cmd "-stats"}}
 **Statistiques de {{index .CmdArgs 0}} : **
 	:white_small_square: Force : {{$force}}
 	:white_small_square: Endurance : {{$endurance}}
@@ -34,7 +42,7 @@
 	:white_small_square: Intelligence : {{$intel}}
 	:white_small_square: Karma : {{$karma}}
 
-		{{else if eq (index .CmdArgs 1) "-implant"}}
+		{{else if eq $cmd "-implant"}}
 
 **Implant de {{index .CmdArgs 0}}** :
 	:white_small_square: Force : {{$iforce}}

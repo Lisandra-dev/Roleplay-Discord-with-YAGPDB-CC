@@ -20,6 +20,12 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
+	{{if ge (len .CmdArgs) 3}}
+    {{with (userArg (index .CmdArgs 2))}}
+      {{$id = .}}
+      {{$id = $id.ID}}
+    {{end}}
+  {{end}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
@@ -55,7 +61,11 @@
 				{{end}}
 			{{end}}
 			{{if ge (len .) 3}}
-				{{$amount = toInt (index . 2)}}
+				{{if not (userArg (index . 2))}}
+					{{$amount = toInt (index . 2)}}
+				{{else}}
+					{{$amount = toInt (index . 3)}}
+				{{end}}
 			{{end}}
 		{{end}}
 	{{end}}
@@ -149,16 +159,24 @@
 			{{end}}
 				{{if ge (len .) 3}}
 					{{$item = title (index . 2)}}
-					{{if (reFind `(?i)chargeur` $item)}}
-						{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
-						{{$item = print "[CHARGEUR] " (title (lower $weap))}}
-					{{end}}
 					{{if ge (len .) 4}}
-						{{$amount = or (toInt (index . 3)) 1}}
+            {{if not (userArg (index . 2))}}
+              {{$amount = or (toInt (index . 3)) 1}}
+            {{else}}
+              {{$item = title (index . 3)}}
+            {{end}}
+            {{if ge (len .) 5}}
+              {{$amount = or (toInt (index . 4)) 1}}
+            {{end}}
 					{{end}}
 				{{end}}
 			{{end}}
 		{{end}}
+	{{end}}
+	{{$chargeur = reFind `(?i)chargeur` $item}}
+	{{if $chargeur}}
+		{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
+		{{$item = print "[CHARGEUR] " (title (lower $weap))}}
 	{{end}}
 	{{if not $secondflag}}
 		**Usage** : `$manageinv -(add|tremove|reset|clean|set) user item amount`
@@ -201,6 +219,7 @@
 	{{end}}
 
 	{{else if eq $secondflag "-add"}}
+
 		{{$items := sdict}}
 		{{with ($serverEco.Get "Items")}}
 			{{$items = sdict .}}

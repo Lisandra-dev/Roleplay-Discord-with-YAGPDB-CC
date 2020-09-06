@@ -27,35 +27,31 @@
   {{$chargeur := ""}}
 	{{$amount := 1}}
 	{{with .CmdArgs}}
-		{{if ge (len .CmdArgs) 1}}
+		{{if ge (len .) 1}}
 			{{$secondflag = (reFind `\-(add|reset|init|remove)` (index . 0))}}
-			{{if ge (len .CmdArgs) 2}}
-			{{if $name}}
-				{{$target = $id}}
-				{{$user = $name}}
-				{{$mention = $name}}
-			{{else}}
-				{{with (userArg (index .CmdArgs 1))}}
-					{{$target = .}}
-					{{$target = $target.ID}}
-					{{$mention = joinStr "" "<@" $target ">"}}
-					{{$user = (getMember $target).Nick}}
-				{{end}}
-			{{end}}
-				{{if ge (len .CmdArgs) 3}}
-					{{$item = title (index .CmdArgs 2)}}
-          {{if and $name (userArg (index .CmdArgs 2))}}
-            {{$item = title (index .CmdArgs 3)}}
+			{{if ge (len .) 2}}
+        {{if $name}}
+          {{$target = $id}}
+          {{$user = $name}}
+          {{$mention = $name}}
+        {{else}}
+          {{with (userArg (index . 1))}}
+            {{$target = .}}
+            {{$target = $target.ID}}
+            {{$mention = joinStr "" "<@" $target ">"}}
+            {{$user = (getMember $target).Nick}}
           {{end}}
-          {{$chargeur = reFind `(?i)chargeur` $item}}
-					{{if $chargeur}}
-						{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
-						{{$item = print "[CHARGEUR] " (title (lower $weap))}}
-					{{end}}
+			  {{end}}
+				{{if ge (len .) 3}}
+					{{$item = title (index . 2)}}
 					{{if ge (len .) 4}}
-						{{$amount = or (toInt (index .CmdArgs 3)) 1}}
-            {{if (userArg (index .CmdArgs 2))}}
-              {{$amount = or (toInt (index .CmdArgs 4)) 1}}
+            {{if not (userArg (index . 2))}}
+              {{$amount = or (toInt (index . 3)) 1}}
+            {{else}}
+              {{$item = title (index . 3)}}
+            {{end}}
+            {{if ge (len .) 5}}
+              {{$amount = or (toInt (index . 4)) 1}}
             {{end}}
 					{{end}}
 				{{end}}
@@ -92,6 +88,12 @@
         {{dbSet $target "place" $place}}
 
       {{else if eq $secondflag "-add"}}
+      {{$chargeur = reFind `(?i)chargeur` $item}}
+			{{if $chargeur}}
+					{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
+					{{$item = print "[CHARGEUR] " (title (lower $weap))}}
+				{{end}}
+
         {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
         {{if $compo}}
           {{if eq $compo "bc" "BC" "Bc"}}
