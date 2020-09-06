@@ -14,7 +14,7 @@
 {{ $validEmojis := cslice "▶️" "◀️" "🗑️" }} {{/* Valid emojis */}}
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
-{{if $embed.Author.Name}}
+{{if $embed.Author}}
 	{{$check = reFind `Casier` $embed.Author.Name}}
 {{end}}
 {{ if and (eq $check "Casier") $embed.Footer}} {{/* More checks */}}

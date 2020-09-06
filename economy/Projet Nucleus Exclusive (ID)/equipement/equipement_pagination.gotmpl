@@ -7,14 +7,13 @@
 		 {{- $embed.Set $k (structToSdict $v) }}
 		 {{- end -}}
 		{{ end }}
-
 {{$del := false}}
 {{$check := ""}}
 {{ $action := $.Reaction.Emoji.Name }} {{/* The action being ran */}}
 {{ $validEmojis := cslice "▶️" "◀️" "🗑️" }} {{/* Valid emojis */}}
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
-{{if $embed.Author.Name}}
+{{if $embed.Author}}
 	{{$check = reFind `(?i)équipement` $embed.Author.Name}}
 {{end}}
 {{ if and (eq $check "Équipement") $embed.Footer}} {{/* More checks */}}

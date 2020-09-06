@@ -66,14 +66,16 @@
 		 	{{- $embed.Set $k (structToSdict $v) }}
 		 {{- end -}}
 		{{ end }}
-	{{ if and (eq $embed.Author.Name "Vaisseau Marchand") $embed.Footer}} {{/* More checks */}}
-		{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
-		{{ $isValid = true }} {{/* Yay, it is valid */}}
-	{{else if eq $embed.Author.Name "Vaisseau Nucleus"}}
-		{{$isValid = true}}
-		{{$page = 1}}
+	{{if $embed.Author}}
+		{{ if and (eq $embed.Author.Name "Vaisseau Marchand") $embed.Footer}} {{/* More checks */}}
+			{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
+			{{ $isValid = true }} {{/* Yay, it is valid */}}
+		{{else if eq $embed.Author.Name "Vaisseau Nucleus"}}
+			{{$isValid = true}}
+			{{$page = 1}}
+		{{ end }}
 	{{ end }}
-{{ end }}
+{{end}}
 
 
 {{ if and (in $validEmojis $action) $isValid $page }} {{/* Even more checks for validity... */}}
