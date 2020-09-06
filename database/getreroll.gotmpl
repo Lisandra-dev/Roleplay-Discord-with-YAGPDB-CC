@@ -1,9 +1,9 @@
 {{if .CmdArgs}}
-	{{$cmd = "false"}}
+	{{$cmd := "false"}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user :=.User.ID }}
-	{{if eq (len .CmdArgs) 2}}
-		{{$cmd := index .CmdArgs 1}}
+	{{if ge (len .CmdArgs) 2}}
+		{{$cmd = index .CmdArgs 1}}
 		{{with (userArg $cmd)}}
 			{{$cmd = index .CmdArgs 2}}
 			{{$user = .}}
@@ -50,6 +50,11 @@
 	:white_small_square: Agilité : {{$iagi}}
 	:white_small_square: Précision : {{$ipreci}}
 	:white_small_square: Intelligence : {{$iintel}}
+
+	{{else if eq $cmd "-ID"}}
+	**ID** : {{$user}}
+	{{else if eq $cmd "-IDm"}}
+	{{$user}}
 
 		{{else}}
 **Statistiques de {{index .CmdArgs 0}} : **

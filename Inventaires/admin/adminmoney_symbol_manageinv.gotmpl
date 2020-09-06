@@ -214,14 +214,14 @@ Vous avez besoin de spécifier une valeur !
 					{{$inv.Del $k}}
 				{{end}}
 			{{end}}
-			Inventaire de : {{$mention}} Nettoyé !
+			Casier de : {{$mention}} Nettoyé !
 			{{$userEco.Set "Inventory" $inv}}
 		{{end}}
 
 	{{else if eq $secondflag "-reset"}}
 		{{if $target}}
 			{{$userEco.Del "Inventory"}}
-			Reset de l'inventaire de : {{$mention}}.
+			Reset de l'Casier de : {{$mention}}.
 	{{end}}
 
 	{{else if eq $secondflag "-add"}}
@@ -240,7 +240,7 @@ Vous avez besoin de spécifier une valeur !
 				{{$inv.Set $item $amount}}
 			{{end}}
 				{{$userEco.Set "Inventory" $inv}}
-				Ajout de : {{$amount}} {{$item}} à l'inventaire de {{$mention}}.
+				Ajout de : {{$amount}} {{$item}} à l'Casier de {{$mention}}.
 
 		{{else if eq $secondflag "-remove"}}
 			{{if $target}}
@@ -260,9 +260,9 @@ Vous avez besoin de spécifier une valeur !
 						{{$inv.Del $item}}
 					{{end}}
 					{{$userEco.Set "Inventory" $inv}}
-					{{$amount}} : {{$item}} de l'inventaire de {{$mention}} a été retiré.
+					{{$amount}} : {{$item}} de l'Casier de {{$mention}} a été retiré.
 				{{else}}
-					Cet objet n'existe pas dans l'inventaire cible.
+					Cet objet n'existe pas dans l'Casier cible.
 				{{end}}
 			{{end}}
 		{{else if eq $secondflag "-set"}}
@@ -282,7 +282,7 @@ Vous avez besoin de spécifier une valeur !
 							{{$inv.Del $item}}
 						{{end}}
 						{{$userEco.Set "Inventory" $inv}}
-						{{$amount}} : {{$item}} a été mis dans l'inventaire de {{$mention}}
+						{{$amount}} : {{$item}} a été mis dans l'Casier de {{$mention}}
 				{{end}}
 			{{end}}
 			{{if $target}}
