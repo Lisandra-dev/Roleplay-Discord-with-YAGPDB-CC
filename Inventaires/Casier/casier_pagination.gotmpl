@@ -30,6 +30,8 @@
 {{$user := ""}}
 {{if eq (toInt (dbGet (toInt $id) "rerollName").Value) (toInt $id)}}
 	{{$user = (dbGet (toInt $id) "rerollName").Value}}
+{{else}}
+	{{$user = (getMember $id).Nick}}
 {{end}}
 
 
