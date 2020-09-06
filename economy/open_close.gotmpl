@@ -31,11 +31,15 @@
 			{{$smax := $i.Get "smax"}}
 			{{$buyprice := $i.Get "buyprice"}}
 			{{$sellprice := $i.Get "sellprice"}}
-			{{if ne (toInt $bmax) 0}}
+			{{if ne (toInt $bmax) (toInt $bmin) }}
 				{{$buyprice = randInt (toInt $bmin) (toInt $bmax)}}
+			{{else if or (eq (toInt $bmax) 0) (eq (toInt $bmin) (toInt $bmax))}}
+				{{$buyprice = $bmin}}
 			{{end}}
 			{{if eq (toInt $smax) 0}}
 				{{$sellprice = "Invendable"}}
+			{{else if eq (toInt $smax) (toInt $smin)}}
+				{{$sellprice = $smin}}
 			{{else}}
 				{{$sellprice = randInt (toInt $smin) (toInt $smax)}}
 			{{end}}
