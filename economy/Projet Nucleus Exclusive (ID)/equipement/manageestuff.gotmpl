@@ -179,6 +179,10 @@
       {{end}}  
     {{end}}
   {{end}}
+{{else}}
+**Usage** : `$managestuff -(init|reset|add|rm) user item amount`
+> Si reset / init : juste indiquer l'utilisateur
+> Si reroll : #reroll @joueur pour l'user. 
 {{end}}
 {{sendMessage nil $msg}}
 {{deleteTrigger 1}}

@@ -96,8 +96,10 @@
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
-				Vous avez besoin de spécifier une valeur !
-				**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
+Vous avez besoin de spécifier une valeur !
+**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
+> Dans le cas d'un reroll : #reroll @joueur
+
 			{{end}}
 		{{else if eq $secondflag "-reset"}}
 			{{$bal = 0}}
@@ -111,8 +113,10 @@
 				"color" 0x8CBAEF}}
 				{{sendMessage nil $embed}}
 			{{else}}
-				Vous avez besoin de spécifier une valeur !
-				**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
+Vous avez besoin de spécifier une valeur !
+**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
+> Dans le cas d'un reroll : #reroll @joueur
+
 			{{end}}
 		{{end}}
 		{{$userEco.Set "balance" $bal}}
@@ -173,13 +177,14 @@
 			{{end}}
 		{{end}}
 	{{end}}
-	{{$chargeur = reFind `(?i)chargeur` $item}}
+	{{$chargeur := reFind `(?i)chargeur` $item}}
 	{{if $chargeur}}
 		{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
 		{{$item = print "[CHARGEUR] " (title (lower $weap))}}
 	{{end}}
 	{{if not $secondflag}}
-		**Usage** : `$manageinv -(add|tremove|reset|clean|set) user item amount`
+**Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
+> Dans le cas d'un reroll : #reroll @joueur
 	{{else}}
 		{{$userEco := sdict}}
 		{{if $target}}
@@ -187,7 +192,8 @@
 			{{$userEco = sdict .Value}}
 		{{end}}
 	{{else}}
-		**Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
+**Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
+> Cas de reroll : #reroll @joueur
 	{{end}}
 	{{if eq $secondflag "-clean"}}
 		{{if $target}}
@@ -289,6 +295,7 @@
 :white_small_square: __Symbol__ : `$symbol <symbol>`
 :white_small_square: __Manage inventory__ : `$manageinv -(add|remove|set) user item amount`
 :white_small_square: __Reset inventory__ : `$manageinv -reset user`
+> Dans le cas d'un reroll, l'user est #reroll @joueur
 {{end}}
 
 {{/* Database Updates */}}
