@@ -1,15 +1,5 @@
 {{/* Variable definition */}}
-{{$tEco := sdict}}
-{{$ci := ""}}
-{{$au := "Erreur"}}
-{{$fo := ""}}
-{{$invt := sdict }}
-{{$inv := ""}}
-{{$idt := 0}}
-{{$d := "**Usage** :\n- `$give <ci> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}
-{{$arr := "<:next:723131844643651655>" }}
-{{/* Symbol */}}
-{{$mon := ""}}
+{{$tEco := sdict}}{{$ci := ""}}{{$au := "Erreur"}}{{$fo := ""}}{{$invt := sdict }}{{$inv := ""}}{{$idt := 0}}{{$d := "**Usage** :\n- `$give <ci> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}{{$arr := "<:next:723131844643651655>" }}{{/* Symbol */}}{{$mon := ""}}
 
 
 {{/* Give color */}}
@@ -25,22 +15,15 @@
 
 {{/* DB */}}
 {{$sE := sdict}}
-{{with (dbGet .Server.ID "economy")}}
-	{{$sE = sdict .Value}}
-{{end}}
+{{with (dbGet .Server.ID "economy")}}{{$sE = sdict .Value}}{{end}}
 
-{{if $sE.Get "symbol"}}
-	{{$mon = $sE.Get "symbol"}}
+{{if $sE.Get "symbol"}}{{$mon = $sE.Get "symbol"}}
 {{end}}
 
 
-{{$n := reFind `(\#\S*)` .Message.Content}}
-{{$n = joinStr "" (split $n "#")}}
-{{$u := .Member.Nick}}
-{{$id := .user.ID }}
+{{$n := reFind `(\#\S*)` .Message.Content}}{{$n = joinStr "" (split $n "#")}}{{$u := .Member.Nick}}{{$id := .user.ID }}
 {{if $n}}
-	{{$u = $n}}
-	{{$idp := (toRune (lower $n))}}
+	{{$u = $n}}{{$idp := (toRune (lower $n))}}
 	{{range $idp}}
 		{{- $id = add $id . }}
 	{{- end}}
@@ -50,20 +33,12 @@
 {{$u = title $u}}
 {{$t := ""}}
 
-{{$uEco := sdict}}
-{{with (dbGet $id "economy")}}
-	{{$uEco = sdict .Value}}
-{{end}}
+{{$uEco := sdict}}{{with (dbGet $id "economy")}}{{$uEco = sdict .Value}}{{end}}
 
 {{$inv := sdict}}
-{{with (dbGet $id "équipement")}}
-	{{$inv = sdict .Value}}
-{{end}}
+{{with (dbGet $id "équipement")}}{{$inv = sdict .Value}}{{end}}
 
-{{$pl := sdict}}
-{{with (dbGet $id "place")}}
-	{{$pl = sdict .Value}}
-{{end}}
+{{$pl := sdict}}{{with (dbGet $id "place")}}{{$pl = sdict .Value}}{{end}}
 
 {{$rr := false}}
 
@@ -72,9 +47,7 @@
 	{{if (reFind `(\&\S*)` (index .CmdArgs 0))}}
 		{{$t = joinStr "" (split (index .CmdArgs 0) "&")}}
 		{{with (userArg (index .CmdArgs 1))}}
-			{{$idt = .}}
-			{{$idt = $idt.ID}}
-			{{$rr = true}}
+			{{$idt = .}}{{$idt = $idt.ID}}{{$rr = true}}
 		{{end}}
 		{{$idC := (toRune (lower $t))}}
 		{{range $idC}}
@@ -83,19 +56,14 @@
 		{{$ci = title $t}}
 	{{else if not (reFind `(\&\S*)` (index .CmdArgs 0))}}
 		{{with (userArg (index .CmdArgs 0))}}
-			{{$t = .}}
-			{{$idt = $t.ID}}
-			{{$ci = (getMember $t).Nick}}
+			{{$t = .}}{{$idt = $t.ID}}{{$ci = (getMember $t).Nick}}
 		{{else}}
 			{{$idt = 0}}
 		{{end}}
 	{{else}}
 		{{$idt = 0}}
 	{{end}}
-	{{$args := ""}}
-	{{with (dbGet $idt "economy")}}
-		{{$tEco = sdict .Value}}
-	{{end}}
+	{{$args := ""}}{{with (dbGet $idt "economy")}}{{$tEco = sdict .Value}}{{end}}
 
 	{{if and (ne $idt 0)  (ge (len .CmdArgs) 2)}}
 		{{if eq $rr true }}
@@ -117,45 +85,41 @@
 			{{if gt $value $bal}}
 				{{$d = "Tu ne peux pas donner autant !"}}
 			{{else}}
-				{{$newbal := add $value (toInt ($tEco.Get "balance"))}}
-				{{$oldbal := sub $bal $value }}
-				{{$d = joinStr " " $value $mon "\n\n" $arr  $ci "a maintenant" $newbal $mon "sur son compte. \n" $arr  $u "a maintenant" $oldbal $mon " sur son compte."}}
-				{{$uEco.Set "balance" $oldbal}}
-				{{$tEco.Set "balance" $newbal}}
-				{{dbSet $idt "economy" $tEco}}
-				{{dbSet $id "economy" $uEco}}
-				{{$au = joinStr " " $u "donne"}}
-				{{$fo = joinStr " " "A" $ci }}
+				{{$newbal := add $value (toInt ($tEco.Get "balance"))}}{{$oldbal := sub $bal $value }}{{$d = joinStr " " $value $mon "\n\n" $arr  $ci "a maintenant" $newbal $mon "sur son compte. \n" $arr  $u "a maintenant" $oldbal $mon " sur son compte."}}{{$uEco.Set "balance" $oldbal}}{{$tEco.Set "balance" $newbal}}{{dbSet $idt "economy" $tEco}}{{dbSet $id "economy" $uEco}}{{$au = joinStr " " $u "donne"}}{{$fo = joinStr " " "A" $ci }}
 			{{end}}
 
 		{{else if (eq (toInt $args) 0)}}
-			{{$q := 1}}
-			{{$i := ""}}
+			{{$q := 1}}{{$i := ""}}
 			{{if eq $rr false}}
 				{{$i = title (index .CmdArgs 1)}}
 			{{else}}
 				{{$i = title (index .CmdArgs 2)}}
 			{{end}}
-			{{$cha := reFind `(?i)chargeur` $i}}
-			{{$co := reFind `(?i)(bc|lc|cb|sf|cu)` $i}}
+			{{$cha := lower (reFind `(?i)chargeur` $i)}}{{$co := lower (reFind `(?i)(bc|lc|cb|sf|cu)` $i)}}
 			{{if $co}}
-				{{if eq $co "bc" "BC" "Bc"}}
+				{{if eq $co "bc"}}
 					{{$i = "[C] Biocomposant"}}
-				{{else if eq $co "lc" "LC" "Lc"}}
+				{{else if eq $co "lc"}}
 					{{$i = "[C] Liquide Cytomorphe"}}
-				{{else if eq $co "cb" "CB" "Cb"}}
+				{{else if eq $co "cb"}}
 					{{$i = "[C] Cellule Bionotropique"}}
-				{{else if eq $co "sf" "SF" "Sf"}}
+				{{else if eq $co "sf"}}
 					{{$i = "[C] Substrat Ferreux"}}
-				{{else if eq $co "cu" "CU" "Cu"}}
+				{{else if eq $co "cu"}}
 					{{$i = "[C] Composant Universel"}}
 				{{end}}
 			{{end}}
 
 			{{if $cha}}
-				{{$i = reFind `(?i)(fusil|pistolet|canon)` $i}}
-				{{$i = print "[CHARGEUR] " $i}}
+				{{$i = title (lower (reFind `(?i)(fusil|pistolet|canon)` $i))}}{{$i = print "[CHARGEUR] " $i}}
 			{{end}}
+
+		{{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)`)}}
+		{{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+			{{$item = "[MODULE] " $mimp}}
+		{{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+			{{$item = "[IMPLANT] " $mimp}}
+		{{end}}
 
 			{{if and (ge (len .CmdArgs) 4) (eq $rr false)}}
 				{{$q = toInt (index .CmdArgs 2)}}
@@ -163,14 +127,9 @@
 				{{$q = toInt (index .CmdArgs 3)}}
 			{{end}}
 
-			{{with (dbGet $idt "équipement")}}
-				{{$invt = sdict .Value}}
-			{{end}}
+			{{with (dbGet $idt "équipement")}}{{$invt = sdict .Value}}{{end}}
 
-			{{$pt := sdict}}
-			{{with (dbGet $idt "place")}}
-				{{$pt = sdict .Value}}
-			{{end}}
+			{{$pt := sdict}}{{with (dbGet $idt "place")}}{{$pt = sdict .Value}}{{end}}
 
 		{{$ss := $pl.Get "s_stuff"}}{{$sconso := $pl.Get "s_conso"}}
 		{{$mst := $pl.Get "max_stuff"}}{{$mc := $pl.Get "max_conso"}}{{$ts := $pt.Get "s_stuff"}}{{$tco := $pt.Get "s_conso"}}{{$tms := $pt.Get "max_stuff"}}{{$tmc := $pt.Get "max_conso"}}{{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $i)}}
@@ -214,9 +173,7 @@
 								{{$pl.Set "s_stuff" $ss}}{{$pl.Set "s_conso" $sconso}}{{$pl.Set "max_stuff" 2}}{{$pl.Set "max_conso" 5}}{{$pt.Set "s_stuff" (add $ts 1)}}{{$pt.Set "s_conso" (add $tco 3)}}{{$pt.Set "max_stuff" (add $ts 1)}}{{$pt.Set "max_conso" (add $tco 3)}}
 							{{end}}
             {{end}}
-						{{$inv.Del $i}}
-						{{$invt.Set $i 1}}
-						{{$d = joinStr "" $q " " $i}}
+						{{$inv.Del $i}}{{$invt.Set $i 1}}{{$d = joinStr "" $q " " $i}}
 					{{else if $cha}}
 						{{if lt (toInt $q) (toInt $tco) }}
 							{{$pt.Set "s_conso" (sub $tco $q)}}{{$pl.Set "s_conso" (sub $sconso $q)}}{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}{{$d = joinStr "" $q " " $i}}

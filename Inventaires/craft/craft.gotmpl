@@ -113,10 +113,12 @@
 		{{$item = $reci}}
 	{{else if eq $balle "module" "Module" "MODULE"}}
 		{{$type := reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` $item}}
+		{{$item = print "[MODULE] " (title (lower $type))}}
 		{{$reci = title (lower $type)}}
 	{{else if eq $balle "implant" "Implant" "IMPLANT"}}
 		{{$type := reFind `(?i)(force|résistance|cognition|furtivité|vision)` $item}}
 		{{$reci = title (lower $type)}}
+		{{$item = print "[IMPLANT] " (title (lower $type))}}
 	{{else if and $balle $arme (eq $balle $arme)}}
 		{{$reci = title (lower $arme)}}
 	{{end}}

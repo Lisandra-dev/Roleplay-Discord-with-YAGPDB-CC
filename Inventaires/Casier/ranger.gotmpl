@@ -86,6 +86,14 @@
       {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
       {{$item = print "[CHARGEUR] " $item}}
     {{end}}
+
+    {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison|bdg)`)}}
+    {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+      {{$item = "[MODULE] " (title $mimp)}}
+    {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+      {{$item = "[IMPLANT] " (title $mimp)}}
+    {{end}}
+
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
       {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
         {{if and (not $sac) (not $chargeur)}}

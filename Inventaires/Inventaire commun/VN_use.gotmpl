@@ -1,12 +1,3 @@
-{{/* Here its more an example and cannot really be used on another roleplay, but you can using it like a base. You can change the name for dictionnary, componant... You can change all name. Just don't forget that if you change the name here, you must change it everywhere.
-
-	Name used in :
-	-> Inventory dict : [C] items
-	-> Compo dict : diminutif without majuscule
-	-> recipe : Complete name with majuscule
-	You can use the function without using the compo dictionnary, delete just the "VN reFind" or, if you want to keep place, delete all text in relation with.  */}}
-
-
 {{$compo := sdict}}
 {{with (dbGet .Server.ID "compo")}}
 	{{$compo = sdict .Value}}
@@ -130,10 +121,11 @@ Erreur : Nombre d'argument invalide.
 		{{end}}
 
 	{{else if eq $flag "-module" "-modules"}}
-		{{$type := title (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content)}}
+		{{$type := title (lower (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content))}}
 	{{if not $type}}
 		Erreur : Vous devez indiquer indiquer le type de module.
 	{{else}}
+		{{$item = print "[MODULE] " $type}}
 		{{if and ($module.Get $item) (ge (toInt ($module.Get $item)) $q)}}
 			{{$module.Set $item (sub ($module.Get $item) $q)}}
 			{{if le ($module.Get $item) 0}}
@@ -152,10 +144,11 @@ Erreur : Nombre d'argument invalide.
 	{{end}}
 
 	{{else if eq $flag "-implant" "-implants"}}
-		{{$type := title (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content)}}
+		{{$type := title (lower (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content))}}
 		{{if not $type}}
 			Erreur : Vous devez indiquer le type d'implants.
 		{{else}}
+			{{$item = print "[IMPLANT] " $type}}
 			{{if and ($implant.Get $item) (ge (toInt ($implant.Get $item)) $q)}}
 				{{$implant.Set $item (sub ($implant.Get $item) $q)}}
 				{{if le ($implant.Get $item) 0}}

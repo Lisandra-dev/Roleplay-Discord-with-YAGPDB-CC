@@ -94,6 +94,12 @@
     {{if $sac}}
       {{$item = print "[E] " (title (lower $sac))}}
     {{end}}
+    {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)`)}}
+    {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+      {{$item = "[MODULE] " (title $mimp)}}
+    {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+      {{$item = "[IMPLANT] " (title $mimp)}}
+    {{end}}
     {{if $inv.Get $item}}
       {{$value := $inv.Get $item}}
       {{$q := $amount}}

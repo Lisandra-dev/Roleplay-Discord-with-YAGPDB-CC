@@ -112,6 +112,14 @@
         {{if $sac}}
           {{$item = print "[E] " (title (lower $sac))}}
         {{end}}
+        
+        {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)`)}}
+        {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+		      {{$item = "[MODULE] " $mimp}}
+        {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+		      {{$item = "[IMPLANT] " $mimp}}
+        {{end}}
+        
         {{$sstuff := $place.Get "s_stuff"}}
         {{$sconso := $place.Get "s_conso"}}
         {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
