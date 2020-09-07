@@ -179,6 +179,7 @@
             {{$compo.Set "cytomorphe" $lcv}}
           {{end}}
           {{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant son inventaire et celui du Nucleus. \n\n Il a utilisé : \n ▫️ Biocomposant :" $bc "[" $bcv "] \n ▫️ Substrat Ferreux :" $sf "[" $sfv "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcv "] \n ▫️ Cellule Bionotropique" $cb "[" $cbv "]"}}
+          {{sendMessage nil $log}}
         {{else}}
           {{$msg := joinStr " " $user "a fabriqué" $q $item "en utilisant :\n ▫️ Biocomposant :" $bc "[" $bcp "] \n ▫️ Substrat Ferreux :" $sf "[" $sfp "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcp "] \n ▫️ Cellule Bionotropique" $cb "[" $cbp "]" }}
           {{sendMessage nil $msg}}
@@ -213,7 +214,8 @@
           {{end}}
         {{end}}
       {{else}}
-        Le vaisseau et {{$user}} n'ont pas les composants nécessaires pour faire {{$item}}
+        {{$msg = joinStr "" "Le vaisseau et " $user "n'ont pas les composants nécessaires pour faire" $item}}
+        {{sendMessage nil $msg}}
       {{end}}
     {{else if and $choice $u }}
       {{$cut := $q}}
@@ -229,7 +231,6 @@
           {{end}}
           {{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant" $q "composants universels du vaisseau. \n Il reste" ($compo.Get "universel") "sur le vaisseau." }}
         {{else}}
-          {{$user}} a fabriqué {{$q}} {{$item}} en utilisant ses propres ressources.
           {{if ($inv.Get $item)}}
             {{$inv.Set $item (add ($inv.Get $item) $q)}}
           {{else}}
@@ -239,15 +240,17 @@
           {{if le ($inv.Get "[C] Composant Universel") 0}}
             {{$inv.Del "[C] Composant Universel"}}
           {{end}}
-          {{$msg := joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
+          {{$msg = joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
           {{sendMessage nil $msg}}
         {{end}}
       {{else}}
-        Le Nucleus n'a pas assez de composants universels pour fabriquer {{$q}} {{$item}}
+        {{$msg = joinStr "" "Le Nucleus n'a pas assez de composants universels pour fabriquer" $q $item "."}}
+        {{sendMessage nil $msg}}
       {{end}}
 		{{end}}
   {{else}}
-		L'objet ne possède pas de recette.
+	{{$msg = "L'objet ne possède pas de recette."}}
+  {{sendMessage nil $msg}}
 	{{end}}
 {{else}}
 	**Usage** : `$craft "objet" (q[1-100]) (+VN|-case) (-bdg) (-cu) (#reroll)`

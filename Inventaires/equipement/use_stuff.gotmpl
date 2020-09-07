@@ -13,17 +13,14 @@
 	{{$user = .User.Username}}
 {{end}}
 {{$target := .User.ID}}
-{{$mention := ""}}
 {{$msg := ""}}
 
 {{if .CmdArgs}}
 	{{if $name}}
     {{$target = $id}}
     {{$user = $name}}
-    {{$mention = $name}}
 	{{else}}
     {{$target = .User.ID}}
-    {{$mention = joinStr "" "<@" $target ">"}}
     {{$user = (getMember $target).Nick}}
   {{end}}
   {{if $target}}
@@ -41,6 +38,12 @@
     {{$mconso := $place.Get "max_conso"}}
 
     {{$item := title (index .CmdArgs 0)}}
+    {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison|bdg)` $item)}}
+    {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+      {{$item = print "[MODULE] " (title $mimp)}}
+    {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+      {{$item = print "[IMPLANT] " (title $mimp)}}
+    {{end}}
     {{$amount := 1}}
     {{if gt (len .CmdArgs) 1 }}
       {{$amount = (toInt (index .CmdArgs 1))}}
@@ -58,30 +61,30 @@
             {{$place.Set "s_conso" (add $amount $sconso)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
             {{if eq (toInt $amount) 1}}
-             {{$msg = joinStr "" $mention " a utilisé un " $item "."}}
+             {{$msg = joinStr "" $user " a utilisé un " $item "."}}
             {{else}}
-              {{$msg = joinStr "" $mention " a utilisé " $amount $item "."}}
+              {{$msg = joinStr "" $user " a utilisé " $amount $item "."}}
             {{end}}
           {{else if eq $amount (toInt ($equip.Get $item))}}
             {{$place.Set "s_conso" $mconso}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
           {{if eq (toInt $amount) 1}}
-             {{$msg = joinStr "" $mention  "a utilisé un " $item "."}}
+             {{$msg = joinStr "" $user  "a utilisé un " $item "."}}
             {{else}}
-              {{$msg = joinStr "" $mention " a utilisé " $amount $item "."}}
+              {{$msg = joinStr "" $user " a utilisé " $amount $item "."}}
             {{end}}
           {{else}}
-            {{$msg = joinStr "" $mention " ne possède pas la quantité spécifiée (" $amount ") pour utiliser " $item "."}}
+            {{$msg = joinStr "" $user " ne possède pas la quantité spécifiée (" $amount ") pour utiliser " $item "."}}
           {{end}}
         {{if le (toInt ($equip.Get $item)) 0}}
           {{$equip.Del $item}}
         {{end}}
-        {{$msg = joinStr "" $msg "\n" $mention " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables." }}
+        {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables." }}
         {{dbSet $target "équipement" $equip }}
         {{dbSet $target "place" $place}}
       {{end}}
     {{else}}
-      {{$msg = joinStr "" $mention " : L'objet n'existe pas dans votre équipement, ou vous n'avez pas la quantité ciblée."}}
+      {{$msg = joinStr "" $user " : L'objet n'existe pas dans votre équipement, ou vous n'avez pas la quantité ciblée."}}
     {{end}}
   {{end}}
 {{end}}

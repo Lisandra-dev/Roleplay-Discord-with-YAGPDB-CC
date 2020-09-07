@@ -17,7 +17,6 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$mention := ""}}
 {{$msg := ""}}
 
 {{if .CmdArgs}}
@@ -28,17 +27,15 @@
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 1}}
-			{{$secondflag = (reFind `\-(add|reset|init|remove)` (index . 0))}}
+			{{$secondflag = (reFind `\-(add|reset|init)` (index . 0))}}
 			{{if ge (len .) 2}}
         {{if $name}}
           {{$target = $id}}
           {{$user = $name}}
-          {{$mention = $name}}
         {{else}}
           {{with (userArg (index . 1))}}
             {{$target = .}}
             {{$target = $target.ID}}
-            {{$mention = joinStr "" "<@" $target ">"}}
             {{$user = (getMember $target).Nick}}
           {{end}}
 			  {{end}}
@@ -59,7 +56,7 @@
 		{{end}}
 	{{end}}
 	{{if not $secondflag}}
-		**Usage** : `$managestuff -(add|reset|init|remove) user item amount`
+		**Usage** : `$managestuff -(add|reset|init) user item amount`
 	{{else}}
 		{{$equip := sdict}}
     {{$place := sdict}}
@@ -76,7 +73,7 @@
         {{$place.Set "max_conso" 5}}
         {{$place.Set "max_stuff" 2}}
         {{dbSet $target "place" $place}}
-        Inventaire de {{$mention}} initialisé. 
+        Inventaire de {{$user}} initialisé. 
 
       {{else if eq $secondflag "-reset"}}
         {{dbDel $target "équipement"}}
@@ -84,7 +81,7 @@
         {{$place.Set "s_stuff" 2}}
         {{$place.Set "max_conso" 5}}
         {{$place.Set "max_stuff" 2}}
-        Inventaire de : {{$mention}} Nettoyé !
+        Inventaire de : {{$user}} Nettoyé !
         {{dbSet $target "place" $place}}
 
       {{else if eq $secondflag "-add"}}
@@ -113,7 +110,7 @@
           {{$item = print "[E] " (title (lower $sac))}}
         {{end}}
         
-        {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)`)}}
+        {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
         {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
 		      {{$item = "[MODULE] " $mimp}}
         {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
@@ -127,13 +124,13 @@
             {{if le (toInt $amount) (toInt $sstuff) }}
               {{$place.Set "s_stuff" (sub $sstuff $amount)}}
               {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-              {{$msg = joinStr "" $mention " a obtenu " $amount " " $item "."}}
+              {{$msg = joinStr "" $user " a obtenu " $amount " " $item "."}}
             {{else}}
-              {{$msg = joinStr "" $mention " n'a pas assez de place dans son inventaire." }}
+              {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire." }}
             {{end}}
           {{else if $sac}}
             {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
-              {{$msg = joinStr "" $mention " possède déjà un sac. Merci de retirer l'ancien."}}
+              {{$msg = joinStr "" $user " possède déjà un sac. Merci de retirer l'ancien."}}
             {{else}}
               {{if eq $item "[E] Sac À Dos" }}
                 {{$place.Set "s_stuff" (add $sstuff 3)}}
@@ -152,28 +149,28 @@
                 {{$place.Set "max_conso" (add $sconso 3)}}
               {{end}}
               {{$equip.Set $item 1}}
-              {{$msg = joinStr "" $mention " a obtenu " $item "."}}
+              {{$msg = joinStr "" $user " a obtenu " $item "."}}
             {{end}}
           {{else if $chargeur}}
             {{if and (le $amount (toInt $sconso))}}
               {{$place.Set "s_conso" (sub $sconso $amount)}}
               {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-              {{$msg = joinStr "" $mention " a obtenu " $amount " " $item "."}}
+              {{$msg = joinStr "" $user " a obtenu " $amount " " $item "."}}
             {{else}}
-              {{$msg = joinStr "" $mention " n'a pas assez de place dans son inventaire."}}
+              {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
             {{end}}
           {{end}}
         {{else if (not $compo)}}
           {{if and (le $amount (toInt $sconso))}}
             {{$place.Set "s_conso" (sub $sconso $amount)}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-            {{$msg = joinStr "" $mention " a obtenu " $amount " " $item "."}}
+            {{$msg = joinStr "" $user " a obtenu " $amount " " $item "."}}
           {{else}}
-            {{$msg = joinStr "" $mention " n'a pas assez de place dans son inventaire."}}
+            {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
           {{end}}
         {{else if $compo}}
           {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-          {{$msg = joinStr "" $mention " a obtenu " $amount " " $item ", sans perte de place."}}
+          {{$msg = joinStr "" $user " a obtenu " $amount " " $item ", sans perte de place."}}
         {{end}}
         {{if le (toInt ($place.Get "s_stuff")) 0}}
           {{$place.Set "s_stuff" 0}}
@@ -183,7 +180,7 @@
         {{end}}
         {{dbSet $target "équipement" $equip}}
         {{dbSet $target "place" $place}}
-        {{$msg = joinStr "" $msg "\n" $mention " : Il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables."}} 
+        {{$msg = joinStr "" $msg "\n" $user " : Il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables."}} 
       {{end}}  
     {{end}}
   {{end}}

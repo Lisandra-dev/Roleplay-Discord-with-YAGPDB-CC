@@ -34,8 +34,8 @@
     {{with (userArg (index .CmdArgs 0))}}
       {{$target = .}}
       {{$target = $target.ID}}
-      {{$mention = joinStr "" "<@" $target ">"}}
       {{$user = (getMember $target).Nick}}
+      {{$mention = $user}}
     {{end}}
   {{end}}
     {{$item = title (index .CmdArgs 1)}}
@@ -86,7 +86,7 @@
     {{if $sac}}
       {{$item = print "[E] " (title (lower $sac))}}
     {{end}}
-    {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)`)}}
+    {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
     {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
       {{$item = "[MODULE] " $mimp}}
     {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
@@ -96,10 +96,10 @@
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
       {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
         {{if and (not $sac) (not $chargeur)}}
-          {{if lt $amount $sstuff}}
+          {{if lt $amount $mstuff}}
             {{$place.Set "s_stuff" (add $sstuff $amount)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{else if eq $amount $sstuff}}
+          {{else if eq $amount $mstuff}}
             {{$place.Set "s_stuff" $mstuff}}
           {{end}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -108,7 +108,7 @@
           {{if eq $item "[E] Sac À Dos" }}
             {{$sstuff = sub $sstuff 3}}
             {{$sconso = sub $sconso 9}}
-            {{if or (lt $sstuff 0) (lt $sconso 0)}}
+            {{if or (le $sstuff 0) (le $sconso 0)}}
              {{ $msg = joinStr "" "Le " $item " de " $mention "est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
@@ -119,7 +119,7 @@
           {{else if eq $item "[E] Sacoche" }}
             {{$sstuff = sub $sstuff 2}}
             {{$sconso = sub $sconso 6}}
-            {{if or (lt $sstuff 0) (lt $sconso 0)}}
+            {{if or (le $sstuff 0) (le $sconso 0)}}
              {{ $msg = joinStr "" "Le " $item " de " $mention "est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
@@ -142,21 +142,21 @@
           {{$equip.Del $item}}
           {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
         {{else if $chargeur}}
-          {{if lt $amount (toInt $sconso)}}
+          {{if lt $amount (toInt $mconso)}}
           {{$place.Set "s_conso" (add $amount $sconso)}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{else if eq $amount (toInt $sconso)}}
+          {{else if eq $amount (toInt $mconso)}}
             {{$place.Set "s_conso" $mconso}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
             {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
           {{end}}
         {{end}}
       {{else if not $compo}}
-        {{if lt $amount (toInt $sconso)}}
+        {{if lt $amount (toInt $mconso)}}
           {{$place.Set "s_conso" (add $amount $sconso)}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
           {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}
-        {{else if eq $amount (toInt $sconso)}}
+        {{else if eq $amount (toInt $mconso)}}
           {{$place.Set "s_conso" $mconso}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
           {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}

@@ -200,8 +200,10 @@
 					{{$compo.Set "cytomorphe" $lc_vn}}
 				{{end}}
 				{{$log = joinStr " " $user "a fabriqué, grâce à l'inventaire du Nucleus," $q $item "en utilisant : \n ▫️ Biocomposant" $bc "[" $bc_vn "]\n ▫️ Substrat Ferreux :" $sf "[" $sf_vn "]\n ▫️ Liquide Cytomorphe" $lc "[" $lc_vn "] \n ▫️ Cellule Bionotropique" $cb "[" $cb_vn "]" }}
+				{{sendMessage nil $log}}
 			{{else}}
-				Le Nucleus n'a pas les composants nécessaires pour fabriquer {{$q}} {{$item}}.
+				{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+				{{sendMessage nil $msg}}
 			{{end}}
 
 		{{else if and $univ (eq $choice "-case")}}
@@ -216,8 +218,10 @@
 					{{$compo.Del "universel"}}
 				{{end}}
 				{{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant" $q "composants universels du vaisseau. \n Il reste" ($compo.Get "universel") "sur le vaisseau." }}
+				{{sendMessage nil $log}}
 			{{else}}
-				Le Nucleus n'a pas assez de composants universels pour fabriquer {{$q}} {{$item}}
+				{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+				{{sendMessage nil $log}}
 			{{end}}
 
 		{{else if $univ }}
@@ -234,13 +238,16 @@
       {{$msg := joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
 			{{sendMessage nil $msg}}
 			{{else}}
-				{{$user}} n'a pas assez de composants universels pour fabriquer {{$q}} {{$item}}
+				{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+				{{sendMessage nil $msg}}
 			{{end}}
 		{{else}}
-			{{$user}} ne peut pas fabriquer {{$q}} {{$item}} car ne possèdant pas les ressources nécessaires.
+			{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+			{{sendMessage nil $log}}
 		{{end}}
 	{{else}}
-		L'objet ne possède pas de recette.
+	{{$msg = "L'objet ne possède pas de recette."}}
+	{{sendMessage nil $msg}}
 	{{end}}
 {{else}}
 	**Usage** : `$craft "objet" (q[1-100]) (+VN|-case) (-bdg) (-cu) (#reroll)`
