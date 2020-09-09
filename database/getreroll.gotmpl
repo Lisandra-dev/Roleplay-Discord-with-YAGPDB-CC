@@ -2,13 +2,10 @@
 	{{$cmd := "false"}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user :=.User.ID }}
-	{{if ge (len .CmdArgs) 2}}
-		{{$cmd = index .CmdArgs 1}}
-		{{with (userArg $cmd)}}
-			{{$cmd = index .CmdArgs 2}}
-			{{$user = .}}
-			{{$user = $user.ID}}
-		{{end}}
+		{{$testU := reFind `(\#\S*)` .Message.Content}}
+	{{$testU = joinStr "" (split $testU "#")}}
+	{{if $testU}}
+		{{$user = toInt $testU}}
 	{{end}}
 	{{range $name}}
 		{{- $user = (add $user .)}}
