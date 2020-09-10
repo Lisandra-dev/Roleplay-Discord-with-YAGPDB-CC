@@ -1,0 +1,36 @@
+{{$joined := sdict}}
+{{with (dbGet 0 "joined")}}
+  {{$joined = sdict .Value}}
+{{end}}
+{{$join := $joined.Get (str .User.ID)}}
+
+{{$t := humanizeDurationHours (currentTime.Sub .Member.JoinedAt.Parse)}}
+{{$t = reReplace `days` $t "jours"}}
+{{if reFind `(weeks|week)` $t}}
+  {{$m := reFind `\d+ (weeks|week)` $t}}
+  {{$m = toFloat (reFind `\d+` $m)}}
+  {{if and $m (ge $m (toFloat 4)) }}
+    {{$m = div $m (toFloat 4)}}
+    {{$t = reReplace `\d+ (weeks|week)` $t (print $m " mois")}}
+  {{else}}
+    {{$t = reReplace `(weeks|week)` $t "semaines"}}
+  {{end}}
+{{end}}
+{{$t = reReplace `years` $t "ans"}}
+{{$t = reReplace `and` $t "et"}}
+{{$t = reReplace `hours` $t "heures"}}
+{{$t}}
+  
+
+
+{{ $avatar := (joinStr "" "https://cdn.discordapp.com/avatars/" (toString .User.ID) "/" .User.Avatar ".png") }}
+{{$serv := (print "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+{{$embed := cembed
+"title" (joinStr " " .User.Username "vient de quitter le serveur... ")
+"author" (sdict "name" "Projet Nucleus" "icon_url"  $serv)
+"thumbnail" (sdict "url" $avatar)
+"footer" (sdict "text" (joinStr " " "Le serveur totalise maintenant"  .Guild.MemberCount "membres • Avait rejoint il y a" $string))
+"color" 0x75bfd8}}
+{{sendMessage nil $embed}}
+{{$joined.Del (str .User.ID)}}
+{{dbSet 0 "joined" $joined}}
