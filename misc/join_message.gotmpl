@@ -15,5 +15,5 @@
 {{with (dbGet 0 "joined")}}
 {{$joined = sdict .Value}}
 {{end}}
-{{$joined.Set (str .User.ID) .Member.JoinedAt.Parse}}
+{{$joined.Set (str .User.ID) (humanizeDurationHours (currentTime.Sub .Member.JoinedAt.Parse))}}
 {{dbSet 0 "joined" $joined}}
