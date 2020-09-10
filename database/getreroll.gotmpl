@@ -1,5 +1,5 @@
 {{if .CmdArgs}}
-	{{$cmd := "false"}}
+	{{$cmd := reFind `\-(.*)` .Message.Content}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user :=.User.ID }}
 		{{$testU := reFind `(\#\S*)` .Message.Content}}
