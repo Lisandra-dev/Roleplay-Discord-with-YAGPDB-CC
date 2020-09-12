@@ -25,6 +25,8 @@
 
 > Reset le cycle actuel, les message, et le jour à respectivement 1, 0 et 1. 
 
+Pour des raisons de sécurité, un mot de passe généré aléatoirement est demandé. 
+
 # Changer le nom d'un channel en fonction du temps
 
 **Trigger** : Minute interval : 5 minutes.
@@ -33,7 +35,7 @@
 
 > Attention, à cause des limitations discord, il n'est pas possible de rendre cette commande plus rapide. Elle permet de changer le nom d'un channel pour indiquer rapidement le cycle et le jour actuel. 
 
-# Changing number for cycle
+# Modifier les paramètres : 
 
 **Trigger** : command
 
@@ -41,7 +43,7 @@
 
 > Cette commande permet de changer les paramètres lié au temps. Chaque modification envoie un embed dans un channel précis (ici celui indiquant le temps). Il permet de fixer le nombre de message dans un cycle, le jour, le n° du cycle, et le nombre de message pour le passage d'un cycle. 
 
-# Settings of timer :
+# Afficher les paramètres
 
 **Trigger** : Command
 
