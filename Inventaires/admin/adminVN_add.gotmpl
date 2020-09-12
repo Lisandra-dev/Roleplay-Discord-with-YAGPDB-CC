@@ -1,0 +1,159 @@
+{{$compo := sdict}}
+{{with (dbGet .Server.ID "compo")}}
+	{{$compo = sdict .Value}}
+{{end}}
+
+{{$armes := sdict}}
+{{with (dbGet 0 "armelist")}}
+	{{$armes = sdict .Value}}
+{{end}}
+
+{{$module := sdict}}
+{{with (dbGet .Server.ID "module")}}
+	{{$module = sdict .Value}}
+{{end}}
+
+{{$implant := sdict }}
+{{with (dbGet .Server.ID "implant")}}
+	{{$implant = sdict .Value}}
+{{end}}
+
+{{$chargeur := sdict}}
+{{with (dbGet 0 "chargeur_Multi")}}
+	{{$chargeur = sdict .Value}}
+{{end}}
+
+{{$soin := sdict}}
+{{with (dbGet 0 "soin")}}
+	{{$soin = sdict .Value}}
+{{end}}
+
+{{$flag := reFind `\-(?i)(armes?|modules?|implants?|soins?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
+{{$flag = lower $flag}}
+{{$log := ""}}
+{{$q := 1}}
+{{$item := ""}}
+
+{{if .CmdArgs}}
+	{{if eq (len .CmdArgs) 1}}
+Erreur : Nombre d'argument invalide.
+> N'oublier pas le nom de l'objet !
+	{{else if ge (len .CmdArgs) 2}}
+		{{$item = title (index .CmdArgs 1)}}
+		
+		{{if eq (len .CmdArgs) 3}}
+			{{$q = toInt (index .CmdArgs 2)}}
+		{{end}}
+		
+		{{if eq $flag "-arme" "-armes"}}
+			{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
+			{{if not $type}}
+        Erreur : Oublie du type d'arme
+			{{else}}
+				{{$armes.Set $item (add ($armes.Get $item) $q)}}
+				{{$log = (joinStr " " "Rajout de" $q $item "à l'inventaire du Nucleus")}}
+				{{sendMessage nil $log}}
+				{{dbSet 0 "armelist" $armes}}
+			{{end}}
+		
+		{{else if eq $flag "-soin" "-soins"}}
+			{{$soin.Set $item (add ($soin.Get $item) $q)}}
+			{{$log = (joinStr " " "Rajout de" $q $item "à l'inventaire du Nucleus")}}
+			{{sendMessage nil $log}}
+			{{dbSet 0 "soin" $soin}}
+		
+		{{else if eq $flag "-module" "-modules"}}
+			{{$type := title (lower (reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` .Message.Content))}}
+			{{if not $type}}
+				Erreur : Vous devez indiquer le type de modules.
+			{{else}}
+				{{$item = print "[MODULE] " $type}}
+				{{$module.Set $item (add ($module.Get $item) $q)}}
+				{{dbSet .Server.ID "module" $module}}
+				{{$log = (joinStr " " "Rajout de" $q $item "à l'inventaire du Nucleus")}}
+				{{sendMessage nil $log}}
+			{{end}}
+
+		{{else if eq $flag "-chargeur"}}
+			{{$balle := reFind `(?i)(fusil|pistolet|canon)` .Message.Content}}
+			{{if not $balle}}
+				Erreur : VOus devez indiquer l'arme liée au chargeur.
+			{{else}}
+				{{$item = print "[CHARGEUR] " (title $balle)}}
+				{{$chargeur.Set $item (add ($chargeur.Get $item) $q)}}
+				{{dbSet 0 "chargeur_Multi" $chargeur}}
+				{{$log = (joinStr " " "Rajout de" $q $item "à l'inventaire du Nucleus")}}
+				{{sendMessage nil $log}}
+			{{end}}
+
+		{{else if eq $flag "-implant" "-implants"}}
+			{{$type := title (lower (reFind `(?i)(force|résistance|cognition|furtivité|vision)` .Message.Content))}}
+			{{if not $type}}
+			Erreur : Vous devez indiquer le type d'implants.
+			{{else}}
+				{{$item = print "[IMPLANT] " $type}}
+				{{$implant.Set $item (add ($implant.Get $item) $q)}}
+				{{dbSet .Server.ID "implant" $implant}}
+				{{$log = (joinStr " " "Rajout de" $q $item "à l'inventaire du Nucleus")}}
+				{{sendMessage nil $log}}
+			{{end}}
+
+		{{else if eq $flag "-bc"}}
+			{{$x := (toInt (index .CmdArgs 1))}}
+			{{$value := $compo.Get "biocomposant"}}
+			{{$bc := add $value $x}}
+			{{$compo.Set "biocomposant" $bc}}
+			{{$log = (joinStr " " "Rajout de" $x "Biocomposant à l'inventaire du Nucleus")}}
+			{{sendMessage nil $log}}
+			{{dbSet .Server.ID "compo" $compo}}
+
+
+		{{else if eq $flag "-lc"}}
+			{{$x := (toInt (index .CmdArgs 1))}}
+			{{$value := $compo.Get "cytomorphe"}}
+			{{$lc := add $value $x}}
+			{{$compo.Set "cytomorphe" $lc}}
+			{{$log = (joinStr " " "Rajout de" $x "liquides cytomorphes à l'inventaire du Nucleus")}}
+			{{dbSet .Server.ID "compo" $compo}}
+			{{sendMessage nil $log}}
+
+
+		{{else if eq $flag "-cb"}}
+			{{$value := $compo.Get "bionotropique"}}
+			{{$x := (toInt (index .CmdArgs 1))}}
+			{{$cb := add $value $x}}
+			{{$compo.Set "bionotropique" $cb}}
+			{{dbSet .Server.ID "compo" $compo}}
+			{{$log = (joinStr " " "Rajout de" $x "cellule bionotropique à l'inventaire du Nucleus")}}
+			{{sendMessage nil $log}}
+
+
+		{{else if eq $flag "-sf"}}
+			{{$value := $compo.Get "ferreux"}}
+			{{$x := (toInt (index .CmdArgs 1))}}
+			{{$sf := add $value $x}}
+			{{$compo.Set "ferreux" $sf}}
+			{{dbSet .Server.ID "compo" $compo}}
+			{{$log = (joinStr " " "Rajout de" $x "substrats ferreux à l'inventaire du Nucleus")}}
+			{{sendMessage nil $log}}
+
+		{{else if eq $flag "-cu"}}
+			{{$value := $compo.Get "universel"}}
+			{{$x := (toInt (index .CmdArgs 1))}}
+			{{$cu := add $value $x}}
+			{{$compo.Set "universel" $cu}}
+			{{dbSet .Server.ID "compo" $compo}}
+			{{$log = (joinStr " " "Rajout de" $x "composants universels à l'inventaire du Nucleus")}}
+			{{sendMessage nil $log}}
+		{{end}}
+	{{end}}
+{{else}}
+	**Usage** : `$adminVN -add -(armes?|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur> (quantité si non-composant)`
+{{end}}
+
+
+
+
+
+
+
