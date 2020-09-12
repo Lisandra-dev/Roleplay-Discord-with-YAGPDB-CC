@@ -129,7 +129,7 @@ Erreur : Nombre d'argument invalide.
 					{{if eq ($inv.Get $item) 0}}
 						{{$inv.Del $item}}
 					{{end}}
-					{{$module.Set $item (add ($module.Get $item) 1)}}
+					{{$module.Set $item (add ($module.Get $item) $q)}}
 					{{dbSet .Server.ID "module" $module}}
 					{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
 				{{else}}
@@ -193,7 +193,6 @@ Erreur : Nombre d'argument invalide.
 			{{$x := (toInt (index .CmdArgs 1))}}
 			{{$cb := add $value $x}}
 			{{if and ($inv.Get "[C] Cellule Bionotropique") (ge (toInt ($inv.Get "[C] Cellule Bionotropique")) $x)}}
-				{{$compo.Set "bionotropique" $cb}}
 				{{dbSet .Server.ID "compo" $compo}}
 				{{$inv.Set "[C] Cellule Bionotropique" (sub ($inv.Get "[C] Cellule Bionotropique") $x)}}
 				{{if eq ($inv.Get "[C] Cellule Bionotropique") 0}}
@@ -244,10 +243,10 @@ Erreur : Nombre d'argument invalide.
 			{{$item = print "[CHARGEUR] " (title $balle)}}
 				{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
 					{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+					{{$chargeur.Set $item (add ($chargeur.Get $item) $q)}}
 					{{if eq ($inv.Get $item) 0}}
 						{{$inv.Del $item}}
 					{{end}}
-				{{dbSet .Server.ID "compo" $compo}}
 				{{$inv.Set $item (sub ($inv.Get $item) $q)}}
 				{{dbSet 0 "chargeur_Multi" $chargeur}}
 				{{if eq ($inv.Get $item) 0}}
