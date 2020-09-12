@@ -5,17 +5,25 @@
 {{end}}
 
 {{$number:= ($time.Get "cycle")}}
+{{$txt := ($time.Get "message") }}
+{{$pourcent := 0}}
+{{$msg := ""}}
 
 {{$msgc := (toFloat ($time.Get "mgsc"))}}
-{{$pourcent := div $msgc 100}}
-{{if lt $pourcent (toFloat 1)}}
-	{{$pourcent = (toFloat 1)}}
+{{if ge $msgc (toFloat 100)}}
+	{{$pourcent := div $msgc 100}}
+	{{if lt $pourcent (toFloat 1)}}
+		{{$pourcent = (toFloat 1)}}
+	{{end}}
+	{{ $msg = (json (div ($time.Get "message") $pourcent)) }}
+{{else}}
+	{{$msg = json (mult (div $txt $msgc) 100)}}
 {{end}}
-{{ $msg := (json (div ($time.Get "message") $pourcent)) }}
+
 
 
 {{$y := (toFloat ($time.Get "cycle"))}}
-{{$txt := ($time.Get "message") }}
+
 {{$val := (joinStr " " (toString (toInt $txt)) "message(s) dans le cycle")}} {{/* Footer message */}}
 {{$day := (toString (toInt ($time.Get "jour")))}}
 

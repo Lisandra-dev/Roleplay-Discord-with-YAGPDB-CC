@@ -14,7 +14,16 @@
 {{end}}
 
 {{$log := "735938256038002818"}}
-{{$fruit := "https://imgur.com/0atJRWH"}}
+{{$fruit := "https://i.imgur.com/0atJRWH.png"}}
+
+{{$jardin := cembed 
+	"author" (sdict "name" "Sola-UI" "authoricon" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png") 
+	"title" "Production du jardin"
+	"description" "Le jardin a produit 1 biocomposant !"
+	"footer" (sdict "text" (joinStr " " "Biocomposant :" ($compo.Get "biocomposant")))
+	"color" 0x7abac6
+	"thumbnail" (sdict "url" $fruit)
+	"timestamp" .Message.Timestamp}}
 
 {{/*All message database counter*/}}
 {{$time := sdict }}
@@ -57,13 +66,6 @@
 					"timestamp" .Message.Timestamp}}
 				{{sendMessage $chan $embed}}
 				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{$jardin := cembed
-					"title" "Production du jardin"
-					"description" "Le jardin a produit 1 biocomposant !"
-					"footer" (sdict "text" (joinStr " " "Biocomposant" ($compo.Get "biocomposant")))
-					"color" 0x7abac6
-					"thumbnail" (sdict "url" $fruit)
-					"timestamp" .Message.Timestamp}}
 				{{sendMessage $log $jardin}}
 
   		{{else if eq $y (toFloat 2)}}
@@ -75,13 +77,6 @@
 					"timestamp" .Message.Timestamp}}
 				{{sendMessage $chan $embed}}
 				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{$jardin := cembed
-					"title" "Production du jardin"
-					"description" "Le jardin a produit 1 biocomposant !"
-					"footer" (sdict "text" (joinStr " " "Biocomposant" ($compo.Get "biocomposant")))
-					"color" 0x7abac6
-					"thumbnail" (sdict "url" $fruit)
-					"timestamp" .Message.Timestamp}}
 				{{sendMessage $log $jardin}}
 
 
@@ -94,13 +89,6 @@
   				"timestamp" .Message.Timestamp}}
 				{{sendMessage $chan $embed}}
 				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{$jardin := cembed
-				"title" "Production du jardin"
-				"description" "Le jardin a produit 1 biocomposant !"
-				"footer" (sdict "text" (joinStr " " "Biocomposant" ($compo.Get "biocomposant")))
-				"color" 0x7abac6
-				"thumbnail" (sdict "url" $fruit)
-				"timestamp" .Message.Timestamp}}
 				{{sendMessage $log $jardin}}
 
   		{{else if eq $y (toFloat 4)}}
@@ -112,13 +100,6 @@
 			"timestamp" .Message.Timestamp}}
 		{{sendMessage $chan $embed}}
 			{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{$jardin := cembed
-				"title" "Production du jardin"
-				"description" "Le jardin a produit 1 biocomposant !"
-				"footer" (sdict "text" (joinStr " " "Biocomposant" ($compo.Get "biocomposant")))
-				"color" 0x7abac6
-				"thumbnail" (sdict "url" $fruit)
-				"timestamp" .Message.Timestamp}}
 			{{sendMessage $log $jardin}}
 
 {{/*you can add cycle with just else if eq $y (toFloat number) */}}
@@ -129,15 +110,18 @@
   			{{$time.Set "cycle" 1}}
   			{{$time.Set "jour" (add $jour 1)}}
   			{{$jour:= $time.Get "jour"}}
+				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
   			{{$embed := cembed
    		 		"title" (joinStr "" "Début du Jour : " $jour)
   				"description" "Nous sommes maintenant au cycle 1"
-    				"color" 0x1B3175
+    			"color" 0x1B3175
   				"thumbnail" (sdict "url" $nuit)
   				"timestamp" .Message.Timestamp}}
   			{{sendMessage $chan $embed}}
+				{{sendMessage $log $jardin}}
     	{{end}}
 	{{end}}
 {{else}}
 {{end}}
 {{dbSet 0 "time" $time}}
+{{dbSet .Server.ID "compo" $compo}}
