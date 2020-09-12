@@ -6,24 +6,18 @@ Toutes les commandes listées peuvent être utiliser avec un reroll, en indiquan
 
 Le centre du système d'arme.
 
-
-
 **Trigger : ** Coutains `:pa:`
 
 > Compte les PA d'un utilisateur à chaque trigger. A quatre, l'utilisateur a utilisé tous ses PA. A chaque fois que la commande est lancé, elle recherche dans la base de données si l'utilisateur recharge quelque chose (arme ou compétence). Si oui, elle va faire `+1`. Si cette valeur atteint le seuil, alors elle va indiquer le rechargement complet puis supprimer la clé de la base de données. En outre, pour les armes, elle va reset le compte et indiquer donc le maximum de charge.
 
 # Recharge
 
-Fun : c'est la seule commande qui n'utilise pas de dictionnaire avec le temps, son utilisation nécessite donc un premium car il y a de nombreux `dbGet`.
-
-
-
 **Trigger : ** Command
 
 **Usage : ** 
 
 * <u> Arme :</u>`$recharge -(fusil|fusil2|pistolet|pistolet2|canon)`
-* <u> Compétence :</u> `$recharge -(attaque|support) "name"`
+* <u> Compétence :</u> `$cd -(court|long) "name"`
 
 Il faut :
 
@@ -32,7 +26,6 @@ Il faut :
 * Canon : 8 PA
 * Compétence d'attaque : 8 PA
 * Compétence de support : 12 PA (les altération durent 6 PA, et le cooldown 6PA.)
-
 
 
 # Fusil, fusil2, pistolet, pistolet2, canon

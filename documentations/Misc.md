@@ -1,12 +1,3 @@
-All command here can work as stand alone. That's why there are ungrouped.
-
-# Pins
-
-**Trigger** : Command
-
-**Usage** : `$pins`
-
-> Le bot envoie juste un gif.
 
 # Instruction
 
@@ -51,8 +42,8 @@ All command here can work as stand alone. That's why there are ungrouped.
 **Trigger** : Command
 
 **Usage** : `-edit <id> <things>`
+
 > Permet d'éditer un message de YAG, dont des embed.
->
 > Source : https://github.com/Jo3-L/yagpdb-cc
 > Voir au dessus pour plus d'information.
 
@@ -66,15 +57,16 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 > Permet d'envoyer une recherche google à quelqu'un.
 
-# AFK
+## AFK
 
+# AFK : 
 **Trigger** : command
 
 **Usage** : `-afk -d duration (en heure) <raison>`
 
 > Permet de donner le rôle AFK à quelqu'un durant x temps, avec une raison optionnel. Un message indiquant son absence est envoyé dans un channel, et le message est automatiquement supprimé si la personne supprime son AFK (avec la commande) ou sort naturellement de l'AFK.
 
-# Viewafk
+## Viewafk
 
 **Trigger** : Command
 
@@ -106,24 +98,33 @@ All command here can work as stand alone. That's why there are ungrouped.
 
 > Supprime les émoji "solitaire".
 
-# play or skip :
+# Joueurs
 
-**Trigger :** Reaction added/removed
-
-> Edit un message de YAG, et rajoute l'utilisateur dans l'embed. Permet d'indiquer rapidement les roles des membres sur le message.
-
-# rm player guide :
+## Indication joueur :
 
 **Trigger :** Reaction added / Removed
 
 > Envoie un message aux personnes choisissant d'être joueur, avec un guide pour ne pas être perdu dans les channels.
 
-# Content :
+## Join & leave message :
+
+Ce sont des fonctions à utiliser via les fonctions de join/leave de YAGPDD. Attention, il faut changer le rôle si vous souhaitez mettre un rôle à tous les nouveaux arrivants.
+
+# Suggest :
+
+*Source* : YAGPDB - GITHUB
+
+## Reaction Suggestion :
+
+Permet de supprimer automatiquement l'emoji précédent d'une réaction lors d'un changement d'avis.
+Utilisation : Reaction Added
+
+# Text :
 
 **Trigger** : Command
 
-**Usage** : `$content <id>`
-Pour récupérer un message d'un autre channel : `$content -chan <id> <message id>`
+**Usage** : `$text <id> (-footer|-title|-field(s)|-color|-author) `
+Pour récupérer un message d'un autre channel : `$content -chan <id> <message id> (-footer|-title|-field(s)|-color|-author)`
 
 > Permet de récupérer, en format "code" le contenu d'un message, qui peut être un embed ou un message "normal".
 > Attention, la commande bug sur les messages contenant à la fois un embed et un message texte.
