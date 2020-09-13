@@ -32,9 +32,10 @@
 	{{$user = (dbGet (toInt $id) "rerollName").Value}}
 {{else}}
 	{{$user = (getMember $id).Nick}}
+	{{if eq (len $user) 0}}
+		{{$user = $.User.Username}}
+	{{end}}
 {{end}}
-
-
 
 {{$userEco := sdict}}
 {{with (dbGet $id "economy")}}
@@ -51,7 +52,6 @@
 {{if ($userEco.Get "Inventory")}}
 	{{$inv = sdict ($userEco.Get "Inventory")}}
 {{end}}
-
 
 {{$desc := "Ton Inventaire est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
 {{$footer := print "Page: 1 / 1 | #" $id }}

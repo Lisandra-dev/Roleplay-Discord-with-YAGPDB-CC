@@ -19,18 +19,15 @@
 {{with (dbGet $id "economy")}}
 	{{$userEco = sdict .Value}}
 {{end}}
-
 {{$serverEco := sdict}}
 {{with (dbGet .Server.ID "economy")}}
 	{{$serverEco = sdict .Value}}
 {{end}}
-
 {{/* Inventory */}}
 {{$inv := sdict}}
 {{if ($userEco.Get "Inventory")}}
 	{{$inv = sdict ($userEco.Get "Inventory")}}
 {{end}}
-
 
 {{$desc := "Ton Inventaire est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
 {{$footer := print "Page: 1 / 1 | #" $id }}

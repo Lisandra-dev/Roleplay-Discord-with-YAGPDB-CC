@@ -87,9 +87,8 @@
 					 	{{$item.Set "stock" (sub $stock $amount)}}
 					{{end}}
 					{{if .sii}}
-							{{$inv.Set $initem (add (toInt ($inv.Get $initem)) $amount)}}
-							{{$userEco.Set "Inventory" $inv}}
-						{{end}}
+						{{$inv.Set $initem (add (toInt ($inv.Get $initem)) $amount)}}
+						{{$userEco.Set "Inventory" $inv}}
 					{{end}}
 		      {{if not .reply}}
 					{{$user = joinStr " " "Achat | " (title $user)}}
@@ -105,7 +104,6 @@
 	    {{end}}
 	  {{end}}
 	{{end}}
-	{{/* Database Updates */}}
 	{{dbSet .Server.ID "economy" $serverEco}}
 	{{dbSet $id "economy" $userEco}}
 {{else}}

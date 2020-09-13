@@ -1,11 +1,11 @@
 {{$matches := reFind `\$(open|close)` .Message.Content}}
 
 {{/* User variable */}}
-{{$author := "Sola-UI"}}
-{{$chan := "701395027896565810"}}
+{{$author := .User.Username}}
+{{$chan := "nil"}}
 {{$avatar := "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png"}}
-{{$msg_ouvert := "Un vaisseau marchand vous contacte sur la ligne de communication. Il vous ouvre sa boutique dans un canal privé, n'hésitez pas à aller leur répondre."}}
-{{$msg_close := "Le vaisseau marchand vient de partir."}}
+{{$msg_ouvert := "Le store est ouvert !"}}
+{{$msg_close := "Le store est fermé !"}}
 
 {{/* Databases */}}
 {{$serverEco := sdict}}

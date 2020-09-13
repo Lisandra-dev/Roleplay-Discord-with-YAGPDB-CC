@@ -9,7 +9,7 @@
 	{{$symbol = $serverEco.Get "symbol"}}
 {{end}}
 {{$desc := ""}}
-{{$name := "Vaisseau Marchand"}}
+{{$name := "Marchand"}}
 {{$icon := "https://i.imgur.com/u80Pg6O.png"}}
 {{$thumb := "https://i.imgur.com/ACrlyqV.png"}}
 
@@ -23,6 +23,7 @@
 		{{$items = sdict ($serverEco.Get "Items")}}
 	{{end}}
 	{{$desc = "La boutique est actuellement vide"}}
+	{{$footer = "Page 1 / 1"}}
 	{{if $items}}
 		{{range $k,$v := $items}}
 			{{$item := $k}}
@@ -47,12 +48,10 @@
 	{{end}}
 {{else}}
 	{{$desc = "Le magasin est actuellement fermé..."}}
-	{{$name = "Vaisseau Nucleus"}}
+	{{$name = "Fermeture"}}
 	{{$icon = (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
 	{{$thumb = "https://i.imgur.com/FW1ZJDk.png"}}
 {{end}}
-
-
 
 {{$del := false}}
 {{ $action := .Reaction.Emoji.Name }} {{/* The action being ran */}}
@@ -67,10 +66,10 @@
 		 {{- end -}}
 		{{ end }}
 	{{if $embed.Author}}
-		{{ if and (eq $embed.Author.Name "Vaisseau Marchand") $embed.Footer}} {{/* More checks */}}
+		{{ if and (eq $embed.Author.Name "Marchand") $embed.Footer}} {{/* More checks */}}
 			{{ $page = toInt (reFind `\d+` $embed.Footer.Text) }} {{/* We presume that this is valid, and get the page num */}}
 			{{ $isValid = true }} {{/* Yay, it is valid */}}
-		{{else if eq $embed.Author.Name "Vaisseau Nucleus"}}
+		{{else if eq $embed.Author.Name "Fermeture"}}
 			{{$isValid = true}}
 			{{$page = 1}}
 		{{ end }}

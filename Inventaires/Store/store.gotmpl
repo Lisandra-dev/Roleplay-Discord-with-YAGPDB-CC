@@ -9,7 +9,7 @@
 		{{$symbol = $serverEco.Get "symbol"}}
 	{{end}}
 	{{$desc := ""}}
-	{{$name := "Vaisseau Marchand"}}
+	{{$name := "Marchand"}}
 	{{$icon := "https://i.imgur.com/u80Pg6O.png"}}
 	{{$thumb := "https://i.imgur.com/ACrlyqV.png"}}
 
@@ -23,6 +23,7 @@
 			{{$items = sdict ($serverEco.Get "Items")}}
 		{{end}}
 		{{$desc = "La boutique est actuellement vide"}}
+		{{$footer = "Page 1 / 1"}}
 		{{if $items}}
 			{{range $k,$v := $items}}
 				{{$item := $k}}
@@ -47,7 +48,7 @@
 		{{end}}
 	{{else}}
 		{{$desc = "Le magasin est actuellement fermé..."}}
-		{{$name = "Vaisseau Nucleus"}}
+		{{$name = " Fermeture"}}
 		{{$icon = (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
 		{{$thumb = "https://i.imgur.com/FW1ZJDk.png"}}
 	{{end}}
