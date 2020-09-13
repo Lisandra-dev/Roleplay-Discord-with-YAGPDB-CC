@@ -9,6 +9,15 @@
 	{{else if $name}}
 		{{$user = $name}}
 		{{$idperso := (toRune (lower $name))}}
+		{{if ge (len .CmdArgs) 2}}
+			{{if (userArg (index .CmdArgs 1))}}
+				{{$id = (userArg (index .CmdArgs 2)).ID}}
+			{{else}}
+				{{$id = .User.ID}}
+			{{end}}
+		{{else}}
+			{{$id = .User.ID}}
+		{{end}}
 		{{range $idperso}}
 			{{- $id = add $id . }}
 		{{- end}}

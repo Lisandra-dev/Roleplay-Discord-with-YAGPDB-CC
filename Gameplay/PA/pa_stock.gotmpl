@@ -1,3 +1,6 @@
+{{$imgpa := "https://i.imgur.com/VvOhTON.png"}}
+
+
 {{$desc := ""}}
 {{$col := 16777215}}
 {{$p := 0}}
@@ -50,7 +53,7 @@
 {{end}}
 
 {{$embed := cembed
-	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
+	"author" (sdict "name" $user "icon_url" $imgpa)
 	"description" $desc
 	"color" $col}}
 {{sendMessage nil $embed}}

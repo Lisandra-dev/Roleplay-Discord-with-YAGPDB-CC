@@ -1,3 +1,10 @@
+{{/* USER VARIABLE */}}
+{{$chan := ""}}
+{{$imga := "https://i.imgur.com/zNofnyh.png"}}
+{{$imgs :="https://i.imgur.com/9iRdtbM.png" }}
+{{$imgpa := "https://i.imgur.com/VvOhTON.png"}}
+
+{{/* color */}}
 {{$desc := ""}}
 {{$col := 16777215}}
 {{$p := 0}}
@@ -8,8 +15,6 @@
 	{{$col = .Color}}
 	{{end}}
 {{end}}
-
-{{$chan := "735938256038002818"}}
 
 {{/* Groupe dictionnaire */}}
 
@@ -59,7 +64,7 @@
 		{{else if ge $atq 4}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
+				"author" (sdict "name" $user "icon_url" $imga)
 				"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID $chan $embed }}
@@ -72,7 +77,7 @@
 			{{$x := dbIncr $id $supp 2}}
 		{{else if eq $supp 4}}
 				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					"author" (sdict "name" $user "icon_url" $imgs)
 					"description" (joinStr "" "Support : " $namesupp " terminé.")
 					"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
 					"color" 0xDFAA58}}
@@ -80,7 +85,7 @@
 		{{else if ge $supp 8}}
 			{{dbDel $id "cdsupp"}}
 			{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+				"author" (sdict "name" $user "icon_url" $imgs)
 				"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
 				"color" 0xDFAA58}}
 			{{ $idM := sendMessageRetID $chan $embed }}
@@ -99,7 +104,7 @@
 			{{else if eq $atq 4}}
 				{{dbDel $id "cdatq"}}
 				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
+					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID $chan $embed }}
@@ -111,7 +116,7 @@
 				{{$x := dbIncr $id $namesupp 2}}
 			{{else if eq $supp 4}}
 				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					"author" (sdict "name" $user "icon_url" $imgs)
 					"description" (joinStr "" "Support : " $namesupp " terminé.")
 					"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
 					"color" 0xDFAA58}}
@@ -119,7 +124,7 @@
 			{{else if eq $supp 8}}
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					"author" (sdict "name" $user "icon_url" $imgs)
 					"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
 					"color" 0xDFAA58}}
 				{{ $idM := sendMessageRetID $chan $embed }}
@@ -135,7 +140,7 @@
 
 
 {{$embed := cembed
-	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
+	"author" (sdict "name" $user "icon_url" $imgpa)
 	"description" $desc
 	"color" $col}}
 	{{$idPA := sendMessageRetID nil $embed}}
