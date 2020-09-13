@@ -11,10 +11,10 @@
 	{{$recipe = sdict .Value}}
 {{end}}
 
-{{$bc := 0}}
-{{$lc := 0}}
-{{$sf := 0}}
-{{$cb := 0}}
+{{$c1 := 0}}
+{{$c2 := 0}}
+{{$c3 := 0}}
+{{$c4 := 0}}
 {{$cu := 0}}
 {{$item := ""}}
 
@@ -24,33 +24,30 @@
 		{{$item = print "[BDG] " $item}}
 	{{end}}
 	{{$balle := reFind `(?i)chargeur` .Message.Content}}
-	{{if $balle}}
-		{{$weap := reFind `(?i)(fusil|canon|pistolet)` $item}}
-		{{$item = print "[CHARGEUR] " (title $weap)}}
-	{{end}}
+
 	{{if ($recipe.Get $item)}}
 		{{$i := sdict ($recipe.Get $item)}}
-		{{$bc = $i.Get "Biocomposant"}}
-		{{$lc = $i.Get "Liquide Cytomorphe"}}
-		{{$sf = $i.Get "Substrat Ferreux"}}
-		{{$cb = $i.Get "Cellule Bionotropique"}}
+		{{$c1 = $i.Get "Compo1"}}
+		{{$c2 = $i.Get "Compo2"}}
+		{{$c3 = $i.Get "Compo3"}}
+		{{$c4 = $i.Get "Compo4"}}
 		{{$cu = $i.Get "Composant universel"}}
-		{{$compo := reFind `-(bc|lc|sf|cb|cu)` .Message.Content}}
+		{{$compo := reFind `-(c1|c2|c3|c4|cu)` .Message.Content}}
 		{{if not $compo}}
 			Erreur : Composant non reconnu
 		{{else}}
-			{{if eq $compo "-bc"}}
-				{{$bc = (index .CmdArgs 2)}}
-			{{else if eq $compo "-lc"}}
-				{{$lc = (index .CmdArgs 2)}}
-			{{else if eq $compo "-sf"}}
-				{{$sf = (index .CmdArgs 2)}}
-			{{else if eq $compo "-cb"}}
-				{{$cb = (index .CmdArgs 2)}}
+			{{if eq $compo "-c1"}}
+				{{$c1 = (index .CmdArgs 2)}}
+			{{else if eq $compo "-c2"}}
+				{{$c2 = (index .CmdArgs 2)}}
+			{{else if eq $compo "-c3"}}
+				{{$c3 = (index .CmdArgs 2)}}
+			{{else if eq $compo "-c4"}}
+				{{$c4 = (index .CmdArgs 2)}}
 			{{else if eq $compo "-cu"}}
 				{{$cu = (index .CmdArgs 2)}}
 			{{end}}
-			{{$recipe.Set $item (sdict "Biocomposant" $bc "Substrat Ferreux" $sf "Liquide Cytomorphe" $lc "Cellule Bionotropique" $cb "Composant universel" $cu)}}
+			{{$recipe.Set $item (sdict "Compo1" $c1 "Compo2" $c2 "Compo3" $c3 "Compo4" $c4 "Composant universel" $cu)}}
 			{{with ($recipe.Get $item)}}
 				{{print .}}
 			{{end}}

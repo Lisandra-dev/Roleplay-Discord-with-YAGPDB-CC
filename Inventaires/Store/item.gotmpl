@@ -17,11 +17,6 @@
 	{{if ge (len .) 2}}
 		{{$flag = (reFind `\-(add|edit|delete|info)` (index . 0))}}
 		{{$name = title (index . 1)}}
-		{{$chargeur := reFind `(?i)chargeur` $name}}
-		{{if $chargeur}}
-			{{$name = reFind `(?i)(fusil|pistolet|canon)` $name}}
-			{{$name = print "[CHARGEUR] " $name}}
-		{{end}}
 		{{if ge (len .) 3}}
 			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rbuy|rsell|rename)` (index . 2))}}
 		{{end}}

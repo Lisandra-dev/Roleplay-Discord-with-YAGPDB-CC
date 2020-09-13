@@ -10,11 +10,7 @@
 	{{if (reFind "-bdg" .Message.Content)}}
 		{{$item = print "[BDG] " $item}}
 	{{end}}
-	{{$balle := reFind `(?i)chargeur` .Message.Content}}
-	{{if $balle}}
-		{{$weap := reFind `(?i)(fusil|canon|pistolet)` .Message.Content}}
-		{{$item = print "[CHARGEUR] " (title $weap)}}
-	{{end}}
+	
 	{{if ($recipe.Get $item)}}
 		{{$i := sdict ($recipe.Get $item)}}
 		{{if eq $cmd "-info"}}

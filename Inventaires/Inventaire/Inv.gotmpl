@@ -32,7 +32,7 @@
 {{end}}
 
 
-{{$desc := "Ton casier est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
+{{$desc := "Ton Inventaire est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
 {{$footer := print "Page: 1 / 1 | #" $id }}
 {{$end :=""}}
 {{$cslice := cslice}}
@@ -75,7 +75,7 @@
 
 {{/* hell ends */}}
 {{end}}
-{{$author := (joinStr " " "Casier de :" (title $user))}}
+{{$author := (joinStr " " "Inventaire de :" (title $user))}}
 
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
 {{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}

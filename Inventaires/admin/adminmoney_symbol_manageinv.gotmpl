@@ -177,29 +177,6 @@ Vous avez besoin de spécifier une valeur !
 			{{end}}
 		{{end}}
 	{{end}}
-	{{$typ := reFind `(?i)(chargeur|Sacoche|Sac à dos|Sacoche ceinture|bc|lc|cb|sf|cu|perforant|burst|soutien|altération|schéma|passif|force|résistance|Cognition|furtivité|vision|vitalité|guérison)` $item}}
-	{{$typ = lower $typ}}
-
-	{{if eq $typ "chargeur"}}
-		{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
-		{{$item = print "[CHARGEUR] " (title (lower $weap))}}
-	{{else if eq $typ "sacoche" "Sac à dos" "Sacoche ceinture"}}
-		{{$item = print "[E] " (title $typ)}}
-	{{else if eq $typ "bc"}}
-		{{$item = "[C] Biocomposant"}}
-	{{else if eq $typ "lc" }}
-		{{$item = "[C] Liquide Cytomorphe"}}
-	{{else if eq $typ "cb" }}
-		{{$item = "[C] Cellule Bionotropique"}}
-	{{else if eq $typ "sf" }}
-		{{$item = "[C] Substrat Ferreux"}}
-	{{else if eq $typ "cu"}}
-		{{$item = "[C] Composant Universel"}}
-	{{else if eq $typ "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-		{{$item = "[MODULE] " $typ}}
-	{{else if eq $typ "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-		{{$item = "[IMPLANT] " $typ}}
-	{{end}}
 	
 	{{if not $secondflag}}
 **Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
@@ -240,7 +217,7 @@ Vous avez besoin de spécifier une valeur !
 	{{else if eq $secondflag "-reset"}}
 		{{if $target}}
 			{{$userEco.Del "Inventory"}}
-			Reset de l'Casier de : {{$mention}}.
+			Reset de l'inventaire de : {{$mention}}.
 	{{end}}
 
 	{{else if eq $secondflag "-add"}}
@@ -259,7 +236,7 @@ Vous avez besoin de spécifier une valeur !
 				{{$inv.Set $item $amount}}
 			{{end}}
 				{{$userEco.Set "Inventory" $inv}}
-				Ajout de : {{$amount}} {{$item}} à l'Casier de {{$mention}}.
+				Ajout de : {{$amount}} {{$item}} à l'inventaire de {{$mention}}.
 
 		{{else if eq $secondflag "-remove"}}
 			{{if $target}}
@@ -279,9 +256,9 @@ Vous avez besoin de spécifier une valeur !
 						{{$inv.Del $item}}
 					{{end}}
 					{{$userEco.Set "Inventory" $inv}}
-					{{$amount}} : {{$item}} de le casier de {{$mention}} a été retiré.
+					{{$amount}} : {{$item}} de l'inventaire de {{$mention}} a été retiré.
 				{{else}}
-					Cet objet n'existe pas dans le casier cible.
+					Cet objet n'existe pas dans l'inventaire cible.
 				{{end}}
 			{{end}}
 		{{else if eq $secondflag "-set"}}
@@ -301,7 +278,7 @@ Vous avez besoin de spécifier une valeur !
 							{{$inv.Del $item}}
 						{{end}}
 						{{$userEco.Set "Inventory" $inv}}
-						{{$amount}} : {{$item}} a été mis dans le casier de {{$mention}}
+						{{$amount}} : {{$item}} a été mis dans l'inventaire de {{$mention}}
 				{{end}}
 			{{end}}
 			{{if $target}}
