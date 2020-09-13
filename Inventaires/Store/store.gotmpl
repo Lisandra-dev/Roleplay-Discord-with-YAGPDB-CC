@@ -23,6 +23,7 @@
 			{{$items = sdict ($serverEco.Get "Items")}}
 		{{end}}
 		{{$desc = "La boutique est actuellement vide"}}
+		{{$footer = "Page 1 / 1"}}
 		{{if $items}}
 			{{range $k,$v := $items}}
 				{{$item := $k}}

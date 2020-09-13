@@ -31,6 +31,9 @@
 	{{$user = (dbGet (toInt $id) "rerollName").Value}}
 {{else}}
 	{{$user = (getMember $id).Nick}}
+	{{if eq (len $user) 0}}
+		{{$user = $.User.Username}}
+	{{end}}
 {{end}}
 
 {{/* Inventory */}}
