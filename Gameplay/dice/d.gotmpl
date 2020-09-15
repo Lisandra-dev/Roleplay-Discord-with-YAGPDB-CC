@@ -36,32 +36,28 @@
 {{$idb := (toInt 0)}}
 
 {{$manuel := reFind `s[1-9]` .Message.Content}}
-{{$force:=reFindAllSubmatches `(force|Force)` .Message.Content}}
-{{$agi := reFindAllSubmatches `(agilit(é|e)|Agilit(é|e)|\dagi|\dAgi)` .Message.Content}}
-{{$endu := reFindAllSubmatches `(Endurance|endurance|\dendu|\dEndu)` .Message.Content}}
-{{$preci := reFindAllSubmatches `(Pr(é|e)cision|pr(é|e)cision|pr(é|e)ci|Pr(é|e)ci)` .Message.Content}}
-{{$intell := reFindAllSubmatches `(Intelligence|intelligence|intell|Intell|intel|Intel)` .Message.Content}}
-{{$karma := reFindAllSubmatches `(Karma|karma)` .Message.Content}}
+{{$match := reFind `\b(?i)(force|agi(lit(é|e))?|endu(rance)?|pr(é|e)(cision)?|intel(ligence)?|karma)` .Message.Content}}
+{{$match = lower $match}}
 
 {{if $manuel}}
 	{{$seuil = (toInt (joinStr "" (split $manuel "s")))}}
 	{{$idb = (toInt 0)}}
-{{else if $force}}
+{{else if eq $match "force"}}
 	{{$seuil = (toInt ($stats.Get "force"))}}
 	{{$idb = (toInt ($stats.Get "i_force"))}}
-{{else if $agi}}
+{{else if eq $match "agilité" "agilite" "agi"}}
 	{{$seuil = (toInt ($stats.Get "agi"))}}
 	{{$idb = (toInt ($stats.Get "i_agi"))}}
-{{else if $endu}}
+{{else if eq $match "endurance" "endu"}}
 	{{$seuil = (toInt ($stats.Get "endurance"))}}
 	{{$idb = (toInt ($stats.Get "i_endu"))}}
-{{else if $preci}}
+{{else if eq $match "preci" "préci" "précision" "precision"}}
 	{{$seuil = (toInt ($stats.Get "preci"))}}
 	{{$idb = (toInt ($stats.Get "i_preci"))}}
-{{else if $intell}}
+{{else if eq $match "intel" "intelligence"}}
 	{{$seuil = (toInt ($stats.Get "intelligence"))}}
 	{{$idb = (toInt ($stats.Get "i_intel"))}}
-{{else if $karma}}
+{{else if eq $match "karma"}}
 	{{$seuil = (toInt ($stats.Get "karma"))}}
 	{{$idb = (toInt 0)}}
 {{else}}
