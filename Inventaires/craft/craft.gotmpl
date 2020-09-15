@@ -104,153 +104,157 @@
 
 
 {{/* Function */}}
-{{if .CmdArgs}}
-	{{$item := title (index .CmdArgs 0)}}
-	{{$reci := $item}}
-	{{if eq $balle "chargeur" "CHARGEUR" "Chargeur"}}
-		{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
-		{{$reci = print "[CHARGEUR] " (title $weap)}}
-		{{$item = $reci}}
-	{{else if eq $balle "module" "Module" "MODULE"}}
-		{{$type := reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` $item}}
-		{{$item = print "[MODULE] " (title (lower $type))}}
-		{{$reci = title (lower $type)}}
-	{{else if eq $balle "implant" "Implant" "IMPLANT"}}
-		{{$type := reFind `(?i)(force|résistance|cognition|furtivité|vision)` $item}}
-		{{$reci = title (lower $type)}}
-		{{$item = print "[IMPLANT] " (title (lower $type))}}
-	{{else if and $balle $arme (eq $balle $arme)}}
-		{{$reci = title (lower $arme)}}
-	{{end}}
+{{if (dbGet 0 "mission")}}
+	Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas fabriquer d'objet pour le moment.
+{{else}}
+	{{if .CmdArgs}}
+		{{$item := title (index .CmdArgs 0)}}
+		{{$reci := $item}}
+		{{if eq $balle "chargeur" "CHARGEUR" "Chargeur"}}
+			{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
+			{{$reci = print "[CHARGEUR] " (title $weap)}}
+			{{$item = $reci}}
+		{{else if eq $balle "module" "Module" "MODULE"}}
+			{{$type := reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` $item}}
+			{{$item = print "[MODULE] " (title (lower $type))}}
+			{{$reci = title (lower $type)}}
+		{{else if eq $balle "implant" "Implant" "IMPLANT"}}
+			{{$type := reFind `(?i)(force|résistance|cognition|furtivité|vision)` $item}}
+			{{$reci = title (lower $type)}}
+			{{$item = print "[IMPLANT] " (title (lower $type))}}
+		{{else if and $balle $arme (eq $balle $arme)}}
+			{{$reci = title (lower $arme)}}
+		{{end}}
 
-	{{if $bdg}}
-		{{$reci = print "[BDG] " $reci}}
-		{{$item = print "[BDG] " $item}}
-	{{end}}
+		{{if $bdg}}
+			{{$reci = print "[BDG] " $reci}}
+			{{$item = print "[BDG] " $item}}
+		{{end}}
 
-	{{if ($recipe.Get $reci)}}
-		{{$i := sdict ($recipe.Get $reci)}}
-		{{$bc := mult ($i.Get "Biocomposant") $q}}
-		{{$sf := mult ($i.Get "Substrat Ferreux") $q}}
-		{{$lc := mult ($i.Get "Liquide Cytomorphe") $q}}
-		{{$cb := mult ($i.Get "Cellule Bionotropique") $q}}
+		{{if ($recipe.Get $reci)}}
+			{{$i := sdict ($recipe.Get $reci)}}
+			{{$bc := mult ($i.Get "Biocomposant") $q}}
+			{{$sf := mult ($i.Get "Substrat Ferreux") $q}}
+			{{$lc := mult ($i.Get "Liquide Cytomorphe") $q}}
+			{{$cb := mult ($i.Get "Cellule Bionotropique") $q}}
 
-		{{if and (ge $bcp $bc) (ge $sfp $sf) (ge $lcp $lc) (ge $cbp $cb) (not $univ)}}
-      {{$msg := joinStr " " $user "a fabriqué" $q $item "en utilisant :\n ▫️ Biocomposant :" $bc "[" $bcp "] \n ▫️ Substrat Ferreux :" $sf "[" $sfp "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcp "] \n ▫️ Cellule Bionotropique" $cb "[" $cbp "]" }}
-			{{sendMessage nil $msg}}
-			{{if ($inv.Get $item)}}
-				{{$inv.Set $item (add ($inv.Get $item) $q)}}
-			{{else}}
-				{{$inv.Set $item $q}}
-			{{end}}
-			{{$bcp = sub $bcp $bc}}
-			{{if le $bcp 0}}
-				{{$inv.Del "[C] Biocomposant"}}
-			{{else}}
-				{{$inv.Set "[C] Biocomposant" $bcp}}
-			{{end}}
-			{{$cbp = sub $cbp $cb}}
-			{{if le $cbp 0}}
-				{{$inv.Del "[C] Cellule Bionotropique"}}
-			{{else}}
-				{{$inv.Set "[C] Cellule Bionotropique" $cbp}}
-			{{end}}
-			{{$sfp = sub $sfp $sf}}
-			{{if le $sfp 0}}
-				{{$inv.Del "[C] Substrat Ferreux"}}
-			{{else}}
-				{{$inv.Set "[C] Substrat Ferreux" $sfp}}
-			{{end}}
-			{{$lcp = sub $lcp $lc}}
-			{{if le $lcp 0}}
-				{{$inv.Del "[C] Liquide Cytomorphe"}}
-			{{else}}
-				{{$inv.Set "[C] Liquide Cytomorphe" $lcp}}
-			{{end}}
-
-		{{else if and (eq $choice "-case") (not $univ)}}
-			{{if and (ge $bc_vn $bc) (ge $sf_vn $sf) (ge $lc_vn $lc) (ge $cb_vn $cb)}}
-				{{if ($inv.Get $item)}}
-					{{$inv.Set $item (add ($compo.Get $item) $q)}}
-				{{else}}
-					{{$inv.Set $item $q}}
-				{{end}}
-				{{$bc_vn = sub $bc_vn $bc}}
-				{{if le $bc_vn 0}}
-					{{$compo.Del "biocomposant"}}
-				{{else}}
-					{{$compo.Set "biocomposant" $bc_vn}}
-				{{end}}
-				{{$cb_vn = sub $cb_vn $cb}}
-				{{if le $cb_vn 0}}
-					{{$compo.Del "bionotropique"}}
-				{{else}}
-					{{$compo.Set "bionotropique" $cb_vn}}
-				{{end}}
-				{{$sf_vn = sub $sf_vn $sf}}
-				{{if le $sf_vn 0}}
-					{{$compo.Del "ferreux"}}
-				{{else}}
-					{{$compo.Set "ferreux" $sf_vn}}
-				{{end}}
-				{{$lc_vn = sub $lc_vn $lc}}
-				{{if le $lc_vn 0}}
-					{{$compo.Del "cytomorphe"}}
-				{{else}}
-					{{$compo.Set "cytomorphe" $lc_vn}}
-				{{end}}
-				{{$log = joinStr " " $user "a fabriqué, grâce à l'inventaire du Nucleus," $q $item "en utilisant : \n ▫️ Biocomposant" $bc "[" $bc_vn "]\n ▫️ Substrat Ferreux :" $sf "[" $sf_vn "]\n ▫️ Liquide Cytomorphe" $lc "[" $lc_vn "] \n ▫️ Cellule Bionotropique" $cb "[" $cb_vn "]" }}
-				{{sendMessage nil $log}}
-			{{else}}
-				{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+			{{if and (ge $bcp $bc) (ge $sfp $sf) (ge $lcp $lc) (ge $cbp $cb) (not $univ)}}
+				{{$msg := joinStr " " $user "a fabriqué" $q $item "en utilisant :\n ▫️ Biocomposant :" $bc "[" $bcp "] \n ▫️ Substrat Ferreux :" $sf "[" $sfp "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcp "] \n ▫️ Cellule Bionotropique" $cb "[" $cbp "]" }}
 				{{sendMessage nil $msg}}
-			{{end}}
-
-		{{else if and $univ (eq $choice "-case")}}
-			{{if (ge (mult $cu_vn $q) $q)}}
-				{{if ($inv.Get $item)}}
-					{{$inv.Set $item (add ($compo.Get $item) $q)}}
-				{{else}}
-					{{$inv.Set $item $q}}
-				{{end}}
-				{{$compo.Set "universel" (sub $cu_vn (mult $cu_vn $q))}}
-				{{if le ($compo.Get "universel") 0}}
-					{{$compo.Del "universel"}}
-				{{end}}
-				{{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant" $q "composants universels du vaisseau. \n Il reste" ($compo.Get "universel") "sur le vaisseau." }}
-				{{sendMessage nil $log}}
-			{{else}}
-				{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
-				{{sendMessage nil $log}}
-			{{end}}
-
-		{{else if $univ }}
-			{{if (ge (mult $cup $q) $q)}}
 				{{if ($inv.Get $item)}}
 					{{$inv.Set $item (add ($inv.Get $item) $q)}}
 				{{else}}
 					{{$inv.Set $item $q}}
 				{{end}}
-				{{$inv.Set "[C] Composant Universel" (sub $cup (mult $cup $q))}}
-				{{if le ($inv.Get "[C] Composant Universel") 0}}
-					{{$inv.Del "[C] Composant Universel"}}
+				{{$bcp = sub $bcp $bc}}
+				{{if le $bcp 0}}
+					{{$inv.Del "[C] Biocomposant"}}
+				{{else}}
+					{{$inv.Set "[C] Biocomposant" $bcp}}
 				{{end}}
-      {{$msg := joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
-			{{sendMessage nil $msg}}
+				{{$cbp = sub $cbp $cb}}
+				{{if le $cbp 0}}
+					{{$inv.Del "[C] Cellule Bionotropique"}}
+				{{else}}
+					{{$inv.Set "[C] Cellule Bionotropique" $cbp}}
+				{{end}}
+				{{$sfp = sub $sfp $sf}}
+				{{if le $sfp 0}}
+					{{$inv.Del "[C] Substrat Ferreux"}}
+				{{else}}
+					{{$inv.Set "[C] Substrat Ferreux" $sfp}}
+				{{end}}
+				{{$lcp = sub $lcp $lc}}
+				{{if le $lcp 0}}
+					{{$inv.Del "[C] Liquide Cytomorphe"}}
+				{{else}}
+					{{$inv.Set "[C] Liquide Cytomorphe" $lcp}}
+				{{end}}
+
+			{{else if and (eq $choice "-case") (not $univ)}}
+				{{if and (ge $bc_vn $bc) (ge $sf_vn $sf) (ge $lc_vn $lc) (ge $cb_vn $cb)}}
+					{{if ($inv.Get $item)}}
+						{{$inv.Set $item (add ($compo.Get $item) $q)}}
+					{{else}}
+						{{$inv.Set $item $q}}
+					{{end}}
+					{{$bc_vn = sub $bc_vn $bc}}
+					{{if le $bc_vn 0}}
+						{{$compo.Del "biocomposant"}}
+					{{else}}
+						{{$compo.Set "biocomposant" $bc_vn}}
+					{{end}}
+					{{$cb_vn = sub $cb_vn $cb}}
+					{{if le $cb_vn 0}}
+						{{$compo.Del "bionotropique"}}
+					{{else}}
+						{{$compo.Set "bionotropique" $cb_vn}}
+					{{end}}
+					{{$sf_vn = sub $sf_vn $sf}}
+					{{if le $sf_vn 0}}
+						{{$compo.Del "ferreux"}}
+					{{else}}
+						{{$compo.Set "ferreux" $sf_vn}}
+					{{end}}
+					{{$lc_vn = sub $lc_vn $lc}}
+					{{if le $lc_vn 0}}
+						{{$compo.Del "cytomorphe"}}
+					{{else}}
+						{{$compo.Set "cytomorphe" $lc_vn}}
+					{{end}}
+					{{$log = joinStr " " $user "a fabriqué, grâce à l'inventaire du Nucleus," $q $item "en utilisant : \n ▫️ Biocomposant" $bc "[" $bc_vn "]\n ▫️ Substrat Ferreux :" $sf "[" $sf_vn "]\n ▫️ Liquide Cytomorphe" $lc "[" $lc_vn "] \n ▫️ Cellule Bionotropique" $cb "[" $cb_vn "]" }}
+					{{sendMessage nil $log}}
+				{{else}}
+					{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+					{{sendMessage nil $msg}}
+				{{end}}
+
+			{{else if and $univ (eq $choice "-case")}}
+				{{if (ge (mult $cu_vn $q) $q)}}
+					{{if ($inv.Get $item)}}
+						{{$inv.Set $item (add ($compo.Get $item) $q)}}
+					{{else}}
+						{{$inv.Set $item $q}}
+					{{end}}
+					{{$compo.Set "universel" (sub $cu_vn (mult $cu_vn $q))}}
+					{{if le ($compo.Get "universel") 0}}
+						{{$compo.Del "universel"}}
+					{{end}}
+					{{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant" $q "composants universels du vaisseau. \n Il reste" ($compo.Get "universel") "sur le vaisseau." }}
+					{{sendMessage nil $log}}
+				{{else}}
+					{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+					{{sendMessage nil $log}}
+				{{end}}
+
+			{{else if $univ }}
+				{{if (ge (mult $cup $q) $q)}}
+					{{if ($inv.Get $item)}}
+						{{$inv.Set $item (add ($inv.Get $item) $q)}}
+					{{else}}
+						{{$inv.Set $item $q}}
+					{{end}}
+					{{$inv.Set "[C] Composant Universel" (sub $cup (mult $cup $q))}}
+					{{if le ($inv.Get "[C] Composant Universel") 0}}
+						{{$inv.Del "[C] Composant Universel"}}
+					{{end}}
+				{{$msg := joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
+				{{sendMessage nil $msg}}
+				{{else}}
+					{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
+					{{sendMessage nil $msg}}
+				{{end}}
 			{{else}}
 				{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
-				{{sendMessage nil $msg}}
+				{{sendMessage nil $log}}
 			{{end}}
 		{{else}}
-			{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
-			{{sendMessage nil $log}}
+		{{$msg = "L'objet ne possède pas de recette."}}
+		{{sendMessage nil $msg}}
 		{{end}}
 	{{else}}
-	{{$msg = "L'objet ne possède pas de recette."}}
-	{{sendMessage nil $msg}}
+		**Usage** : `$craft "objet" (q[1-100]) (+VN|-case) (-bdg) (-cu) (#reroll)`
 	{{end}}
-{{else}}
-	**Usage** : `$craft "objet" (q[1-100]) (+VN|-case) (-bdg) (-cu) (#reroll)`
 {{end}}
 {{$userEco.Set "Inventory" $inv}}
 {{dbSet $id "economy" $userEco}}

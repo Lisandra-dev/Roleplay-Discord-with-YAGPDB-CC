@@ -1,0 +1,23 @@
+{{$author := "Vaisseau Nucleus"}}
+{{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+{{$msg := ""}}
+{{$url := ""}}
+
+{{if not (dbGet 0 "mission")}}
+  {{$msg = "Vous n'êtes plus à bord du Nucleus. \n\n Vous ne pouvez donc plus : \n ▫️ Accéder à votre casier \n ▫️ Accéder au stockage du Nucleus \n ▫️ Fabriquer des objets."}}
+  {{$url = "https://i.imgur.com/SErGXAU.png"}}
+  {{dbSet 0 "mission" "Y"}}
+{{else}}
+  {{$msg = "Vous êtes de retour sur le Nucleus !\n\n Vous avez maintenant accès : \n ▫️ À votre casier \n ▫️ Au stockage du Nucleus \n ▫️ À la fabrication d'objets. "}}
+  {{$url = "https://i.imgur.com/QLRCUDJ.png"}}
+  {{dbDel 0 "mission"}}
+{{end}}
+
+{{$embed := cembed
+  "author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon)
+  "color" 0x5b2e90
+  "description" $msg
+  "thumbnail" (sdict "url" $url)
+  "timestamp" currentTime}}
+{{sendMessage 735938256038002818 $embed}}
+{{deleteTrigger 1}}

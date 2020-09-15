@@ -14,144 +14,162 @@
 {{end}}
 {{$target := .User.ID}}
 {{$msg := ""}}
+{{if (dbGet 0 "mission")}}
+	Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas ranger d'objet dans votre casier.
+{{else}}
+  {{if .CmdArgs}}
+    {{if $name}}
+      {{$target = $id}}
+      {{$user = $name}}
+    {{else}}
+      {{$target = .User.ID}}
+      {{$user = (getMember $target).Nick}}
+    {{end}}
+    {{$userEco := sdict}}
+    {{if $target}}
+      {{with (dbGet $target "economy")}}
+        {{$userEco = sdict .Value}}
+      {{end}}
+      {{$inv := sdict}}
+      {{with ($userEco.Get "Inventory")}}
+        {{$inv = sdict .}}
+      {{end}}
+      {{$equip := sdict}}
+      {{with (dbGet $target "équipement")}}
+        {{$equip = sdict .Value}}
+      {{end}}
 
-{{if .CmdArgs}}
-	{{if $name}}
-    {{$target = $id}}
-    {{$user = $name}}
-	{{else}}
-    {{$target = .User.ID}}
-    {{$user = (getMember $target).Nick}}
-  {{end}}
-  {{$userEco := sdict}}
-  {{if $target}}
-    {{with (dbGet $target "economy")}}
-      {{$userEco = sdict .Value}}
-    {{end}}
-    {{$inv := sdict}}
-    {{with ($userEco.Get "Inventory")}}
-      {{$inv = sdict .}}
-    {{end}}
-    {{$equip := sdict}}
-    {{with (dbGet $target "équipement")}}
-      {{$equip = sdict .Value}}
-    {{end}}
+      {{$place := sdict}}
+      {{with (dbGet $target "place")}}
+        {{$place = sdict .Value}}
+      {{end}}
+      {{$sstuff := $place.Get "s_stuff"}}
+      {{$sconso := $place.Get "s_conso"}}
+      {{$mstuff := $place.Get "max_stuff"}}
+      {{$mconso := $place.Get "max_conso"}}
 
-    {{$place := sdict}}
-    {{with (dbGet $target "place")}}
-      {{$place = sdict .Value}}
-    {{end}}
-    {{$sstuff := $place.Get "s_stuff"}}
-    {{$sconso := $place.Get "s_conso"}}
-    {{$mstuff := $place.Get "max_stuff"}}
-    {{$mconso := $place.Get "max_conso"}}
-
-    {{$item := title (index .CmdArgs 0)}}
-    {{$amount := 1}}
-    {{if gt (len .CmdArgs) 1 }}
-      {{$amount = (toInt (index .CmdArgs 1))}}
-      {{if $name}}
-        {{$amount = 1}}
-        {{if gt (len .CmdArgs) 2}}
-          {{$amount = (toInt (index .CmdArgs 1))}}
+      {{$item := title (index .CmdArgs 0)}}
+      {{$amount := 1}}
+      {{if gt (len .CmdArgs) 1 }}
+        {{$amount = (toInt (index .CmdArgs 1))}}
+        {{if $name}}
+          {{$amount = 1}}
+          {{if gt (len .CmdArgs) 2}}
+            {{$amount = (toInt (index .CmdArgs 1))}}
+          {{end}}
         {{end}}
       {{end}}
-    {{end}}
 
-    {{$chargeur := reFind `(?i)chargeur` $item}}
-    {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+      {{$chargeur := reFind `(?i)chargeur` $item}}
+      {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
 
-    {{if $compo}}
-      {{if eq $compo "bc" "BC" "Bc"}}
-        {{$item = "[C] Biocomposant"}}
-      {{else if eq $compo "lc" "LC" "Lc"}}
-        {{$item = "[C] Liquide Cytomorphe"}}
-      {{else if eq $compo "cb" "CB" "Cb"}}
-        {{$item = "[C] Cellule Bionotropique"}}
-      {{else if eq $compo "sf" "SF" "Sf"}}
-        {{$item = "[C] Substrat Ferreux"}}
-      {{else if eq $compo "cu" "CU" "Cu"}}
-        {{$item = "[C] Composant Universel"}}
+      {{if $compo}}
+        {{if eq $compo "bc" "BC" "Bc"}}
+          {{$item = "[C] Biocomposant"}}
+        {{else if eq $compo "lc" "LC" "Lc"}}
+          {{$item = "[C] Liquide Cytomorphe"}}
+        {{else if eq $compo "cb" "CB" "Cb"}}
+          {{$item = "[C] Cellule Bionotropique"}}
+        {{else if eq $compo "sf" "SF" "Sf"}}
+          {{$item = "[C] Substrat Ferreux"}}
+        {{else if eq $compo "cu" "CU" "Cu"}}
+          {{$item = "[C] Composant Universel"}}
+        {{end}}
       {{end}}
-    {{end}}
-    {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
-    {{if $sac}}
-      {{$item = print "[E] " (title (lower $sac))}}
-    {{end}}
+      {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+      {{if $sac}}
+        {{$item = print "[E] " (title (lower $sac))}}
+      {{end}}
 
-    {{if $chargeur}}
-      {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
-      {{$item = print "[CHARGEUR] " $item}}
-    {{end}}
+      {{if $chargeur}}
+        {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
+        {{$item = print "[CHARGEUR] " $item}}
+      {{end}}
 
-    {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison|bdg)` $item)}}
-    {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-      {{$item = print "[MODULE] " (title $mimp)}}
-    {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-      {{$item = print "[IMPLANT] " (title $mimp)}}
-    {{end}}
-    
-    {{if (ge ($equip.Get $item) $amount)}}
-      {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
-        {{if and (not $sac) (not $chargeur)}}
-          {{if lt $amount $mstuff}}
-            {{$place.Set "s_stuff" (add $sstuff $amount)}}
-            {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-            {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-            {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de " $user "."}}
-          {{else if eq $amount $mstuff}}
-            {{$place.Set "s_stuff" $mstuff}}
-            {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-            {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-            {{if eq (toInt $amount) 1}}
+      {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison|bdg)` $item)}}
+      {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+        {{$item = print "[MODULE] " (title $mimp)}}
+      {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+        {{$item = print "[IMPLANT] " (title $mimp)}}
+      {{end}}
+      
+      {{if (ge ($equip.Get $item) $amount)}}
+        {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
+          {{if and (not $sac) (not $chargeur)}}
+            {{if lt $amount $mstuff}}
+              {{$place.Set "s_stuff" (add $sstuff $amount)}}
+              {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+              {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
               {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de " $user "."}}
+            {{else if eq $amount $mstuff}}
+              {{$place.Set "s_stuff" $mstuff}}
+              {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+              {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
+              {{if eq (toInt $amount) 1}}
+                {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de " $user "."}}
+              {{else}}
+                {{$msg = joinStr "" $amount " " $item "ont été ajouté au casier de " $user "."}}
+              {{end}}
+            {{end}}
+          {{else if $sac}}
+            {{if eq $item "[E] Sac À Dos" }}
+              {{$sstuff = sub $sstuff 3}}
+              {{$sconso = sub $sconso 9}}
+              {{if or (le $sstuff 0) (le $sconso 0)}}
+                {{$msg = joinStr "" $user " votre " $item " est rempli ! Videz le avant de le ranger."}}
+              {{else}}
+                {{$place.Set "s_stuff" $sstuff}}
+                {{$place.Set "s_conso" $sconso}}
+                {{$place.Set "max_stuff" 2}}
+                {{$place.Set "max_conso" 5}}
+              {{end}}
+            {{else if eq $item "[E] Sacoche" }}
+              {{$sstuff = sub $sstuff 2}}
+              {{$sconso = sub $sconso 6}}
+              {{if or (le $sstuff 0) (le $sconso 0)}}
+                {{$msg = joinStr "" $user " votre " $item " est rempli ! Videz le avant de le ranger."}}
+              {{else}}
+                {{$place.Set "s_stuff" $sstuff}}
+                {{$place.Set "s_conso" $sconso}}
+                {{$place.Set "max_stuff" 2}}
+                {{$place.Set "max_conso" 5}}
+              {{end}}
+            {{else if eq $item "[E] Sacoche Ceinture"}}
+              {{$sstuff = sub $sstuff 1}}
+              {{$sconso = sub $sconso 3}}
+              {{if or (le $sstuff 0) (le $sconso 0)}}
+                {{$msg = joinStr "" $user " votre " $item " est rempli ! Videz le avant de le ranger."}}
+              {{else}}
+                {{$place.Set "s_stuff" $sstuff}}
+                {{$place.Set "s_conso" $sconso}}
+                {{$place.Set "max_stuff" 2}}
+                {{$place.Set "max_conso" 5}}
+              {{end}}
+            {{end}}
+            {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
+            {{$equip.Del $item}}
+            {{if eq (toInt $amount) 1}}
+              {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $user"}}
             {{else}}
-              {{$msg = joinStr "" $amount " " $item "ont été ajouté au casier de " $user "."}}
+              {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $user "."}}
+            {{end}}
+          {{else if $chargeur}}
+            {{if lt $amount (toInt $mconso)}}
+              {{$place.Set "s_conso" (add $amount $sconso)}}
+              {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+              {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
+            {{else if eq $amount (toInt $mconso)}}
+              {{$place.Set "s_conso" $mconso}}
+              {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+              {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
+              {{if eq (toInt $amount) 1}}
+                {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $user"}}
+              {{else}}
+                {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $user "."}}
+              {{end}}
             {{end}}
           {{end}}
-        {{else if $sac}}
-          {{if eq $item "[E] Sac À Dos" }}
-            {{$sstuff = sub $sstuff 3}}
-            {{$sconso = sub $sconso 9}}
-            {{if or (le $sstuff 0) (le $sconso 0)}}
-              {{$msg = joinStr "" $user " votre " $item " est rempli ! Videz le avant de le ranger."}}
-            {{else}}
-              {{$place.Set "s_stuff" $sstuff}}
-              {{$place.Set "s_conso" $sconso}}
-              {{$place.Set "max_stuff" 2}}
-              {{$place.Set "max_conso" 5}}
-            {{end}}
-          {{else if eq $item "[E] Sacoche" }}
-            {{$sstuff = sub $sstuff 2}}
-            {{$sconso = sub $sconso 6}}
-            {{if or (le $sstuff 0) (le $sconso 0)}}
-              {{$msg = joinStr "" $user " votre " $item " est rempli ! Videz le avant de le ranger."}}
-            {{else}}
-              {{$place.Set "s_stuff" $sstuff}}
-              {{$place.Set "s_conso" $sconso}}
-              {{$place.Set "max_stuff" 2}}
-              {{$place.Set "max_conso" 5}}
-            {{end}}
-          {{else if eq $item "[E] Sacoche Ceinture"}}
-            {{$sstuff = sub $sstuff 1}}
-            {{$sconso = sub $sconso 3}}
-            {{if or (le $sstuff 0) (le $sconso 0)}}
-              {{$msg = joinStr "" $user " votre " $item " est rempli ! Videz le avant de le ranger."}}
-            {{else}}
-              {{$place.Set "s_stuff" $sstuff}}
-              {{$place.Set "s_conso" $sconso}}
-              {{$place.Set "max_stuff" 2}}
-              {{$place.Set "max_conso" 5}}
-            {{end}}
-          {{end}}
-          {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-          {{$equip.Del $item}}
-          {{if eq (toInt $amount) 1}}
-            {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $user"}}
-          {{else}}
-            {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $user "."}}
-          {{end}}
-        {{else if $chargeur}}
+        {{else if not $compo}}
           {{if lt $amount (toInt $mconso)}}
             {{$place.Set "s_conso" (add $amount $sconso)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -161,46 +179,31 @@
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
             {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
             {{if eq (toInt $amount) 1}}
-              {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de $user"}}
+              {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de" $user}}
             {{else}}
               {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $user "."}}
             {{end}}
-          {{end}}
-        {{end}}
-      {{else if not $compo}}
-        {{if lt $amount (toInt $mconso)}}
-          {{$place.Set "s_conso" (add $amount $sconso)}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-        {{else if eq $amount (toInt $mconso)}}
-          {{$place.Set "s_conso" $mconso}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-          {{if eq (toInt $amount) 1}}
-            {{$msg = joinStr "" "L'objet " $item " a été ajouté au casier de" $user}}
           {{else}}
-            {{$msg = joinStr "" $amount " " $item " ont été ajouté au casier de " $user "."}}
+          {{$msg = $user " ne possède pas la quantité spécifiée (" $amount ") pour " $item "."}}
           {{end}}
-        {{else}}
-         {{$msg = $user " ne possède pas la quantité spécifiée (" $amount ") pour " $item "."}}
+        {{else if $compo}}
+          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+          {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
+          {{$msg = joinStr "" $user " range dans son casier " $amount " " $item "."}}
         {{end}}
-      {{else if $compo}}
-        {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-        {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
-        {{$msg = joinStr "" $user " range dans son casier " $amount " " $item "."}}
+        {{if eq (toInt ($equip.Get $item)) 0}}
+          {{$equip.Del $item}}
+        {{end}}
+        {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables."}} 
+        {{$userEco.Set "Inventory" $inv}}
+        {{dbSet $target "economy" $userEco}}
+        {{dbSet $target "équipement" $equip }}
+        {{dbSet $target "place" $place}}
+      {{else}}
+        {{$msg = joinStr "" $user " : L'objet n'existe pas dans votre équipement, ou vous n'avez pas la quantité ciblée."}}
       {{end}}
-      {{if eq (toInt ($equip.Get $item)) 0}}
-        {{$equip.Del $item}}
-      {{end}}
-      {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables."}} 
-      {{$userEco.Set "Inventory" $inv}}
-      {{dbSet $target "economy" $userEco}}
-      {{dbSet $target "équipement" $equip }}
-      {{dbSet $target "place" $place}}
-    {{else}}
-      {{$msg = joinStr "" $user " : L'objet n'existe pas dans votre équipement, ou vous n'avez pas la quantité ciblée."}}
     {{end}}
   {{end}}
+  {{sendMessage nil $msg}}
 {{end}}
-{{sendMessage nil $msg}}
 {{deleteTrigger 1}}

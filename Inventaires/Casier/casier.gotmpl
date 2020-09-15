@@ -31,52 +31,60 @@
 	{{$inv = sdict ($userEco.Get "Inventory")}}
 {{end}}
 
-
-{{$desc := "Ton casier est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
-{{$footer := print "Page: 1 / 1 | #" $id }}
-{{$end :=""}}
-{{$cslice := cslice}}
-{{range $k,$v := $inv}}
-	{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v **  : [%v]" $k $v)}}
-{{end}}
-{{if $cslice}}
-{{/* hell starts */}}
-	{{$page := "1"}}
-	{{if .CmdArgs}}
-		{{$index := 0}}
-		{{if ge (len .CmdArgs) 2}}
-			{{$index = 1}}
+{{if (dbGet 0 "mission")}}
+	{{$embed := cembed
+	"author" (sdict "name" (joinStr " " (title $user) "ERREUR — Casier inaccessible"))
+	"description" "Vous ne vous trouvez actuellement pas sur le Nucleus, il vous êtes donc impossible d'accéder à votre casier !"
+	"timestamp" currentTime
+	"thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") 
+	"color" 0x8CBAEF}}
+	{{sendMessage nil $embed}}
+{{else}}
+	{{$desc := "Ton casier est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
+	{{$footer := print "Page: 1 / 1 | #" $id }}
+	{{$end :=""}}
+	{{$cslice := cslice}}
+	{{range $k,$v := $inv}}
+		{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v **  : [%v]" $k $v)}}
+	{{end}}
+	{{if $cslice}}
+	{{/* hell starts */}}
+		{{$page := "1"}}
+		{{if .CmdArgs}}
+			{{$index := 0}}
+			{{if ge (len .CmdArgs) 2}}
+				{{$index = 1}}
+			{{end}}
+			{{$page = or (toInt (index .CmdArgs $index)) 1}}
+			{{$page = toString $page}}
 		{{end}}
-		{{$page = or (toInt (index .CmdArgs $index)) 1}}
-		{{$page = toString $page}}
-	{{end}}
-		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+			{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+		{{$footer = print "Page: " $page " / " $end " | #" $id }}
+		{{$start := (mult 10 (sub $page 1))}}
+		{{$stop := (mult $page 10)}}
+		{{$data := ""}}
+		{{if ge $stop (len $cslice)}}
+			{{$stop = (len $cslice)}}
+		{{end}}
+		{{if not (eq $page "0")}}
+			{{if and (le $start $stop) (ge (len $cslice) $start) (le $stop (len $cslice))}}
+				{{range (seq $start $stop)}}
+					{{$data = (print $data "\n" (index $cslice .))}}
+				{{else}}
+					{{$data = "Il n'y a rien ici..."}}
 	{{$footer = print "Page: " $page " / " $end " | #" $id }}
-	{{$start := (mult 10 (sub $page 1))}}
-	{{$stop := (mult $page 10)}}
-	{{$data := ""}}
-	{{if ge $stop (len $cslice)}}
-		{{$stop = (len $cslice)}}
-	{{end}}
-	{{if not (eq $page "0")}}
-		{{if and (le $start $stop) (ge (len $cslice) $start) (le $stop (len $cslice))}}
-			{{range (seq $start $stop)}}
-				{{$data = (print $data "\n" (index $cslice .))}}
+				{{end}}
 			{{else}}
 				{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+	{{$footer = print "Page: " $page " / " $end " | #" $id }}
 			{{end}}
-		{{else}}
-			{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+				{{$desc = print "" $data ""}}
 		{{end}}
-			{{$desc = print "" $data ""}}
+
+	{{/* hell ends */}}
 	{{end}}
-
-{{/* hell ends */}}
+	{{$author := (joinStr " " "Casier de :" (title $user))}}
+	{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
+	{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
 {{end}}
-{{$author := (joinStr " " "Casier de :" (title $user))}}
-
-{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
-{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
 {{deleteTrigger 1}}
