@@ -25,7 +25,7 @@
 {{$idict := str $id}}
 
 {{if .CmdArgs}}
-	{{if eq (index .CmdArgs 0) "court"}}
+	{{if eq (index .CmdArgs 0) "court" "burst" "perforant"}}
 		{{if not (index .CmdArgs 1)}}
 			**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque
 		{{else}}
@@ -48,7 +48,7 @@
 				{{deleteMessage nil $idM 30}}
 			{{end}}
 		{{end}}
-	{{else if (index .CmdArgs 0) "long"}}
+	{{else if (index .CmdArgs 0) "long" "support" "soutien" "malus" "altération" "alter" }}
 		{{if not (index .CmdArgs 1)}}
 			**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque
 		{{else}}
