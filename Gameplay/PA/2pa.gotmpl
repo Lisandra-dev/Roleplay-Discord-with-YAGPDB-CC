@@ -59,9 +59,9 @@
 	{{$groupe.Set $idict 2}}
 	{{$desc = joinStr " " "2 PA RESTANTS."}}
 	{{if $nameatq}}
-		{{if lt $atq 8}}
+		{{if lt $atq 6}}
 			{{$x:= dbIncr $id $atq 2}}
-		{{else if ge $atq 4}}
+		{{else if ge $atq 6}}
 			{{dbDel $id "cdatq"}}
 			{{ $embed := cembed
 				"author" (sdict "name" $user "icon_url" $imga)
@@ -99,9 +99,9 @@
 		{{if ge $j 0}}
 			{{$desc = joinStr " " $j "PA RESTANT(S)"}}
 			{{if $nameatq}}
-			{{if lt $atq 8}}
+			{{if lt $atq 6}}
 				{{$x:= dbIncr $id $nameatq 2}}
-			{{else if eq $atq 4}}
+			{{else if eq $atq 6}}
 				{{dbDel $id "cdatq"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" $imga)
