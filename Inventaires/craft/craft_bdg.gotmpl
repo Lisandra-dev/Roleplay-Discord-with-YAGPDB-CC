@@ -3,6 +3,10 @@
 {{$name = joinStr "" (split $name "#")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
+{{if (userArg (index .CmdArgs 1))}}
+  {{$id = (userArg (index .CmdArgs 1)).ID}}
+  {{$user = (getMember $id).Nick}}
+{{end}}
 {{if $name}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
@@ -11,6 +15,9 @@
 	{{- end}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
+  {{if (userArg (index .CmdArgs 1))}}
+    {{$user = (userArg (index .CmdArgs 1)).Username}}
+  {{end}}
 {{end}}
 {{$target := .User.ID}}
 {{$msg := ""}}
@@ -64,19 +71,11 @@
 
 {{if .CmdArgs}}
   {{if (eq (index .CmdArgs 0) "-allow") (hasRoleID 709795313279565906)}}
-    {{if $name}}
-      {{dbSet $id "allow_bdg" true}}
-    {{else if (userArg (index .CmdArgs 1))}}
-      {{$id = (index .CmdArgs 1).ID}}
-      {{dbSet $id "allow_bdg" true}}
-    {{end}}
+    {{dbSet $id "allow_bdg" true}}
+    {{$msg = joinStr " " $user "est maintenant autorisé à fabriquer des objets bas de gamme."}}
   {{else if (eq (index .CmdArgs 0) "-not") (hasRoleID 709795313279565906)}}
-    {{if $name}}
-      {{dbDel $id "allow_bdg"}}
-    {{else if (userArg (index .CmdArgs 1))}}
-      {{$id = (index .CmdArgs 1).ID}}
-      {{dbDel $id "allow_bdg"}}
-    {{end}}
+    {{dbDel $id "allow_bdg"}}
+    {{$msg = joinStr " " $user "ne peut plus fabriquer des objets bas de gamme."}}
   {{else}}
     {{$item := title (index .CmdArgs 0)}}
 	  {{$reci := $item}}
