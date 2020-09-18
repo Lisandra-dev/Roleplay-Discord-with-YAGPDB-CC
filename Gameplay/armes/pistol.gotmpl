@@ -55,7 +55,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 			{{$x := sub 8 $y}}
 			{{if lt (toFloat $y) (toFloat 8)}}
 				{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/8 balles de pistolet.")}}
-			{{else if eq (toFloat $y) (toFloat 12)}}
+			{{else if eq (toFloat $y) (toFloat 8)}}
 				{{$desc = "Dernière balle utilisée."}}
 			{{else}}
 				{{ $desc = "Action impossible : pistolet vide."}}
