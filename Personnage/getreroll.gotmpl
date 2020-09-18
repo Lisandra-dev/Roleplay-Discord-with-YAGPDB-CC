@@ -2,10 +2,10 @@
 	{{$cmd := reFind `\-(.*)` .Message.Content}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user :=.User.ID }}
-		{{$testU := reFind `(\#\S*)` .Message.Content}}
-	{{$testU = joinStr "" (split $testU "#")}}
-	{{if $testU}}
-		{{$user = toInt $testU}}
+	{{$testU := reFind `<@!?\d{17,}>` .Message.Content}}
+	{{with $testU}}
+		{{$user = userArg .}}
+		{{$user = $user.ID}}
 	{{end}}
 	{{range $name}}
 		{{- $user = (add $user .)}}
@@ -84,9 +84,9 @@
 		:white_small_square: Agilité : {{$iagi}}
 		:white_small_square: Précision : {{$ipreci}}
 		:white_small_square: Intelligence : {{$iintel}}
-
 	{{end}}
 {{else}}
 	**ERREUR** : Vous devez indiquer votre personnage !
+	-> Si le personne n'est pas à vous, n'oubliez pas de mentionner le joueur le jouant !
 {{end}}
 {{deleteTrigger 1}}
