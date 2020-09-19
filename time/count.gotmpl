@@ -7,6 +7,27 @@
 {{$midi:="https://i.imgur.com/AFOj90o.png"}}
 {{$soir:="https://i.imgur.com/xSDYgqD.png"}}
 
+{{/* Time dict */}}
+{{$time := sdict }}
+{{with (dbGet 0 "time")}}
+	{{$time = sdict .Value}}
+{{end}}
+
+{{/* Embed */}}
+{{$embed := cembed
+	"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
+	"description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
+	"color" 0xDD99DF
+	"thumbnail" (sdict "url" "")
+	"timestamp" .Message.Timestamp}}
+{{$str := structToSdict $embed}}
+{{ range $k, $v := $str }}
+ 	{{- if eq (kindOf $v true) "struct" }}
+ 		{{- $str.Set $k (structToSdict $v) }}
+ 	{{- end -}}
+{{ end }}
+
+
 {{/* Fruit et biocomposant - A supprimer si vous n'utilisez pas le système de craft */}}
 {{$compo := sdict}}
 {{with (dbGet .Server.ID "compo")}}
@@ -17,7 +38,7 @@
 {{$fruit := "https://i.imgur.com/0atJRWH.png"}}
 
 {{$jardin := cembed 
-	"author" (sdict "name" "Sola-UI" "authoricon" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png") 
+	"author" (sdict "name" "Sola-UI" "icon_url" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png") 
 	"title" "Production du jardin"
 	"description" "Le jardin a produit 1 biocomposant !"
 	"footer" (sdict "text" (joinStr " " "Biocomposant :" ($compo.Get "biocomposant")))
@@ -26,10 +47,7 @@
 	"timestamp" .Message.Timestamp}}
 
 {{/*All message database counter*/}}
-{{$time := sdict }}
-{{with (dbGet 0 "time")}}
-	{{$time = sdict .Value}}
-{{end}}
+
 
 {{/* Variable */}}
 {{$msgc := (toFloat ($time.Get "mgsc"))}}
@@ -38,90 +56,74 @@
 {{$jour := $time.Get "jour"}}
 {{$cycle := $time.Get "cycle"}}
 
-{{/*Check if massage sent is in (brackets)*/}}
-{{ $matches := (index (reFindAllSubmatches `\((.*)\)|(^\$(.*))|(^\!\!(.+))` .Message.Content)) }} {{/* exclude my bot bracket from the count */}}
+{{if not (dbGet 0 "pause")}}
 
-{{/*If not*/}}
-{{if not $matches}}
-  {{$x := (toFloat ($time.Get "count"))}}
-  {{$time.Set "count" (add $x 1)}}
-  {{$time.Set "message" (add $message 1)}}
+	{{/*Check if massage sent is in (brackets)*/}}
+	{{ $matches := (index (reFindAllSubmatches `\((.*)\)|(^\$(.*))|(^\!\!(.+))` .Message.Content)) }} {{/* exclude my bot bracket from the count */}}
 
- {{/*Amount of messages needed for cycle, starts from 0*/}}
-    	{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
-       		{{$time.Set "cycle" (add $cycle 1)}}
+	{{/*If not*/}}
+	{{if not $matches}}
+		{{$x := (toFloat ($time.Get "count"))}}
+		{{$time.Set "count" (add $x 1)}}
+		{{$time.Set "message" (add $message 1)}}
 
-{{/*reset count for new cycle*/}}
-  		{{$time.Set "count" 0}}
-  		{{$time.Set "message" 0}}
-      {{$y := toFloat ($time.Get "cycle")}}
+	{{/*Amount of messages needed for cycle, starts from 0*/}}
+		{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
+			{{$time.Set "cycle" (add $cycle 1)}}
 
-{{/*thumbnail cycle*/}}
-  		{{if eq $y (toFloat 1)}}
-				{{$embed := cembed
-					"title" (joinStr "" "Jour : " $jour " ▬ Changement de cycle")
-					"description" (joinStr "" "Nous sommes maintenant au cycle 1.")
-					"color" 0x1B3175
-					"thumbnail" (sdict "url" $nuit)
-					"timestamp" .Message.Timestamp}}
-				{{sendMessage $chan $embed}}
-				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{sendMessage $log $jardin}}
+	{{/*reset count for new cycle*/}}
+		{{$time.Set "count" 0}}
+		{{$time.Set "message" 0}}
+		{{$y := toFloat ($time.Get "cycle")}}
 
-  		{{else if eq $y (toFloat 2)}}
-				{{$embed := cembed
-					"title" (joinStr "" "Jour : " $jour " ▬ Changement de cycle")
-					"description" (joinStr "" "Nous sommes maintenant au cycle 2.")
-					"color" 0xDD99DF
-					"thumbnail" (sdict "url" $matin)
-					"timestamp" .Message.Timestamp}}
-				{{sendMessage $chan $embed}}
-				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{sendMessage $log $jardin}}
-
-
-  		{{else if eq $y (toFloat 3)}}
-  			{{$embed := cembed
-    			"title" (joinStr "" "Jour : " $jour " ▬ Changement de cycle")
-    			"description" (joinStr "" "Nous sommes maintenant au cycle 3.")
-    			"color" 0xF0B535
-  				"thumbnail" (sdict "url" $midi)
-  				"timestamp" .Message.Timestamp}}
-				{{sendMessage $chan $embed}}
-				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{sendMessage $log $jardin}}
-
-  		{{else if eq $y (toFloat 4)}}
-		{{$embed := cembed
-			"title" (joinStr "" "Jour : " $jour " ▬ Changement de cycle")
-			"description" (joinStr "" "Nous sommes maintenant au cycle 4.")
-			"color" 0x9593E8
-			"thumbnail" (sdict "url" $soir)
-			"timestamp" .Message.Timestamp}}
-		{{sendMessage $chan $embed}}
+	{{/*thumbnail cycle*/}}
+		{{if or (eq $y (toFloat 1)) (eq $y (toFloat 2))}}
+			{{$str.Thumbnail.Set "url" $nuit}}
+			{{$str.Set "color" 0x1B3175}}
 			{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
 			{{sendMessage $log $jardin}}
+			{{sendMessage $chan (cembed $str)}}
 
-{{/*you can add cycle with just else if eq $y (toFloat number) */}}
-
-  {{/*Nouveau jour*/}}
-     	{{else}}
-  			{{$time.Set "count" 0 }}
-  			{{$time.Set "cycle" 1}}
-  			{{$time.Set "jour" (add $jour 1)}}
-  			{{$jour:= $time.Get "jour"}}
+			{{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
+				{{$str.Thumbnail.Set "url" $matin}}
+				{{$str.Set "color" 0xDD99DF}}
 				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-  			{{$embed := cembed
-   		 		"title" (joinStr "" "Début du Jour : " $jour)
-  				"description" "Nous sommes maintenant au cycle 1"
-    			"color" 0x1B3175
-  				"thumbnail" (sdict "url" $nuit)
-  				"timestamp" .Message.Timestamp}}
-  			{{sendMessage $chan $embed}}
 				{{sendMessage $log $jardin}}
-    	{{end}}
+				{{sendMessage $chan (cembed $str)}}
+
+			{{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
+				{{$str.Thumbnail.Set "url" $midi}}
+				{{$str.Set "color" 0xF0B535}}
+				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+				{{sendMessage $log $jardin}}
+				{{sendMessage $chan (cembed $str)}}
+			
+			{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
+				{{$str.Thumbnail.Set "url" $soir}}
+				{{$str.Set "color" 0x9593E8}}
+				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+				{{sendMessage $log $jardin}}
+				{{sendMessage $chan (cembed $str)}}
+
+	{{/*you can add cycle with just else if eq $y (toFloat number) */}}
+
+		{{/*Nouveau jour*/}}
+				{{else}}
+					{{$time.Set "count" 0 }}
+					{{$time.Set "cycle" 1}}
+					{{$time.Set "jour" (add $jour 1)}}
+					{{$jour:= $time.Get "jour"}}
+					{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+					{{$str.Set "title" (joinStr "" "Début du jour : " $jour)}}
+					{{$str.Set "description" "Nous sommes maintenant au cycle 1"}}
+					{{$str.Set "color" 0x1B3175}}
+					{{$str.Thumbnail.Set "url" $nuit}}
+					{{sendMessage $chan (cembed $str)}}
+					{{sendMessage $log $jardin}}
+				{{end}}
+		{{end}}
+	{{else}}
 	{{end}}
-{{else}}
+	{{dbSet 0 "time" $time}}
+	{{dbSet .Server.ID "compo" $compo}}
 {{end}}
-{{dbSet 0 "time" $time}}
-{{dbSet .Server.ID "compo" $compo}}
