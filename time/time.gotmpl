@@ -15,17 +15,29 @@
 	{{if lt $pourcent (toFloat 1)}}
 		{{$pourcent = (toFloat 1)}}
 	{{end}}
-	{{ $msg = (json (div ($time.Get "message") $pourcent)) }}
+	{{ $msg = (json (roundEven (div ($time.Get "message") $pourcent))) }}
 {{else}}
 	{{$msg = json (mult (div $txt $msgc) 100)}}
 {{end}}
 
+{{$val := (joinStr " " (toString (toInt $txt)) "message(s) dans le cycle")}} {{/* Footer message */}}
 
+{{/* Embed */}}
+{{$embed := cembed
+	"title" (joinStr "" "Jour : " ($time.Get "jour"))
+	"description" (joinStr "" "**Cycle** : " (toString (toInt $number)) "\n" $msg " % du cycle est passé...")
+	"color" 0xDD99DF
+	"thumbnail" (sdict "url" "")
+	"footer" (sdict "text" $val)
+	"timestamp" .Message.Timestamp}}
+{{$str := structToSdict $embed}}
+{{ range $k, $v := $str }}
+ 	{{- if eq (kindOf $v true) "struct" }}
+ 		{{- $str.Set $k (structToSdict $v) }}
+ 	{{- end -}}
+{{ end }}
 
 {{$y := (toFloat ($time.Get "cycle"))}}
-
-{{$val := (joinStr " " (toString (toInt $txt)) "message(s) dans le cycle")}} {{/* Footer message */}}
-{{$day := (toString (toInt ($time.Get "jour")))}}
 
 {{/* Thumbnail */}}
 {{$nuit:="https://i.imgur.com/e04keB7.png"}}
@@ -33,47 +45,26 @@
 {{$midi:="https://i.imgur.com/AFOj90o.png"}}
 {{$soir:="https://i.imgur.com/xSDYgqD.png"}}
 
-{{if eq $y (toFloat 1) }}
-	{{$embed := cembed
-		"title" (joinStr "" "Jour : " $day)
-  		"description"  (joinStr "" "**Cycle** : " (toString (toInt $number)) "\n" $msg " % du cycle est passé...")
-  		"color" 0x1B3175
- 		"thumbnail" (sdict "url" $nuit)
-		"footer" (sdict "text" $val)
-		"timestamp" .Message.Timestamp}}
-	{{ sendMessage nil $embed}}
+{{if or (eq $y (toFloat 1)) (eq $y (toFloat 2))}}
+	{{$str.Thumbnail.Set "url" $nuit }}
+	{{$str.Set "color" 0x1B3175}}
+	{{ sendMessage nil (cembed $str)}}
 
-{{else if eq $y (toFloat 2) }}
-		{{$embed := cembed
-		"title" (joinStr "" "Jour : " $day)
-  		"description"  (joinStr "" "**Cycle** : " (toString (toInt $number)) "\n" $msg " % du cycle est passé...")
-  		"color" 0xDD99DF
- 		"thumbnail" (sdict "url" $matin)
-		"footer" (sdict "text" $val)
-		"timestamp" .Message.Timestamp}}
-	{{ sendMessage nil $embed}}
+{{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
+	{{$str.Thumbnail.Set "url" $matin}}
+	{{$str.Set "color" 0xDD99DF}}
+	{{ sendMessage nil (cembed $str)}}
 
-{{else if eq $y (toFloat 3) }}
-	{{$embed := cembed
-		"title" (joinStr "" "Jour : " $day)
-  		"description"  (joinStr "" "**Cycle** : " (toString (toInt $number)) "\n" $msg " % du cycle est passé...")
-  		"color" 0xF0B535
- 		"thumbnail" (sdict "url" $midi)
-		"footer" (sdict "text" $val)
-		"timestamp" .Message.Timestamp}}
-	{{ sendMessage nil $embed}}
 
-{{/* If you want add cycle, add it here ! */}}
+{{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
+	{{$str.Thumbnail.Set "url" $midi}}
+	{{$str.Set "color" 0xF0B535}}
+	{{ sendMessage nil (cembed $str)}}
 
-{{else}}
-	{{$embed := cembed
-		"title" (joinStr "" "Jour : " $day)
-  		"description"  (joinStr "" "**Cycle** : " (toString (toInt $number)) "\n" $msg " % du cycle est passé...")
-  		"color" 0x9593E8
- 		"thumbnail" (sdict "url" $soir)
-		"footer" (sdict "text" $val)
-		"timestamp" .Message.Timestamp}}
-	{{ sendMessage nil $embed}}
+{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
+	{{$str.Thumbnail.Set "url" $soir}}
+	{{$str.Set "color" 0x9593E8}}
+	{{ sendMessage nil (cembed $str)}}
 {{end}}
 
-{{deleteTrigger 0}}
+{{deleteTrigger 1}}

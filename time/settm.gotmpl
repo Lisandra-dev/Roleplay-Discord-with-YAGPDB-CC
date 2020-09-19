@@ -3,11 +3,10 @@
 {{with (dbGet 0 "time")}}
 	{{$time = sdict .Value}}
 {{end}}
+{{$log := 716988208205791342}}
 
 {{$amount := toFloat ($time.Get "mgsc")}}
-
 {{if .CmdArgs}}
-
     {{if eq (index .CmdArgs 0) "cycle"}}
         {{if eq (len .CmdArgs) 2}}
             {{$floatArg := (toFloat (index .CmdArgs 1)) }}
@@ -39,6 +38,29 @@
       {{else}}
         **Usage** day <number>
       {{end}}
+    {{else if eq (index .CmdArgs 0) "pause"}}
+      {{if not (dbGet 0 "pause")}}
+        {{dbSet 0 "pause" "Y"}}
+        Le temps a été mis en pause !
+        {{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+        {{$embed := cembed
+        "author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon)
+        "title" (joinStr "" "JOUR " ($time.Get "jour") " ▬ CYCLE " ($time.Get "cycle"))
+        "description" (joinStr "" "Le temps a été mis en pause par : " .User.Mention ".")
+        "color" 0x472d67
+        "timestamp" .Message.Timestamp}}
+        {{sendMessage $log $embed}}
+      {{else}}
+        {{dbDel 0 "pause"}}
+        {{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+        {{$embed := cembed
+        "author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon) 
+        "title" (joinStr "" "JOUR " ($time.Get "jour") " ▬ CYCLE " ($time.Get "cycle"))
+        "description" (joinStr "" "Le temps a été réactivé par : " .User.Mention ".")
+        "color" 0x472d67
+        "timestamp" .Message.Timestamp}}
+        {{sendMessage $log $embed}}
+      {{end}}
 
     {{else if eq (index .CmdArgs 0) "msg"}}
         {{if eq (len .CmdArgs) 2}}
@@ -56,6 +78,7 @@
         {{end}}
     {{end}}
 {{else}}
-**Usage:** <cycle|msg|day|speed> <number>
+**Usage:** <cycle|msg|day|speed|stop> <number>
 {{end}}
 {{dbSet 0 "time" $time}}
+{{deleteTrigger 1}}
