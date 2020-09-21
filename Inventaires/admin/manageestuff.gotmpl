@@ -3,11 +3,9 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
- {{if ge (len .CmdArgs) 3}}
-    {{with (userArg (index .CmdArgs 2))}}
-      {{$id = .}}
-      {{$id = $id.ID}}
-    {{end}}
+ {{with (reFind `<@!?\d{17,}>` .Message.Content)}}
+    {{$id = userArg .}}
+    {{$id = $id.ID}}
   {{end}}
 	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
@@ -37,6 +35,10 @@
             {{$target = .}}
             {{$target = $target.ID}}
             {{$user = (getMember $target).Nick}}
+            {{if eq (len $user) 0}}
+              {{$user = .}}
+              {{$user = $user.Username}}
+            {{end}}
           {{end}}
 			  {{end}}
 				{{if ge (len .) 3}}
