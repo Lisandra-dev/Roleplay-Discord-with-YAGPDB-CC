@@ -29,6 +29,7 @@
 		{{end}}
 		{{$groupe.Set $i $j}}
 	{{end}}
+	
 	{{$pv := 0}}
 	{{$pv_dic := sdict}}
 	{{range $i, $j := $hp}}
@@ -46,6 +47,7 @@
 			{{end}}
 		{{end}}
 		{{$pv_dic.Set "pv_actuel" $pv}}
+		{{$hp.Set $i $pv_dic}}
 	{{end}}
 	{{dbSet .Server.ID "groupe" $groupe}}
 	{{dbSet 0 "HP" $hp}}

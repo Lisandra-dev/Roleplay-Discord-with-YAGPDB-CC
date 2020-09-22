@@ -24,7 +24,6 @@
   {{$hp = sdict .Value}}
 {{end}}
 
-
 {{/* Embed */}}
 {{$embed := cembed
 	"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
@@ -38,7 +37,6 @@
  		{{- $str.Set $k (structToSdict $v) }}
  	{{- end -}}
 {{ end }}
-
 
 {{/* Fruit et biocomposant - A supprimer si vous n'utilisez pas le système de craft */}}
 {{$compo := sdict}}
@@ -85,7 +83,7 @@
 			{{range $i, $j := $hp}}
 				{{$pv = sdict $j}}
 				{{if not (eq $j.mush "t")}}
-					{{$id = $j.ID}}
+					{{$id = toInt ($j.ID)}}
 					{{with (dbGet $id "stats")}}
 						{{$stats = sdict .Value}}
 					{{end}}
@@ -98,8 +96,10 @@
 					{{$regen = add (toInt $j.pv_actuel) 10}}
 				{{end}}
 				{{$pv.Set "pv_actuel" $regen}}
-				{{dbSet 0 "HP" $hp}}
+				{{$hp.Set $i $pv}}
 			{{end}}
+			{{dbSet 0 "HP" $hp}}
+
 
 		{{/*reset count for new cycle*/}}
 		{{$time.Set "count" 0}}

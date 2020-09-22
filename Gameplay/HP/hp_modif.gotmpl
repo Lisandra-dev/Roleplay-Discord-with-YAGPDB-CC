@@ -8,13 +8,61 @@
   {{if ge (len .CmdArgs) 1}}
     {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
     {{$name = joinStr "" (split $name "#")}}
+    {{$user := ""}}
     {{if $name}}
       {{$user = title $name}}
     {{else if (userArg (index .CmdArgs 0))}}
       {{$user = (userArg (index .CmdArgs 0))}}
-      {{$user = $user.Nick}}
+      {{$user = (getMember $user).Nick}}
       {{if eq (len $user) 0}}
         {{$user = (userArg (index .CmdArgs 0)).Username}}
+      {{end}}
     {{end}}
-    
+    {{$pv := $hp.Get $user}}
+    {{with $pv}}
+      {{$pv = sdict .}}
+    {{end}}
+    {{$val_pv := toInt ($pv.Get "pv_actuel")}}
     {{if ge (len .CmdArgs) 2}}
+      {{$val := toInt (index .CmdArgs 1)}}
+      {{if le $val 0}}
+        {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+        {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{if le (toInt ($pv.Get "pv_actuel")) 0}}
+          {{if eq ($pv.Get "mush") "f"}}
+            {{$hp.Del $user}}
+            {{$msg = print $user " est mort..."}}
+          {{else}}
+            {{$msg = print $user " est KO..."}}
+          {{end}}
+        {{end}}
+        {{$hp.Set $user $pv}}
+        {{dbSet 0 "HP" $hp}}
+      {{else}}
+        {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+        {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+          {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+        {{end}}
+        {{$hp.Set $user $pv}}
+        {{dbSet 0 "HP" $hp}}
+      {{end}}
+    {{else}}
+      {{$msg = "Noubliez pas la valeur !"}}
+    {{end}}
+  {{else}}
+    {{$val := toInt (index .CmdArgs 0)}}
+    {{if le $val 0}}
+      {{$msg = print $user ", non, vous ne pouvez pas vous mutiler !"}}
+    {{else}}
+      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+      {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+        {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+      {{end}}
+    {{end}}
+    {{$hp.Set $user $pv}}
+    {{dbSet 0 "HP" $hp}}
+  {{end}}
+{{end}}
+{{sendMessage nil $msg}}

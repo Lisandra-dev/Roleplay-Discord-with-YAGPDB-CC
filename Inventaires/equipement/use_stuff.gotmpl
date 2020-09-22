@@ -4,7 +4,7 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
-	{{$user = $name}}
+	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
@@ -32,7 +32,10 @@
 {{with (dbGet 0 "HP")}}
   {{$hpS = sdict .Value}}
 {{end}}
-{{$hp := $hpS.Get $user}}
+{{$hp := sdict}}
+{{with ($hpS.Get $user)}}
+  {{$hp = sdict .}}
+{{end}}
 
 {{$sstuff := $place.Get "s_stuff"}}
 {{$sconso := $place.Get "s_conso"}}
@@ -71,9 +74,10 @@
               {{if ge (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}
                 {{$hp.Set "pv_actuel" (toInt ($hp.Get "pv_max"))}}
               {{end}}
+              {{$msg = print $user " a regagné " ($soin.Get $item) "<:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($hp.Get "pv_actuel")) " <:pv:712052732873408703>."}}
               {{$place.Set "s_conso" (add $amount $sconso)}}
               {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-              {{$hpS.Set $hp}}
+              {{$hpS.Set $user $hp}}
               {{dbSet 0 "HP" $hpS}}
             {{else}}
               {{$msg = "Vous ne pouvez pas vous soigner pour le moment : vos HP sont au maximum."}}
@@ -89,9 +93,10 @@
               {{if ge (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}
                 {{$hp.Set "pv_actuel" ($hp.Get "pv_max")}}
               {{end}}
+              {{$msg = print $user " a regagné " ($soin.Get $item) " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($hp.Get "pv_actuel")) " <:pv:712052732873408703>."}}
               {{$place.Set "s_conso" $mconso}}
               {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-              {{$hpS.Set $hp}}
+              {{$hpS.Set $user $hp}}
               {{dbSet 0 "HP" $hpS}}
             {{else}}
               {{$msg = "Vous ne pouvez pas vous soigner pour le moment : vos HP sont au maximum."}}
