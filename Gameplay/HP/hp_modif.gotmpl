@@ -1,0 +1,20 @@
+{{$hp := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+{{$msg := ""}}
+
+{{if .CmdArgs}}
+  {{if ge (len .CmdArgs) 1}}
+    {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
+    {{$name = joinStr "" (split $name "#")}}
+    {{if $name}}
+      {{$user = title $name}}
+    {{else if (userArg (index .CmdArgs 0))}}
+      {{$user = (userArg (index .CmdArgs 0))}}
+      {{$user = $user.Nick}}
+      {{if eq (len $user) 0}}
+        {{$user = (userArg (index .CmdArgs 0)).Username}}
+    {{end}}
+    
+    {{if ge (len .CmdArgs) 2}}
