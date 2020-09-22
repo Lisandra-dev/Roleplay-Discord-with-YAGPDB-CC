@@ -1,0 +1,128 @@
+{{/* Channel */}}
+{{$chan:= 716988208205791342}} {{/* Change the channel ID you want send the embed */}}
+
+{{/*Thumbnail*/}}
+{{$nuit:="https://i.imgur.com/e04keB7.png"}}
+{{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
+{{$midi:="https://i.imgur.com/AFOj90o.png"}}
+{{$soir:="https://i.imgur.com/xSDYgqD.png"}}
+
+{{/* Time dict */}}
+{{$time := sdict }}
+{{with (dbGet 0 "time")}}
+	{{$time = sdict .Value}}
+{{end}}
+
+{{/* regen HP based on endurance */}}
+{{$endu := sdict ("1" 0 "2" 4 "3" 4 "4" 5 "5" 5 "6" 6 "7" 6 "8" 7 "9" 7 "10" 8)}}
+{{$stats := sdict}}
+{{$id := ""}}
+{{$hp := sdict }}
+{{$regen := 0}}
+{{$pv := sdict}}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+
+
+{{/* Embed */}}
+{{$embed := cembed
+	"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
+	"description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
+	"color" 0xDD99DF
+	"thumbnail" (sdict "url" "")
+	"timestamp" .Message.Timestamp}}
+{{$str := structToSdict $embed}}
+{{ range $k, $v := $str }}
+ 	{{- if eq (kindOf $v true) "struct" }}
+ 		{{- $str.Set $k (structToSdict $v) }}
+ 	{{- end -}}
+{{ end }}
+
+
+{{/* Fruit et biocomposant - A supprimer si vous n'utilisez pas le système de craft */}}
+{{$compo := sdict}}
+{{with (dbGet .Server.ID "compo")}}
+	{{$compo = sdict .Value}}
+{{end}}
+
+{{$log := "735938256038002818"}}
+{{$fruit := "https://i.imgur.com/0atJRWH.png"}}
+
+{{$jardin := cembed 
+	"author" (sdict "name" "Sola-UI" "icon_url" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png") 
+	"title" "Production du jardin"
+	"description" "Le jardin a produit 1 biocomposant !"
+	"footer" (sdict "text" (joinStr " " "Biocomposant :" ($compo.Get "biocomposant")))
+	"color" 0x7abac6
+	"thumbnail" (sdict "url" $fruit)
+	"timestamp" .Message.Timestamp}}
+
+{{/* Variable */}}
+{{$msgc := (toFloat ($time.Get "mgsc"))}}
+{{$message := toFloat ($time.Get "message")}}
+{{$number:= ($time.Get "time")}}
+{{$jour := $time.Get "jour"}}
+{{$cycle := $time.Get "cycle"}}
+
+{{$time.Set "cycle" (add $cycle 1)}}
+{{range $i, $j := $hp}}
+  {{$pv = sdict $j}}
+  {{if not (eq $j.mush "t")}}
+    {{$id = $j.ID}}
+    {{with (dbGet $id "stats")}}
+      {{$stats = sdict .Value}}
+    {{end}}
+    {{$seuil = (toInt ($stats.Get "endurance"))}}
+    {{$regen = add (toInt $j.pv_actuel) ($endu.Get $seuil)}}
+    {{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
+      {{$regen = $j.pv_max}}
+    {{end}}
+  {{else if eq ($j.mush "t")}}
+    {{$regen = add (toInt $j.pv_actuel) 10}}
+  {{end}}
+  {{$pv.Set "pv_actuel" $regen}}
+  {{dbSet 0 "HP" $hp}}
+{{end}}
+
+{{$time.Set "count" 0}}
+{{$time.Set "message" 0}}
+
+{{$y := toFloat ($time.Get "cycle")}}
+{{if or (eq $y (toFloat 1)) (eq $y (toFloat 2))}}
+  {{$str.Thumbnail.Set "url" $nuit}}
+  {{$str.Set "color" 0x1B3175}}
+  {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+  {{sendMessage $log $jardin}}
+  {{sendMessage $chan (cembed $str)}}
+{{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
+  {{$str.Thumbnail.Set "url" $matin}}
+  {{$str.Set "color" 0xDD99DF}}
+  {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+  {{sendMessage $log $jardin}}
+  {{sendMessage $chan (cembed $str)}}
+{{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
+  {{$str.Thumbnail.Set "url" $midi}}
+  {{$str.Set "color" 0xF0B535}}
+  {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+  {{sendMessage $log $jardin}}
+  {{sendMessage $chan (cembed $str)}}
+{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
+  {{$str.Thumbnail.Set "url" $soir}}
+  {{$str.Set "color" 0x9593E8}}
+  {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+  {{sendMessage $log $jardin}}
+  {{sendMessage $chan (cembed $str)}}
+{{else}}
+  {{$time.Set "count" 0 }}
+  {{$time.Set "cycle" 1}}
+  {{$time.Set "jour" (add $jour 1)}}
+  {{$jour:= $time.Get "jour"}}
+  {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
+  {{$str.Set "title" (joinStr "" "Début du jour : " $jour)}}
+  {{$str.Set "description" "Nous sommes maintenant au cycle 1"}}
+  {{$str.Set "color" 0x1B3175}}
+  {{$str.Thumbnail.Set "url" $nuit}}
+  {{sendMessage $chan (cembed $str)}}
+  {{sendMessage $log $jardin}}
+{{end}}

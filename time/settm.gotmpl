@@ -11,11 +11,11 @@
         {{if eq (len .CmdArgs) 2}}
             {{$floatArg := (toFloat (index .CmdArgs 1)) }}
             {{$arg1 := (toFloat (index .CmdArgs 1)) }}
-            {{if ge (toFloat 4) $floatArg }}
+            {{if ge (toFloat 8) $floatArg }}
                 {{$time.Set "cycle" $arg1}}
                 Nous sommes actuellement au cycle  `{{$time.Get "cycle"}}`.
             {{else}}
-              Le nombre est supérieur à 4.
+              Le nombre est supérieur à 8.
             {{end}}
         {{else}}
             **Usage:** cycle <number>
