@@ -4,6 +4,10 @@
 {{$id := .User.ID }}
 {{if $name}}
 	{{$user = title $name}}
+  {{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
@@ -36,7 +40,7 @@
           {{$pvm := index .CmdArgs 2}}
           {{$reg := index .CmdArgs 3}}
           {{if or (ne $reg "0") (ne $reg "t" ) (ne $reg "f") (ne $reg "1")}}
-            {{$reg := "0"}}
+            {{$reg := "f"}}
           {{else if eq $reg "0" "t"}}
             {{$reg = "t"}}
           {{else if eq $reg "1" "f"}}
@@ -44,13 +48,13 @@
           {{end}}
           {{$mush := index .CmdArgs 4}}
           {{if or (ne $mush "0") (ne $mush "t" ) (ne $mush "f") (ne $mush "1")}}
-            {{$mush := "0"}}
+            {{$mush := "f"}}
           {{else if eq $mush "0" "t"}}
             {{$mush = "t"}}
           {{else if eq $mush "1" "f"}}
             {{$mush = "f"}}
           {{end}}
-          {{$hp.Set $user (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush)}}
+          {{$hp.Set $user (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush "id" $id)}}
           {{$msg = joinStr " " "PV Maximum :" $pvm "\n" "Implant :" $reg "\n Etat d'hybridation avec le mush :" $mush}}
         {{else}}
           {{$msg = "Usage : hpadmin -add (@joueur / #Reroll) pvmax implant_regen état_mush\n Réponse possible pour les implants et le mush : \n - 0 et t pour oui \n - 1/f pour non \n Par défaut, la réponse est non aux deux."}}
