@@ -4,27 +4,26 @@
 {{end}}
 
 {{if .CmdArgs}}
-  {{if eq (len .CmdArgs) 3}}
-    {{$flag := reFind `-(add|rm|edit)` (index .CmdArgs 0)}}
-    {{if eq $flag "-add"}}
-      {{$item := title (lower (index .CmdArgs 1))}}
-      {{$regen := toInt (index .CmdArgs 2)}}
-      {{$soin.Set $item $regen}}
-      {{dbSet 0 "analgésique" $soin}}
-      {{$item}} : {{$regen}} <:pv:712052732873408703>
-    {{else if eq $flag "-rm"}}
-      {{$item := title (lower (index .CmdArgs 1))}}
-      {{$soin.Del $item}}
-    {{else if eq $flag "-edit"}}
-      {{$item := title (lower (index .CmdArgs 1))}}
-      {{$name := title (lower (index .CmdArgs 2))}}
-      {{$soin.Set $name ($soin.Get $item)}}
-      {{$soin.Del $item}}
-    {{else}}
-      :white_small_square: Inscription : $medoc -add nom regen
-      :white_small_square: Suppression : $medoc -rm nom
-      :white_small_square: Edition : $medoc -edit ancien_nom nouveau_nom
+  {{$flag := reFind `-(add|rm|edit)` (index .CmdArgs 0)}}
+  {{if eq $flag "-add"}}
+    {{$item := title (lower (index .CmdArgs 1))}}
+    {{if (reFind `-bdg` .Message.Content)}}
+      {{$item = print "[BDG] " $item}}
     {{end}}
+    {{$regen := toInt (index .CmdArgs 2)}}
+    {{$soin.Set $item $regen}}
+    {{dbSet 0 "analgésique" $soin}}
+    Ajout de {{$item}} avec un soin de {{$regen}} <:pv:712052732873408703>
+  {{else if eq $flag "-rm"}}
+    {{$item := title (lower (index .CmdArgs 1))}}
+    Suppression de {{$item}}
+    {{$soin.Del $item}}
+  {{else if eq $flag "-edit"}}
+    {{$item := title (lower (index .CmdArgs 1))}}
+    {{$name := title (lower (index .CmdArgs 2))}}
+    {{$soin.Set $name ($soin.Get $item)}}
+    {{$soin.Del $item}}
+    Edition de {{$item}} en {{$name}}
   {{else}}
     :white_small_square: Inscription : $medoc -add nom regen
     :white_small_square: Suppression : $medoc -rm nom

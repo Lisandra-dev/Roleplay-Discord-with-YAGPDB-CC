@@ -63,9 +63,11 @@
   {{else if $sac}}
     {{$item = print "[E] " (title (lower $sac))}}
   {{else if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-    {{$item = "[MODULE] " $mimp}}
+    {{$item = print "[MODULE] " $mimp}}
   {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-    {{$item = "[IMPLANT] " $mimp}}
+    {{$item = print "[IMPLANT] " $mimp}}
+  {{else if and (reFind `-bdg` .Message.Content) (not $compo) (not $mimp) (not $chargeur) (not $sac) (not (reFind `\[X\]` $item))}}
+    {{$item = print "[BDG]" $item }}
   {{end}}
   {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
     {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}

@@ -64,29 +64,20 @@
 
 	{{/* Fonction */}}
 
-{{$flag := reFind `\-(?i)(armes?|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
-{{$flag = lower $flag}}
-{{$log := ""}}
-{{$item := ""}}
-{{$q := 1}}
+{{$flag := reFind `\-(?i)(armes?|conso|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}{{$flag = lower $flag}}{{$log := ""}}{{$item := ""}}{{$q := 1}}
 {{if (dbGet 0 "mission")}}
 	Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas utiliser cette commande pour le moment.
 {{else}}
 	{{if .CmdArgs}}
-		{{if eq (len .CmdArgs) 1}}
-	Erreur : Nombre d'argument invalide. 
-	> N'oublier pas le nom de l'objet !
+		{{if eq (len .CmdArgs) 1}}Erreur : Nombre d'argument invalide. 
+> N'oublier pas le nom de l'objet !
 		{{else if ge (len .CmdArgs) 2}}
 			{{$item = title (index .CmdArgs 1)}}
-			
-			{{if eq (len .CmdArgs) 3}}
-				{{$q = toInt (index .CmdArgs 2)}}
-			{{end}}
-
+			{{if eq (len .CmdArgs) 3}}{{$q = toInt (index .CmdArgs 2)}}{{end}}
 		{{if eq $flag "-arme" "-armes"}}
 			{{$type := title (reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content)}}
-		{{if not $type}}
-			Erreur : Vous devez indiquer le type d'arme.
+			{{if reFind `-bdg` .Message.Content}}{{$item = print "[BDG] " $item}}{{end}}
+		{{if not $type}} Erreur : Vous devez indiquer le type d'arme.
 		{{else}}
 			{{if and ($armes.Get $item) (ge (toInt ($armes.Get $item)) $q)}}
 				{{$armes.Set $item (sub ($armes.Get $item) $q)}}
@@ -105,8 +96,9 @@
 			{{end}}
 		{{end}}
 
-		{{else if eq $flag "-soin" "-soins"}}
+		{{else if eq $flag "-conso"}}
 			{{if and ($soin.Get $item) (ge (toInt ($soin.Get $item)) $q)}}
+			{{if and (reFind `-bdg` .Message.Content) (not (reFind `(?i)balle` $item))}}{{$item = print "[BDG] " $item}}{{end}}
 				{{$soin.Set $item (sub ($soin.Get $item) $q)}}
 				{{if le ($soin.Get $item) 0}}
 					{{$soin.Del $item}}
@@ -272,7 +264,7 @@
 			{{end}}
 
 		{{else}}
-			**Usage** : `$vnuse -(armes?|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur/nom> (quantité si nom)`
+			**Usage** : `$vnuse -(armes?|conso|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur/nom> (quantité si nom)`
 		{{end}}
 	{{end}}
 	{{end}}

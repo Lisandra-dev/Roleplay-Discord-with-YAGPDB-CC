@@ -56,7 +56,8 @@
     {{end}}
   {{end}}
   {{$msg = joinStr "" $user " a utilisé" $number $item "."}}
-  {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison|bdg)` $item)}}
+  {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+  {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
   {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
     {{$item = print "[MODULE] " (title $mimp)}}
     {{$msg = joinStr "" $user " a fixé" $number $item "."}}
@@ -64,9 +65,11 @@
     {{$item = print "[IMPLANT] " (title $mimp)}}
     {{$msg = joinStr "" $user " a fixé" $number $item "."}}
   {{end}}
-  {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
   {{if ($equip.Get $item)}}
     {{if or (not $compo) (not (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item)) (not (reFind `(?i)chargeur` $item)) (not (reFind `^\[E\]` $item)) (not (reFind `(?i)^\[X\]` $item))}}
+      {{if (reFind `-bdg` .Message.Content)}}
+        {{$item = print "[BDG] " $item}}
+      {{end}}
         {{if lt $amount (toInt ($equip.Get $item))}}
           {{if ($soin.Get $item)}}
             {{if lt (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}

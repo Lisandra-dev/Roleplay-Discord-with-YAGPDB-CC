@@ -64,28 +64,20 @@
 
 {{/* Fonction */}}
 
-{{$flag := reFind `\-(?i)(armes?|modules?|implants?|soins?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}
-{{$flag := lower $flag}}
-{{$log := ""}}
-{{$q := 1}}
-{{$item := ""}}
+{{$flag := reFind `\-(?i)(armes?|modules?|implants?|conso|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}{{$bdg := reFind `\-(?i)bdg` .Message.Content}}{{$flag := lower $flag}}{{$log := ""}}{{$q := 1}}{{$item := ""}}
 
-{{if (dbGet 0 "mission")}}
-	Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas utiliser cette commande pour le moment.
+{{if (dbGet 0 "mission")}}Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas utiliser cette commande pour le moment.
 {{else}}
 	{{if .CmdArgs}}
-		{{if eq (len .CmdArgs) 1}}
-	Erreur : Nombre d'argument invalide.
+		{{if eq (len .CmdArgs) 1}}Erreur : Nombre d'argument invalide.
 	> N'oublier pas le nom de l'objet !
 		{{else if ge (len .CmdArgs) 2}}
 			{{$item = title (index .CmdArgs 1)}}
-			{{if eq (len .CmdArgs) 3}}
-				{{$q = toInt (index .CmdArgs 2)}}
-			{{end}}
+			{{if eq (len .CmdArgs) 3}}{{$q = toInt (index .CmdArgs 2)}}{{end}}
 			{{if eq $flag "-arme" "-armes"}}
 				{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
-				{{if not $type}}
-					Erreur : Oublie du type d'arme
+				{{if reFind `-bdg` .Message.Content}}{{$item = print "[BDG] " $item}}{{end}}
+				{{if not $type}} Erreur : Oublie du type d'arme
 				{{else}}
 					{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
 						{{$inv.Set $item (sub ($inv.Get $item) $q)}}
@@ -97,14 +89,11 @@
 						{{if eq ($inv.Get $item) 0}}
 							{{$inv.Del $item}}
 						{{end}}
-						{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}
-						{{dbSet 0 "armelist" $armes}}
-					{{else}}
-						{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.
-					{{end}}
+						{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}{{dbSet 0 "armelist" $armes}}
+					{{else}}{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.{{end}}
 				{{end}}
-
-			{{else if eq $flag "-soin" "-soins"}}
+			{{else if eq $flag "-conso"}}
+				{{if and (reFind `-bdg` .Message.Content) (not (reFind `(?i)balle` $item))}}{{$item = print "[BDG] " $item}}{{end}}
 				{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q) }}
 					{{$inv.Set $item (sub ($inv.Get $item) $q)}}
 					{{if ($soin.Get $item)}}
@@ -262,7 +251,7 @@
 		{{end}}
 
 			{{else}}
-			**Usage** : `$vnadd -(armes?|soin(s?)|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur> (quantité si non-composant)`
+			**Usage** : `$vnadd -(armes?|conso|implant(s?)|modules?|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur) <valeur> (quantité si non-composant)`
 			{{end}}
 		{{end}}
 	{{end}}
