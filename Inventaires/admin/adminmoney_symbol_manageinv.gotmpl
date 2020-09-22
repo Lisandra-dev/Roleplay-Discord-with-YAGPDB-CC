@@ -160,7 +160,10 @@ Vous avez besoin de spécifier une valeur !
 					{{$target = .}}
 					{{$target = $target.ID}}
 					{{$mention = joinStr "" "<@" $target ">"}}
-					{{$user = (getMember $target).Nick}}
+					{{if eq (len $user) 0}}
+            {{$user = .}}
+            {{$user = $user.Username}}
+					{{end}}
 				{{end}}
 			{{end}}
 				{{if ge (len .) 3}}
