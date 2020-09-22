@@ -25,7 +25,7 @@
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{if ge (len .) 1}}
-			{{$secondflag = (reFind `\-(add|reset|init)` (index . 0))}}
+			{{$secondflag = (reFind `\-(add|reset|init|rm)` (index . 0))}}
 			{{if ge (len .) 2}}
         {{if $name}}
           {{$target = $id}}
@@ -107,7 +107,7 @@
             {{$item = "[C] Composant Universel"}}
           {{end}}
         {{end}}
-        {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+        {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
         {{if $sac}}
           {{$item = print "[E] " (title (lower $sac))}}
         {{end}}
@@ -137,18 +137,18 @@
               {{if eq $item "[E] Sac À Dos" }}
                 {{$place.Set "s_stuff" (add $sstuff 3)}}
                 {{$place.Set "s_conso" (add $sconso 9)}}
-                {{$place.Set "max_stuff" (add $sstuff 3)}}
-                {{$place.Set "max_conso" (add $sconso 9)}}
+                {{$place.Set "max_stuff" 5}}
+                {{$place.Set "max_conso" 14}}
               {{else if eq $item "[E] Sacoche" }}
                 {{$place.Set "s_stuff" (add $sstuff 2)}}
                 {{$place.Set "s_conso" (add $sconso 6)}}
-                {{$place.Set "max_stuff" (add $sstuff 2)}}
-                {{$place.Set "max_conso" (add $sconso 6)}}
+                {{$place.Set "max_stuff" 4}}
+                {{$place.Set "max_conso" 11}}
               {{else if eq $item "[E] Sacoche Ceinture"}}
                 {{$place.Set "s_stuff" (add $sstuff 1)}}
                 {{$place.Set "s_conso" (add $sconso 3)}}
-                {{$place.Set "max_stuff" (add $sstuff 1)}}
-                {{$place.Set "max_conso" (add $sconso 3)}}
+                {{$place.Set "max_stuff" 3}}
+                {{$place.Set "max_conso" 8}}
               {{end}}
               {{$equip.Set $item 1}}
               {{$msg = joinStr "" $user " a obtenu " $item "."}}
@@ -162,7 +162,7 @@
               {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
             {{end}}
           {{end}}
-        {{else if (not $compo)}}
+        {{else if and (not $compo) (not ((reFind `\[X\]` $item)))}}
           {{if and (le $amount (toInt $sconso))}}
             {{$place.Set "s_conso" (sub $sconso $amount)}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -170,7 +170,7 @@
           {{else}}
             {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
           {{end}}
-        {{else if $compo}}
+        {{else if or $compo (reFind `\[X\]` $item)}}
           {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
           {{$msg = joinStr "" $user " a obtenu " $amount " " $item ", sans perte de place."}}
         {{end}}

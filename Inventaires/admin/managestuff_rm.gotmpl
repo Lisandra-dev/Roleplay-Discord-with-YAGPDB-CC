@@ -84,7 +84,7 @@
         {{$item = "[C] Composant Universel"}}
       {{end}}
     {{end}}
-    {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+    {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
     {{if $sac}}
       {{$item = print "[E] " (title (lower $sac))}}
     {{end}}
@@ -104,7 +104,6 @@
           {{else if eq $amount $mstuff}}
             {{$place.Set "s_stuff" $mstuff}}
           {{end}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
           {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention}}
         {{else if $sac}}
           {{if eq $item "[E] Sac À Dos" }}
@@ -117,6 +116,8 @@
               {{$place.Set "s_conso" $sconso}}
               {{$place.Set "max_stuff" 2}}
               {{$place.Set "max_conso" 5}}
+              {{$equip.Del $item}}
+              {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}
             {{end}}
           {{else if eq $item "[E] Sacoche" }}
             {{$sstuff = sub $sstuff 2}}
@@ -128,6 +129,8 @@
               {{$place.Set "s_conso" $sconso}}
               {{$place.Set "max_stuff" 2}}
               {{$place.Set "max_conso" 5}}
+              {{$equip.Del $item}}
+              {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}  
             {{end}}
           {{else if eq $item "[E] Sacoche Ceinture"}}
             {{$sstuff = sub $sstuff 1}}
@@ -139,10 +142,10 @@
               {{$place.Set "s_conso" $sconso}}
               {{$place.Set "max_stuff" 2}}
               {{$place.Set "max_conso" 5}}
+              {{$equip.Del $item}}
+              {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}  
             {{end}}
-          {{end}}
-          {{$equip.Del $item}}
-          {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
+          {{end}}      
         {{else if $chargeur}}
           {{if lt $amount (toInt $mconso)}}
           {{$place.Set "s_conso" (add $amount $sconso)}}
@@ -153,7 +156,7 @@
             {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
           {{end}}
         {{end}}
-      {{else if not $compo}}
+      {{else if and (not $compo) (not (reFind `\[X\]` $item))}}
         {{if lt $amount (toInt $mconso)}}
           {{$place.Set "s_conso" (add $amount $sconso)}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -163,9 +166,9 @@
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
           {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}
         {{end}}
-      {{else if $compo}}
+      {{else if or $compo (reFind `\[X\]` $item)}}
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-          {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
+        {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
       {{end}}
       {{if eq (toInt ($equip.Get $item)) 0}}
         {{$equip.Del $item}}
