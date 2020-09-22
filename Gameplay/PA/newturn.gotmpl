@@ -30,7 +30,9 @@
 		{{$groupe.Set $i $j}}
 	{{end}}
 	{{$pv := 0}}
+	{{$pv_dic := sdict}}
 	{{range $i, $j := $hp}}
+		{{$pv_dic = sdict $j}}
 		{{if eq $j.regen "t"}}
 			{{$pv = add (toInt $j.pv_actuel) 5}}
 			{{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
@@ -43,10 +45,10 @@
 				{{$pv = $j.pv_max}}
 			{{end}}
 		{{end}}
-		{{$j.Set "pv_actuel" $pv}}
-		{{$hp.Set $i $j}}
+		{{$pv_dic.Set "pv_actuel" $pv}}
 	{{end}}
 	{{dbSet .Server.ID "groupe" $groupe}}
+	{{dbSet 0 "HP" $hp}}
 {{end}}
 
 {{$turn := (dbGet 0 "turn").Value}}
