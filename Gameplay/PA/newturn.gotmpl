@@ -3,6 +3,11 @@
 	{{$groupe = sdict .Value}}
 {{end}}
 
+{{$hp := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+
 {{/* Tour count :Incr each call unless CmdArgs = reset */}}
 {{if .CmdArgs}}
 	{{dbSet 0 "turn" 1}}
@@ -23,6 +28,23 @@
 			{{$j = 6}}
 		{{end}}
 		{{$groupe.Set $i $j}}
+	{{end}}
+	{{$pv := 0}}
+	{{range $i, $j := $hp}}
+		{{if eq $j.regen "t"}}
+			{{$pv = add (toInt $j.pv_actuel) 5}}
+			{{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
+				{{$pv = $j.pv_max}}
+			{{end}}
+		{{end}}
+		{{if eq $j.mush "t"}}
+			{{$pv = add (toInt $j.pv_actuel) 1}}
+			{{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
+				{{$pv = $j.pv_max}}
+			{{end}}
+		{{end}}
+		{{$j.Set "pv_actuel" $pv}}
+		{{$hp.Set $i $j}}
 	{{end}}
 	{{dbSet .Server.ID "groupe" $groupe}}
 {{end}}
