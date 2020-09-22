@@ -76,7 +76,7 @@
           {{$item = "[C] Composant Universel"}}
         {{end}}
       {{end}}
-      {{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $item)}}
+      {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
       {{if $sac}}
         {{$item = print "[E] " (title (lower $sac))}}
       {{end}}

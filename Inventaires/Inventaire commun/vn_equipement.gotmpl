@@ -53,6 +53,10 @@
 			> N'oublier pas le nom de l'objet ! 
 		{{else if ge (len .CmdArgs) 2}}
 				{{$item = title (index .CmdArgs 1)}}
+				{{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
+				{{if $sac}}
+					{{$item = print "[E] " (title (lower $sac))}}
+				{{end}}
 			{{if eq (len .CmdArgs) 3}}
 				{{$q = toInt (index .CmdArgs 2)}}
 			{{end}}

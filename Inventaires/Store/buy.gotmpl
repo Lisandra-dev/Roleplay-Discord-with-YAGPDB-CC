@@ -50,9 +50,9 @@
 
 	{{$chargeur := reFind `(?i)chargeur` $initem}}
 	{{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $initem}}
-	{{$letter := reFind `(?i)^(e|m)` $initem}}
 	{{$vn := reFind `(?i)(\+vn)` .Message.Content}}
 	{{$vn = lower $vn}}
+	{{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $initem)}}
 	{{if $compo}}
 		{{if eq $compo "bc" "BC" "Bc"}}
 			{{$initem = "[C] Biocomposant"}}
@@ -68,9 +68,9 @@
 	{{else if $chargeur}}
 		{{$initem = reFind `(?i)(fusil|pistolet|canon)` $initem}}
 		{{$initem = print "[CHARGEUR] " $initem}}
-	{{else if $letter}}
-		{{$initem = print "[" (upper $letter) "] " $initem }}
-	{{end}}
+	{{else if $sac}}
+    {{$initem = print "[E] " (title (lower $sac))}}
+  {{end}}
 
 	{{$item := sdict}}
 
@@ -128,7 +128,7 @@
 								{{end}}
 								{{$elem.Set $initem (add (toInt ($elem.Get $initem)) $amount)}}
 								{{dbSet .Server.ID "compo" $elem}}
-							{{else if $letter}}
+							{{else if (reFind `\[E\]` $item)}}
 								{{$stuff := sdict}}
 								{{with (dbGet 0 "stuff")}}
 									{{$stuff := sdict .Value}}
