@@ -23,6 +23,17 @@
 {{with (dbGet $id "place")}}
   {{$place = sdict .Value}}
 {{end}}
+{{$soin := sdict}}
+{{with (dbGet 0 "analgésique")}}
+  {{$soin = sdict .Value}}
+{{end}}
+
+{{$hpS := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hpS = sdict .Value}}
+{{end}}
+{{$hp := $hpS.Get $user}}
+
 {{$sstuff := $place.Get "s_stuff"}}
 {{$sconso := $place.Get "s_conso"}}
 {{$mstuff := $place.Get "max_stuff"}}
@@ -54,11 +65,41 @@
   {{if ($equip.Get $item)}}
     {{if or (not $compo) (not (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item)) (not (reFind `(?i)chargeur` $item)) (not (reFind `^\[E\]` $item)) (not (reFind `(?i)^\[X\]` $item))}}
         {{if lt $amount (toInt ($equip.Get $item))}}
-          {{$place.Set "s_conso" (add $amount $sconso)}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+          {{if ($soin.Get $item)}}
+            {{if lt (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}
+              {{$hp.Set "pv_actuel" (add (toInt ($hp.Get "pv_actuel")) (toInt ($soin.Get $item)))}}
+              {{if ge (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}
+                {{$hp.Set "pv_actuel" (toInt ($hp.Get "pv_max"))}}
+              {{end}}
+              {{$place.Set "s_conso" (add $amount $sconso)}}
+              {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+              {{$hpS.Set $hp}}
+              {{dbSet 0 "HP" $hpS}}
+            {{else}}
+              {{$msg = "Vous ne pouvez pas vous soigner pour le moment : vos HP sont au maximum."}}
+            {{end}}
+          {{else}}
+            {{$place.Set "s_conso" (add $amount $sconso)}}
+            {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+          {{end}}
         {{else if eq $amount (toInt ($equip.Get $item))}}
-          {{$place.Set "s_conso" $mconso}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+          {{if ($soin.Get $item)}}
+            {{if lt (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}
+              {{$hp.Set "pv_actuel" (add (toInt ($hp.Get "pv_actuel")) (toInt ($soin.Get $item))) }}
+              {{if ge (toInt ($hp.Get "pv_actuel")) (toInt ($hp.Get "pv_max"))}}
+                {{$hp.Set "pv_actuel" ($hp.Get "pv_max")}}
+              {{end}}
+              {{$place.Set "s_conso" $mconso}}
+              {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+              {{$hpS.Set $hp}}
+              {{dbSet 0 "HP" $hpS}}
+            {{else}}
+              {{$msg = "Vous ne pouvez pas vous soigner pour le moment : vos HP sont au maximum."}}
+            {{end}}
+          {{else}}
+            {{$place.Set "s_conso" $mconso}}
+            {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+          {{end}}
         {{else}}
           {{$msg = joinStr "" $user " ne possède pas la quantité spécifiée (" $amount ") pour utiliser " $item "."}}
         {{end}}
