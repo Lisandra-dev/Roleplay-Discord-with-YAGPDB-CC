@@ -1,0 +1,94 @@
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$user = title $name}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+
+
+{{$hp := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+{{$cmd := lower (reFind `(?i)(\$adminhp|\?hp)` .Message.Content)}}
+{{$msg := ""}}
+
+{{if eq $cmd "$adminhp"}}
+  {{if .CmdArgs}}
+    {{with (userArg (index .CmdArgs 0))}}
+      {{$id = .}}
+      {{$id = $id.ID}}
+      {{$user = (getMember $id).Nick}}
+      {{if eq (len $user) 0}}
+        {{$user = .}}
+        {{$user = $user.Username}}
+      {{end}}
+    {{end}}
+    {{$flag := lower (reFind `(?i)\-(add|rm)` .Message.Content)}}
+    {{if not $flag}}
+      {{$msg = "Erreur : Vous devez indiquer si vous rajouter ou supprimer un joueur"}}
+    {{else}}
+      {{if eq $flag "-add"}}
+        {{if ge (len .CmdArgs) 4}}
+          {{$pvm := index .CmdArgs 2}}
+          {{$reg := index .CmdArgs 3}}
+          {{if or (ne $reg "0") (ne $reg "t" ) (ne $reg "f") (ne $reg "1")}}
+            {{$reg := "0"}}
+          {{else if eq $reg "0" "t"}}
+            {{$reg = "t"}}
+          {{else if eq $reg "1" "f"}}
+            {{$reg = "f"}}
+          {{end}}
+          {{$mush := index .CmdArgs 4}}
+          {{if or (ne $mush "0") (ne $mush "t" ) (ne $mush "f") (ne $mush "1")}}
+            {{$mush := "0"}}
+          {{else if eq $mush "0" "t"}}
+            {{$mush = "t"}}
+          {{else if eq $mush "1" "f"}}
+            {{$mush = "f"}}
+          {{end}}
+          {{$hp.Set $user (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush)}}
+          {{$msg = joinStr " " "PV Maximum :" $pvm "\n" "Implant :" $reg "\n Etat d'hybridation avec le mush :" $mush}}
+        {{else}}
+          {{$msg = "Usage : hpadmin -add (@joueur / #Reroll) pvmax implant_regen état_mush\n Réponse possible pour les implants et le mush : \n - 0 et t pour oui \n - 1/f pour non \n Par défaut, la réponse est non aux deux."}}
+        {{end}}
+      {{else if eq $flag "-rm"}}
+        {{$hp.Del $user}}
+        {{$msg = joinStr $user "a bien été supprimé du groupe."}}
+      {{end}}
+    {{end}}
+  {{end}}
+{{end}}
+
+{{if eq $cmd "?hp"}}
+  {{if not .CmdArgs}}
+    {{with ($hp.Get $user)}}
+      {{$msg = print $user " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+    {{end}}
+  {{else}}
+    {{if (reFind `(all|group)` (index .CmdArgs 0))}}
+      {{range $i, $j := $hp}}
+        {{- $msg = print $msg $i " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+      {{- end}}
+    {{else}}
+      {{with (userArg (index .CmdArgs 0))}}
+        {{$id = .}}
+        {{$id = $id.ID}}
+        {{$user = (getMember $id).Nick}}
+        {{if eq (len $user) 0}}
+          {{$user = .}}
+          {{$user = $user.Username}}
+        {{end}}
+      {{end}}
+      {{with ($hp.Get $user)}}
+        {{$msg = print $user " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+      {{end}}
+    {{end}}
+  {{end}}
+{{end}}
+{{dbSet 0 "HP" $hp}}
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}
