@@ -1,0 +1,150 @@
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$msg := ""}}
+{{$nb := " un "}}
+
+{{$equip := sdict}}
+{{with (dbGet $id "équipement")}}
+  {{$equip = sdict .Value}}
+{{end}}
+{{$place := sdict}}
+{{with (dbGet $id "place")}}
+  {{$place = sdict .Value}}
+{{end}}
+{{$sstuff := $place.Get "s_stuff"}}
+{{$sconso := $place.Get "s_conso"}}
+{{$mstuff := $place.Get "max_stuff"}}
+{{$mconso := $place.Get "max_conso"}}
+
+{{if .CmdArgs}}
+  {{$item := title (lower (index .CmdArgs 0))}}
+  {{$amount := 1}}
+  {{if gt (len .CmdArgs) 1 }}
+    {{$amount = (toInt (index .CmdArgs 1))}}
+    {{if $name}}
+      {{$amount = 1}}
+      {{if gt (len .CmdArgs) 2}}
+        {{$amount = (toInt (index .CmdArgs 1))}}
+        {{$nb = $amount}}
+      {{end}}
+    {{end}}
+  {{end}}
+  {{$msg = joinStr "" $user " a abandonné " $nb " " $item "."}}
+  {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+  {{$chargeur := reFind `(?i)chargeur` $item}}
+  {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
+  {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
+  {{if $chargeur}}
+    {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
+    {{$item = print "[CHARGEUR] " $item}}
+  {{else if $compo}}
+    {{if eq $compo "bc" "BC" "Bc"}}
+      {{$item = "[C] Biocomposant"}}
+    {{else if eq $compo "lc" "LC" "Lc"}}
+      {{$item = "[C] Liquide Cytomorphe"}}
+    {{else if eq $compo "cb" "CB" "Cb"}}
+      {{$item = "[C] Cellule Bionotropique"}}
+    {{else if eq $compo "sf" "SF" "Sf"}}
+      {{$item = "[C] Substrat Ferreux"}}
+    {{else if eq $compo "cu" "CU" "Cu"}}
+      {{$item = "[C] Composant Universel"}}
+    {{end}}
+  {{else if $sac}}
+    {{$item = print "[E] " (title (lower $sac))}}
+  {{else if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+    {{$item = "[MODULE] " $mimp}}
+  {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+    {{$item = "[IMPLANT] " $mimp}}
+  {{end}}
+  {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
+    {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
+      {{if and (not $sac) (not $chargeur)}}
+        {{if lt $amount $mstuff}}
+          {{$place.Set "s_stuff" (add $sstuff $amount)}}
+          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+        {{else if eq $amount $mstuff}}
+          {{$place.Set "s_stuff" $mstuff}}
+        {{end}}
+        {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+      {{else if $sac}}
+        {{if eq $item "[E] Sac À Dos" }}
+          {{$sstuff = sub $sstuff 3}}
+          {{$sconso = sub $sconso 9}}
+          {{if or (le $sstuff 0) (le $sconso 0)}}
+            {{$msg = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
+          {{else}}
+            {{$place.Set "s_stuff" $sstuff}}
+            {{$place.Set "s_conso" $sconso}}
+            {{$place.Set "max_stuff" 2}}
+            {{$place.Set "max_conso" 5}}
+            {{$equip.Del $item}}
+            {{$msg = joinStr "" $user " a abandonné son " $item}}
+          {{end}}
+        {{else if eq $item "[E] Sacoche" }}
+          {{$sstuff = sub $sstuff 2}}
+          {{$sconso = sub $sconso 6}}
+          {{if or (le $sstuff 0) (le $sconso 0)}}
+            {{$msg = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
+          {{else}}
+            {{$place.Set "s_stuff" $sstuff}}
+            {{$place.Set "s_conso" $sconso}}
+            {{$place.Set "max_stuff" 2}}
+            {{$place.Set "max_conso" 5}}
+            {{$equip.Del $item}}
+            {{$msg = joinStr "" $user " a abandonné sa " $item}}
+          {{end}}
+        {{else if eq $item "[E] Sacoche Ceinture"}}
+          {{$sstuff = sub $sstuff 1}}
+          {{$sconso = sub $sconso 3}}
+          {{if or (lt $sstuff 0) (lt $sconso 0)}}
+            {{$msg = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
+          {{else}}
+            {{$place.Set "s_stuff" $sstuff}}
+            {{$place.Set "s_conso" $sconso}}
+            {{$place.Set "max_stuff" 2}}
+            {{$place.Set "max_conso" 5}}
+            {{$equip.Del $item}}
+            {{$msg = joinStr "" $user " a abandonné sa " $item}}
+          {{end}}
+        {{end}}
+      {{else if and (not $compo) (not (reFind `\[X\]` $item))}}
+        {{if lt $amount (toInt $mconso)}}
+          {{$place.Set "s_conso" (add $amount $sconso)}}
+          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+        {{$msg = joinStr "" $user "a abandonné" $nb $item "."}}
+        {{else if eq $amount (toInt $mconso)}}
+          {{$place.Set "s_conso" $mconso}}
+          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+        {{end}}
+      {{else if or $compo (reFind `\[X\]` $item)}}
+        {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+      {{end}}
+      {{if eq (toInt ($equip.Get $item)) 0}}
+        {{$equip.Del $item}}
+      {{end}}
+      {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 
+      {{dbSet $id "équipement" $equip }}
+      {{dbSet $id "place" $place}}
+    {{else}}
+      {{$msg = joinStr "" $user " : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez." }}
+    {{end}}
+  {{end}}
+{{else}}
+  **Usage** : `$depot item quantité (#reroll)`
+{{end}}
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}
+
+
+
