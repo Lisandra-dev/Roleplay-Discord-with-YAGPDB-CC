@@ -17,7 +17,7 @@
 {{with (dbGet 0 "HP")}}
   {{$hp = sdict .Value}}
 {{end}}
-{{$cmd := lower (reFind `(?i)(\$adminhp|\?hp)` .Message.Content)}}
+{{$cmd := lower (reFind `(?i)(\$adminhp|\?(hp|pv))` .Message.Content)}}
 {{$msg := ""}}
 
 {{if eq $cmd "$adminhp"}}
@@ -67,13 +67,13 @@
   {{end}}
 {{end}}
 
-{{if eq $cmd "?hp"}}
+{{if eq $cmd "?hp" "?pv"}}
   {{if not .CmdArgs}}
     {{with ($hp.Get $user)}}
       {{$msg = print $user " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
     {{end}}
   {{else}}
-    {{if (reFind `(all|group)` (index .CmdArgs 0))}}
+    {{if (reFind `(all|groupe)` (index .CmdArgs 0))}}
       {{range $i, $j := $hp}}
         {{- $msg = print $msg $i " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
       {{- end}}
