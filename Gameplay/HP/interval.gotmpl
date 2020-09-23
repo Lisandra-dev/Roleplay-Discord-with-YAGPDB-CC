@@ -3,16 +3,17 @@
   {{$hp = sdict .Value}}
 {{end}}
 {{$msg := ""}}
-{{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+{{$mention := ""}}
 
 {{range $i, $j := $hp}}
-  {{- $msg = print $msg "▫️" $i " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
-{{- end}}
+  {{ if lt (toInt $j.pv_actuel) (toInt $j.pv_max)}}
+    {{ $msg = print $msg "▫️" "**__" $j.Personnage "__** : " $j.pv_actuel "/" $j.pv_max "\n"}}
+  {{ end}}
+{{ end}}
 {{$embed := cembed
 "title" "Point de vie"
 "thumbnail" (sdict "url" "https://i.imgur.com/oQxsUZR.png")
-"author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon)
-"description" (joinStr " " "*Note : Ce message est actualisé toutes les 5 minutes \n" $msg)
+"description" (joinStr " " $msg)
 "color" 0x74b5cd}}
 
-{{editMessage 736937453788725278 758114611160809512 (complexMessageEdit "embed" $embed "content" "") }}
+{{editMessage 736937453788725278 758114611160809512 (complexMessageEdit "embed" $embed "content" "*Note : Ce message est mis-à-jour toutes les 5 minutes.* \n *Seuls les personnages ayant perdus des PV sont affichés dans cette liste.*") }}
