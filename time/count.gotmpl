@@ -14,7 +14,7 @@
 {{end}}
 
 {{/* regen HP based on endurance */}}
-{{$endu := sdict ("1" 0 "2" 4 "3" 4 "4" 5 "5" 5 "6" 6 "7" 6 "8" 7 "9" 7 "10" 8)}}
+{{$endu := sdict "1" 0 "2" 4 "3" 4 "4" 5 "5" 5 "6" 6 "7" 6 "8" 7 "9" 7 "10" 8}}
 {{$stats := sdict}}
 {{$id := ""}}
 {{$hp := sdict }}
@@ -60,11 +60,12 @@
 
 
 {{/* Variable */}}
-{{$msgc := (toFloat ($time.Get "mgsc"))}}
+{{$msgc := 1}}
 {{$message := toFloat ($time.Get "message")}}
 {{$number:= ($time.Get "time")}}
 {{$jour := $time.Get "jour"}}
 {{$cycle := $time.Get "cycle"}}
+{{$seuil := 0}}
 
 {{if not (dbGet 0 "pause")}}
 
@@ -83,12 +84,12 @@
 			{{range $i, $j := $hp}}
 				{{$pv = sdict $j}}
 				{{if not (eq $j.mush "t")}}
-					{{$id = toInt ($j.ID)}}
+					{{$id = toInt $i}}
 					{{with (dbGet $id "stats")}}
 						{{$stats = sdict .Value}}
 					{{end}}
 					{{$seuil = (toInt ($stats.Get "endurance"))}}
-					{{$regen = add (toInt $j.pv_actuel) ($endu.Get $seuil)}}
+					{{$regen = add (toInt $j.pv_actuel) ($endu.Get (str $seuil))}}
 					{{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
 						{{$regen = $j.pv_max}}
 					{{end}}
