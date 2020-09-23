@@ -1,0 +1,18 @@
+{{$hp := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+{{$msg := ""}}
+{{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+
+{{range $i, $j := $hp}}
+  {{- $msg = print $msg "▫️" $i " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+{{- end}}
+{{$embed := cembed
+"title" "Point de vie"
+"thumbnail" (sdict "url" "https://i.imgur.com/oQxsUZR.png")
+"author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon)
+"description" (joinStr " " "*Note : Ce message est actualisé toutes les 5 minutes \n" $msg)
+"color" 0x74b5cd}}
+
+{{editMessage 736937453788725278 758114611160809512 (complexMessageEdit "embed" $embed "content" "") }}
