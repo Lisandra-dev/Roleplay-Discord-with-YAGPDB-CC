@@ -54,13 +54,13 @@
           {{else if eq $mush "1" "f"}}
             {{$mush = "f"}}
           {{end}}
-          {{$hp.Set $user (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush "id" $id)}}
+          {{$hp.Set (str $id) (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush "Personnage" $user)}}
           {{$msg = joinStr " " "PV Maximum :" $pvm "\n" "Implant :" $reg "\n Etat d'hybridation avec le mush :" $mush}}
         {{else}}
           {{$msg = "Usage : hpadmin -add (@joueur / #Reroll) pvmax implant_regen état_mush\n Réponse possible pour les implants et le mush : \n - 0 et t pour oui \n - 1/f pour non \n Par défaut, la réponse est non aux deux."}}
         {{end}}
       {{else if eq $flag "-rm"}}
-        {{$hp.Del $user}}
+        {{$hp.Del $id}}
         {{$msg = joinStr $user "a bien été supprimé du groupe."}}
       {{end}}
     {{end}}
@@ -69,26 +69,38 @@
 
 {{if eq $cmd "?hp" "?pv"}}
   {{if not .CmdArgs}}
-    {{with ($hp.Get $user)}}
-      {{$msg = print $user " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+    {{with ($hp.Get (str $id))}}
+      {{$msg = print .Personnage " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
     {{end}}
   {{else}}
     {{if (reFind `(all|groupe)` (index .CmdArgs 0))}}
       {{range $i, $j := $hp}}
-        {{- $msg = print $msg $i " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+        {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
       {{- end}}
     {{else}}
-      {{with (userArg (index .CmdArgs 0))}}
-        {{$id = .}}
-        {{$id = $id.ID}}
-        {{$user = (getMember $id).Nick}}
-        {{if eq (len $user) 0}}
-          {{$user = .}}
-          {{$user = $user.Username}}
+      {{$name := reFind `(\#\S*)` .Message.Content}}
+      {{$name = joinStr "" (split $name "#")}}
+      {{$user := .Member.Nick}}
+      {{$id := .User.ID }}
+    {{if $name}}
+	    {{$user = title $name}}
+      {{$idperso := (toRune (lower $name))}}
+	    {{range $idperso}}
+		    {{- $id = add $id . }}
+	    {{- end}}
+      {{else if (userArg (index .CmdArgs 0))}}
+        {{with (userArg (index .CmdArgs 0))}}
+          {{$id = .}}
+          {{$id = $id.ID}}
+          {{$user = (getMember $id).Nick}}
+          {{if eq (len $user) 0}}
+            {{$user = .}}
+            {{$user = $user.Username}}
+          {{end}}
         {{end}}
       {{end}}
-      {{with ($hp.Get $user)}}
-        {{$msg = print $user " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+      {{with ($hp.Get (str $id))}}
+        {{$msg = print .Personnage " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
       {{end}}
     {{end}}
   {{end}}
