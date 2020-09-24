@@ -1,0 +1,108 @@
+<<<<<<< HEAD
+=======
+{{$hp := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+{{$msg := ""}}
+{{$check := false}}
+{{$id := .User.ID}}
+
+{{if .CmdArgs}}
+  {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
+  {{$name = joinStr "" (split $name "#")}}
+  {{$user := ""}}
+  {{if $name}}
+    {{$user = title $name}}
+    {{$idperso := (toRune (lower $name))}}
+	  {{range $idperso}}
+		  {{- $id = add $id . }}
+	  {{- end}}
+    {{$check = true}}
+  {{else if (userArg (index .CmdArgs 0))}}
+    {{$check = true}}
+    {{$id = (userArg (index .CmdArgs 0)).ID}}
+    {{$user = (getMember $id).Nick}}
+    {{if eq (len $user) 0}}
+      {{$user = (userArg (index .CmdArgs 0)).Username}}
+    {{end}}
+  {{end}}
+  {{$pv := sdict}}
+  {{with ($hp.Get (str $id))}}
+    {{$pv = sdict .}}
+  {{end}}
+  {{$val_pv := toInt ($pv.Get "pv_actuel")}}
+  {{if eq $check true}}
+    {{$val := toInt (index .CmdArgs 1)}}
+    {{if le $val 0}}
+      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$hp.Set (str $id) $pv}}
+      {{if le (toInt ($pv.Get "pv_actuel")) 0}}
+        {{if eq ($pv.Get "mush") "f"}}
+          {{$hp.Del $user}}
+          {{$msg = print $user " est mort..."}}
+        {{else}}
+          {{$msg = print $user " est KO..."}}
+        {{end}}
+      {{end}}
+      {{dbSet 0 "HP" $hp}}
+    {{else}}
+      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+      {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+        {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+      {{end}}
+      {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$hp.Set (str $id) $pv}}
+      {{dbSet 0 "HP" $hp}}
+    {{end}}
+  {{else if eq $check false}}
+    {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
+    {{$name = joinStr "" (split $name "#")}}
+    {{$user := .Member.Nick}}
+    {{$id = .User.ID}}
+    {{if $name}}
+      {{$user = title $name}}
+      {{$idperso := (toRune (lower $name))}}
+      {{range $idperso}}
+        {{- $id = add $id . }}
+      {{- end}}
+    {{else if eq (len $user) 0}}
+      {{$user = .User.Username}}
+    {{end}}
+    {{$pv := sdict}}
+    {{with ($hp.Get (str $id))}}
+      {{$pv = sdict .}}
+    {{end}}
+    {{$val_pv := toInt ($pv.Get "pv_actuel")}}
+    {{$val := toInt (index .CmdArgs 0)}}
+    {{if le $val 0}}
+      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$hp.Set (str $id) $pv}}
+      {{if le (toInt ($pv.Get "pv_actuel")) 0}}
+        {{if eq ($pv.Get "mush") "f"}}
+          {{$hp.Del $user}}
+          {{$msg = print $user " est mort..."}}
+        {{else}}
+          {{$msg = print $user " est KO..."}}
+        {{end}}
+      {{end}}
+      {{dbSet 0 "HP" $hp}}
+    {{else}}
+      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+      {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+        {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+      {{end}}
+      {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+        {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+      {{end}}
+    {{end}}
+    {{$hp.Set (str $id) $pv}}
+    {{dbSet 0 "HP" $hp}}
+  {{end}}
+{{end}}
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}
+>>>>>>> 71e876e... user can auto loss HP
