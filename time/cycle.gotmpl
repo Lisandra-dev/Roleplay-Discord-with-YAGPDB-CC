@@ -69,19 +69,19 @@
 
 {{range $i, $j := $hp}}
   {{$pv = sdict $j}}
-  {{if not (eq $j.mush "t")}}
+  {{if eq $j.mush 0}}
     {{$id = toInt $i}}
     {{with (dbGet $id "stats")}}
       {{$stats = sdict .Value}}
     {{end}}
     {{$seuil = (toInt ($stats.Get "endurance"))}}
     {{$regen = add (toInt $j.pv_actuel) ($endu.Get (str $seuil))}}
-    {{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
+  {{else}}
+    {{$regen = add (toInt $j.pv_actuel) (mult $j.mush 10)}}
+  {{end}}
+  {{if ge $regen (toInt $j.pv_max)}}
       {{$regen = $j.pv_max}}
     {{end}}
-  {{else if eq ($j.mush "t")}}
-    {{$regen = add (toInt $j.pv_actuel) 10}}
-  {{end}}
   {{$pv.Set "pv_actuel" $regen}}
   {{$hp.Set $i $pv}}
 {{end}}
