@@ -180,7 +180,7 @@
             {{else}}
               {{$compo.Set "cytomorphe" $lcv}}
             {{end}}
-            {{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant son inventaire et celui du Nucleus. \n\n Il a utilisé : \n ▫️ Biocomposant :" $bc "[" $bcv "] \n ▫️ Substrat Ferreux :" $sf "[" $sfv "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcv "] \n ▫️ Cellule Bionotropique" $cb "[" $cbv "]"}}
+            {{$log = joinStr " " $user "a fabriqué" $q $item "en utilisant son inventaire et celui du Nucleus. \n\n " $user " a utilisé : \n ▫️ Biocomposant :" $bc "[" $bcv "] \n ▫️ Substrat Ferreux :" $sf "[" $sfv "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcv "] \n ▫️ Cellule Bionotropique" $cb "[" $cbv "]"}}
             {{sendMessage nil $log}}
           {{else}}
             {{$msg := joinStr " " $user "a fabriqué" $q $item "en utilisant :\n ▫️ Biocomposant :" $bc "[" $bcp "] \n ▫️ Substrat Ferreux :" $sf "[" $sfp "] \n ▫️ Liquide Cytomorphe" $lc "[" $lcp "] \n ▫️ Cellule Bionotropique" $cb "[" $cbp "]" }}
@@ -242,7 +242,7 @@
             {{if le ($inv.Get "[C] Composant Universel") 0}}
               {{$inv.Del "[C] Composant Universel"}}
             {{end}}
-            {{$msg = joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
+            {{$msg = joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il reste " (sub $cup (mult $cup $q)) "dans son inventaire."}}
             {{sendMessage nil $msg}}
           {{end}}
         {{else}}

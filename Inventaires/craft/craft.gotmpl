@@ -238,7 +238,7 @@
 					{{if le ($inv.Get "[C] Composant Universel") 0}}
 						{{$inv.Del "[C] Composant Universel"}}
 					{{end}}
-				{{$msg := joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il lui en reste " (sub $cup (mult $cup $q)) "."}}
+				{{$msg := joinStr "" $user " a fabriqué " $q " " $item " en utilisant " $q " Composant Universel. Il reste " (sub $cup (mult $cup $q)) "dans son inventaire."}}
 				{{sendMessage nil $msg}}
 				{{else}}
 					{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
