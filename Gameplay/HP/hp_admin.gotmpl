@@ -31,37 +31,53 @@
         {{$user = $user.Username}}
       {{end}}
     {{end}}
-    {{$flag := lower (reFind `(?i)\-(add|rm)` .Message.Content)}}
+    {{$flag := lower (reFind `(?i)\-(add|rm|edit)` .Message.Content)}}
     {{if not $flag}}
-      {{$msg = "Erreur : Vous devez indiquer si vous rajouter ou supprimer un joueur"}}
+      {{$msg = "Erreur : Vous devez indiquer si vous rajouter, editer ou supprimer un joueur"}}
     {{else}}
       {{if eq $flag "-add"}}
         {{if ge (len .CmdArgs) 4}}
           {{$pvm := index .CmdArgs 2}}
-          {{$reg := str (index .CmdArgs 3)}}
-          {{$mush := str (index .CmdArgs 4)}}
-          {{if and (ne $reg "0") (ne $reg "t" ) (ne $reg "f") (ne $reg "1")}}
-            {{$reg = "f"}}
-          {{else if eq $reg "0" "t"}}
-            {{$reg = "t"}}
-          {{else if eq $reg "1" "f"}}
-            {{$reg = "f"}}
+          {{$reg := toInt (reFind `[0-2]` (index .CmdArgs 3))}}
+          {{if not $reg}}
+            {{$reg = 0}}
           {{end}}
-          {{if and (ne $mush "0") (ne $mush "t" ) (ne $mush "f") (ne $mush "1")}}
-            {{$mush = "f"}}
-          {{else if eq $mush "0" "t"}}
-            {{$mush = "t"}}
-          {{else if eq $mush "1" "f"}}
-            {{$mush = "f"}}
+          {{$mush := toInt (reFind `\d+` (index .CmdArgs 4))}}
+          {{if not $mush}}
+            {{$mush = 0}}
           {{end}}
           {{$hp.Set (str $id) (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush "Personnage" $user)}}
           {{$msg = joinStr " " "PV Maximum :" $pvm "\n" "Implant :" $reg "\n Etat d'hybridation avec le mush :" $mush}}
         {{else}}
-          {{$msg = "Usage : hpadmin -add (@joueur / #Reroll) pvmax implant_regen état_mush\n Réponse possible pour les implants et le mush : \n - 0 et t pour oui \n - 1/f pour non \n Par défaut, la réponse est non aux deux."}}
+          {{$msg = "Usage : hpadmin (@joueur / #Reroll) -add pvmax implant_regen état_mush"}}
         {{end}}
       {{else if eq $flag "-rm"}}
         {{$hp.Del $id}}
         {{$msg = joinStr $user "a bien été supprimé du groupe."}}
+      {{else if eq $flag "-edit"}}
+        {{$hpP := sdict}}
+        {{with ($hp.Get (str $id))}}
+          {{$hpP = sdict .}}
+        {{end}}
+        {{$cmd := lower (index .CmdArgs 2)}}
+        {{if eq $cmd "pv"}}
+          {{$pv := toInt (index .CmdArgs 3)}}
+          {{$hpP.Set "pv_max" $pv}}
+          {{$msg = joinStr "" "Edition des pv de " $user " : " $pv }}
+        {{else if eq $cmd "regen"}}
+          {{$regen := reFind `[0-2]` (index .CmdArgs 3)}}
+          {{$hpP.Set "regen" $regen}}
+          {{$msg = joinStr "" "Edition des implants de " $user " : " $regen}}
+        {{else if eq $cmd "mush"}}
+          {{$mush := reFind `\d+` (index .CmdArgs 3)}}
+          {{$hpP.Set "mush" $mush}}
+          {{$msg = joinStr " " "Edition de l'état mush de" $user ":" $mush}}
+        {{else if eq $cmd "perso"}}
+          {{$perso := index .CmdArgs 3}}
+          {{$hpP.Set "Personnage" $perso}}
+          {{$msg = joinStr " " "Edition du nom du personnage de " $user ":" $perso}}
+        {{end}}
+        {{$hp.Set (str $id) $hpP}}
       {{end}}
     {{end}}
   {{end}}

@@ -31,28 +31,30 @@
   {{end}}
   {{$val_pv := toInt ($pv.Get "pv_actuel")}}
   {{if eq $check true}}
-    {{$val := toInt (index .CmdArgs 1)}}
-    {{if le $val 0}}
-      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
-      {{$hp.Set (str $id) $pv}}
-      {{if le (toInt ($pv.Get "pv_actuel")) 0}}
-        {{if eq ($pv.Get "mush") "f"}}
-          {{$hp.Del $user}}
-          {{$msg = print $user " est mort..."}}
-        {{else}}
-          {{$msg = print $user " est KO..."}}
+    {{if ge (len .CmdArgs) 2}}
+      {{$val := toInt (index .CmdArgs 1)}}
+      {{if le $val 0}}
+        {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+        {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{$hp.Set (str $id) $pv}}
+        {{if le (toInt ($pv.Get "pv_actuel")) 0}}
+          {{if eq ($pv.Get "mush") "f"}}
+            {{$hp.Del $user}}
+            {{$msg = print $user " est mort..."}}
+          {{else}}
+            {{$msg = print $user " est KO..."}}
+          {{end}}
         {{end}}
+        {{dbSet 0 "HP" $hp}}
+      {{else}}
+        {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+        {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+          {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+        {{end}}
+        {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{$hp.Set (str $id) $pv}}
+        {{dbSet 0 "HP" $hp}}
       {{end}}
-      {{dbSet 0 "HP" $hp}}
-    {{else}}
-      {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-      {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
-        {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
-      {{end}}
-      {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
-      {{$hp.Set (str $id) $pv}}
-      {{dbSet 0 "HP" $hp}}
     {{end}}
   {{else if eq $check false}}
     {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}

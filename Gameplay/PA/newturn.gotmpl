@@ -7,6 +7,8 @@
 {{with (dbGet 0 "HP")}}
   {{$hp = sdict .Value}}
 {{end}}
+{{$pv_dic := sdict}}
+
 
 {{/* Tour count :Incr each call unless CmdArgs = reset */}}
 {{if .CmdArgs}}
@@ -31,20 +33,13 @@
 	{{end}}
 	
 	{{$pv := 0}}
-	{{$pv_dic := sdict}}
 	{{range $i, $j := $hp}}
 		{{$pv_dic = sdict $j}}
-		{{if eq $j.regen "t"}}
-			{{$pv = add (toInt $j.pv_actuel) 5}}
-			{{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
-				{{$pv = $j.pv_max}}
-			{{end}}
-		{{end}}
-		{{if eq $j.mush "t"}}
-			{{$pv = add (toInt $j.pv_actuel) 1}}
-			{{if ge (toInt $j.pv_actuel) (toInt $j.pv_max)}}
-				{{$pv = $j.pv_max}}
-			{{end}}
+		{{$pv = (mult 5 (toInt $pv_dic.regen))}}
+		{{$pv = add (toInt $j.pv_actuel) $pv}}
+		{{$pv = add $pv (mult 1 (toInt $pv_dic.Mush))}}
+		{{if ge $pv (toInt $j.pv_max)}}
+			{{$pv = $j.pv_max}}
 		{{end}}
 		{{$pv_dic.Set "pv_actuel" $pv}}
 		{{$hp.Set $i $pv_dic}}
