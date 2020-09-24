@@ -28,7 +28,7 @@
 {{/* Embed */}}
 {{$embed := cembed
 	"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
-	"description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
+	"description" (joinStr "" "Nous sommes maintenant au cycle " ($time.Get "cycle"))
 	"color" 0xDD99DF
 	"thumbnail" (sdict "url" "")
 	"timestamp" .Message.Timestamp}}
@@ -96,12 +96,14 @@
   {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
   {{sendMessage $log $jardin}}
   {{sendMessage $chan (cembed $str)}}
+
 {{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
   {{$str.Thumbnail.Set "url" $matin}}
   {{$str.Set "color" 0xDD99DF}}
   {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
   {{sendMessage $log $jardin}}
   {{sendMessage $chan (cembed $str)}}
+
 {{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
   {{$str.Thumbnail.Set "url" $midi}}
   {{$str.Set "color" 0xF0B535}}
@@ -114,6 +116,7 @@
   {{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
   {{sendMessage $log $jardin}}
   {{sendMessage $chan (cembed $str)}}
+
 {{else}}
   {{$time.Set "count" 0 }}
   {{$time.Set "cycle" 1}}
@@ -128,3 +131,5 @@
   {{sendMessage $log $jardin}}
 {{end}}
 {{deleteTrigger 1}}
+{{dbSet 0 "time" $time}}
+{{dbSet .Server.ID "compo" $compo}}

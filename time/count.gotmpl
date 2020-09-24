@@ -27,7 +27,7 @@
 {{/* Embed */}}
 {{$embed := cembed
 	"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
-	"description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
+	"description" (joinStr "" "Nous sommes maintenant au cycle " ($time.Get "cycle"))
 	"color" 0xDD99DF
 	"thumbnail" (sdict "url" "")
 	"timestamp" .Message.Timestamp}}
