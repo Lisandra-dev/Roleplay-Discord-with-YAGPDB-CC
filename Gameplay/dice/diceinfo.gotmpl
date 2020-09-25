@@ -1,151 +1,48 @@
-{$name := reFind `(\#\S*)` .Message.Content}}
-{{$support:=reFindAllSubmatches `^\!(malus|soutien)` .Message.Content}}
-{{$soin:= reFindAllSubmatches `^\!soin` .Message.Content}}
-{{$poison:= reFindAllSubmatches `^\!poison` .Message.Content}}
-{{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
-{{$supportimg:="https://i.imgur.com/fuHvIUn.png"}}
-{{$poisonimg:="https://i.imgur.com/CmgNFYu.png"}}
+{{$flag := reFind `^\?(malus|soin|poison|support|soutien)` .Message.Content}}
+{{$embed := cembed}}
+{{$id := ""}}
 {{$s := "+"}}
-{{$ec := "Bonus de -"}}
-{{$soincol:=0xb66dc1}}
-{{$poisoncol:=0x370E6A}}
-{{$supportcol:=0x2B7697}}
-{{$id:= ""}}
-{{$name = joinStr "" (split $name "#")}}
-{{$user := .Member.Nick}}
-{{if $name}}
-	{{$user = $name}}
-{{else if eq (len $user) 0}}
-	{{$user = .User.Username}}
+{{$ec := "Malus de -"}}
+
+{{if eq $flag "?soutien"}}
+	{{$s = "-"}}
+	{{$ec := "Malus de +"}}
+{{else if eq $flag "?malus"}}
+	{{$s = "+"}}
+	{{$ec := "Bonus de -"}}
 {{end}}
 
-{{if .CmdArgs}}
-	{{$d:=(toFloat (index .CmdArgs 0) ) }}
-	{{if $support}}
-		{{if eq $support "!malus"}}
-			{{$s = "+"}}
-			{{$ec = "Bonus de -"}}
-			{{$w ="malus"}}
-		{{else if eq $support "!soutien"}}
-			{{$s = "-"}}
-			{{$ec = "Malus de +"}}
-			{{$w = "bonus"}}
-		{{end}}
-		{{if eq $d (toFloat 0)}}
-			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible a un {{$w}} de {{$s}}4."
-				"color" $supportcol
-				"author" (sdict "name" $user "icon_url" $supportimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if or (eq $d (toFloat 1)) (eq $d (toFloat 2) ) }}
-			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible a un {{$w}} de {{$s}}3."
-				"color" $supportcol
-				"author" (sdict "name" $user "icon_url" $supportimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if and (le $d (toFloat 5)) (ge $d (toFloat 3))}}
-			{{$embed:=cembed
-				"description" "Votre cible a un {{$w}} de {{$s}}2."
-				"color" $supportcol
-        "author" (sdict "name" $user "icon_url" $supportimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if  and (le $d (toFloat 8)) (ge $d (toFloat 6))}}
-			{{$embed:=cembed
-				"description" "Votre cible a un {{$w}} de {{$s}}1."
-				"color" $supportcol
-        "author" (sdict "name" $user "icon_url" $supportimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if eq $d (toFloat 9)}}
-			{{$embed:=cembed
-				"description" "Echec"
-				"color" $supportcol
-        "author" (sdict "name" $user "icon_url" $supportimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if eq $d (toFloat 10)}}
-			{{$embed:=cembed
-				"description" "Echec critique : Votre cible a un {{ec}}2."
-				"color" $supportcol
-        "author" (sdict "name" $user "icon_url" $supportimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-    {{else}}
-      {{$embed:=cembed
-        "title" "ERREUR"
-        "description" "**Usage** : `$support <valeur>`\n Votre valeur doit être entre 0 et 10."
-        "color" 0xD83333}}
-      {{$id = sendMessageRetID nil $embed}}
-		{{end}}
+{{if eq $flag "?soin"}}
+  {{$embed = cembed
+    "title" "Soin"
+    "Description" "**0** : URC / Bonus + 40 pv → IMPLANT UNIQUEMENT \n**1** : 40\n**2** : 35\n**3** : 30\n**4** : 25\n**5** : 20\n**6** : 15\n**7** : 10\n**8** : 5\n**9** : Echec\n**10** : Echec + Malus\n\nEn cas d'utilisation avec un pouvoir ou un module :\n:white_small_square: Les PV rendus sont augmentés de 1.\n:white_small_square: Il n'y a pas de malus en cas d'EC."
+  "color" 0xb66dc1
+  "thumbnail" (sdict "url" "https://www.sphanalytics.com/wp-content/uploads/2018/01/Health-Icon334.png")}}
 
-	{{else if $soin}}
-		{{if eq $d (toFloat 0)}}
-			{{$embed:=cembed
-				"description" "Ultra critique : Votre cible regagne 40 PV *(+5 si module/PSI)* et obtient un bonus de votre choix."
-				"color" $soincol
-				"author" (sdict "name" $user "icon_url" $soinimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if eq $d (toFloat 1)}}
-			{{$embed:=cembed
-				"description" "Réussite critique : Votre cible regagne 40 PV *(+5 si module/PSI).*"
-				"color" $soincol
-        "author" (sdict "name" $user "icon_url" $soinimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if eq $d (toFloat 9)}}
-    {{$embed:=cembed
-      "description" "Echec..."
-      "color" $soincol
-      "author" (sdict "name" $user "icon_url" $soinimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else if eq $d (toFloat 10)}}
-			{{$embed:=cembed
-				"description" "Echec critique : Votre cible obtient un support."
-				"color" $soincol
-        "author" (sdict "name" $user "icon_url" $soinimg)}}
-			{{$id = sendMessageRetID nil $embed}}
-		{{else}}
-		{{$regen:= sub 9 $d}}
-		{{$regen := mult $regen 5}}
-		{{$r := cembed
-			"author" (sdict "name" $user "icon_url" $soinimg)
-				"description" (joinStr "" "**Réussite : ** *+" $regen " PV (+5 si capacité).*\n")
-				"color" 0xEFA3EA }}
-				{{$id = sendMessageRetID nil $r}}
+{{else if eq $flag "?malus" "?soutien"}}
+  {{$embed = cembed
+    "title" "Malus de caractéristiques"
+    "Description" "**0** : {{$s}}4 → IMPLANT UNIQUEMENT\n**1** : {{$s}}3\n**2** : {{$s}}3\n**3** : {{$s}}2\n**4**: {{$s}}2\n**5**: {{$s}}2\n**6**: {{$s}}1 \n**7**: {{$s}}1 \n**8**: {{$s}}1\n**9** : Echec\n**10** : EC → {{ec}}2 à l'adversaire"
+    "color" 0x2B7697
+    "thumbnail" (sdict "url" "https://i.imgur.com/fuHvIUn.png")}}
 
+{{else if eq $flag "?poison"}}
+  {{$embed = cembed
+    "title" "Empoisonnement"
+    "Description" "Attention, les poisons ne sont pas en pourcentages, et les dégâts sont multipliés, au final, par 4 car une altération dure 4 PA. \n\n  **0** : -10 (-30 PV) → IMPLANT UNIQUEMENT \n**1** : -9 (-27PV)\n**2** : -8 (-24 PV)\n**3** : -7 (-21PV)\n**4**: -6 (-18PV)\n**5** : -5 (-15PV)\n**6** : -4 (-12PV) \n**7** : -3 (-9PV)\n**8** : -2 (-6PV)\n**9** : Echec\n**10** : +15 PV (+45PV)"
+    "color" 0x370E6A
+    "thumbnail" (sdict "url" "https://i.imgur.com/CmgNFYu.png")}}
 
-		{{end}}
-
-  {{else}}
-		{{$val:= sub $d 9}}
-		{{if eq $d (toFloat 0)}}
-			{{$urc := cembed
-				"author" (sdict "name" $user "icon_url" $poisonimg)
-				"description" "**Ultra critique** : Votre cible a un empoisonnement de 10 PV sur 3 tours (-30 PV en tout).\n"
-				"color" 0x4D399E}}
-				{{sendMessage nil $urc}}
-		{{else if eq $d (toFloat 1)}}
-		{{$rc := cembed
-			"author" (sdict "name" $user "icon_url" $poisonimg)
-			"description" "**Réussite critique** : Votre cible a un empoisonnement de 40 PV sur 3 tours (-120 PV en tout).\n"
-			"color" 0x4D399E }}
-			{{sendMessage nil $rc}}
-		{{else if eq $d (toFloat 9)}}
-		{{$echec := cembed
-			"author" (sdict "name" $user "icon_url" $poisonimg)
-			"description" "**Echec de l'empoisonnement**...\n"
-			"color" 0x4D399E }}
-			{{sendMessage nil $echec}}
-		{{else if eq $d (toFloat 10)}}
-		{{$ec:= cembed
-			"author" (sdict "name" $user "icon_url" $poisonimg)
-			"description" "**Echec critique de l'empoisonnement :** Votre cible gagne une régénération de 15 PV sur 3 tours (+90 PV en tout).\n"
-			"color" 0x4D399E }}
-			{{sendMessage nil $ec}}
-		{{else}}
-			{{$p:= sub 10 $d}}
-			{{$pa:= mult $p 3}}
-			{{$r := cembed
-				"author" (sdict "name" $user "icon_url" $poisonimg)
-				"description" (joinStr "" "**Réussite** : Votre cible a un empoisonnement de " $p " PV sur 3 tours (-" $pa " PV en tout).\n")
-				"color" 0x4D399E }}
-				{{sendMessage nil $r}}
-		{{end}}
-  {{end}}
+{{else if eq $flag "?support"}}
+  {{$embed = cembed
+      "title" "Informations sur les résultats de dés"
+      "fields" (cslice
+  (sdict "name" "Soin" "value" "**0** : URC / Bonus + 40 pv → IMPLANT UNIQUEMENT \n**1** : 40\n**2** : 35\n**3** : 30\n**4** : 25\n**5** : 20\n**6** : 15\n**7** : 10\n**8** : 5\n**9** : Echec\n**10** : Echec + Malus\n\nEn cas d'utilisation avec un pouvoir ou un module :\n:white_small_square: Les PV rendus sont augmentés de 1.\n:white_small_square: Il n'y a pas de malus en cas d'EC." "inline" false)
+    (sdict "name" "_ _" "value" "_ _" "inline" false)
+      (sdict "name" "Poison" "value" "Attention, les poisons ne sont pas en pourcentages, et les dégâts sont multipliés, au final, par 3 car une altération dure trois tours. \n\n  **0** : -10 (30) → IMPLANT UNIQUEMENT \n**1** : -8 (24)\n**2** : -7 (21)\n**3** : -6 (18)\n**4**: -5 (15)\n**5** : -4 (12)\n**6** : -3 (9) \n**7** : -2 (6)\n**8** : -1 (3)\n**9** : Echec\n**10** : +3 PV (+9)" "inline" false)
+    (sdict "name" "_ _" "value" "_ _" "inline" false)
+  (sdict "name" "Malus ou support de caractéristiques" "value" "**0** : (+/-)4 → IMPLANT UNIQUEMENT\n**1** :  (+/-)3\n**2** :  (+/-)3\n**3** :  (+/-)2\n**4**:  (+/-)2\n**5**:  (+/-)2\n**6**:  (+/-)1 \n**7**:  (+/-)1 \n**8**:  (+/-)1\n**9** : Echec\n**10** : EC → Bonus ou malus de -/+ 2 à l'adversaire" "inline" false))
+      "color" 0x2B7697}}
 {{end}}
+{{deleteTrigger 1}}
+{{sendMessage nil $embed}}
