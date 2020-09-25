@@ -5,8 +5,21 @@
 {{$msg := ""}}
 {{$check := false}}
 {{$id := .User.ID}}
+{{$log := 735938256038002818}}
 
 {{if .CmdArgs}}
+  {{$ln := reFind `(\&\S*)` .Message.Content }}
+  {{$ln = joinStr "" (split $ln "&")}}
+  {{$la := ""}}
+  {{if $ln}}
+    {{$la = title $ln}}
+  {{else}}
+    {{$la = .Member.Nick}}
+    {{if eq (len $la) 0}}
+      {{$la = .User.Nick}}
+    {{end}}
+  {{end}}
+    
   {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
   {{$name = joinStr "" (split $name "#")}}
   {{$user := ""}}
@@ -25,6 +38,7 @@
       {{$user = (userArg (index .CmdArgs 0)).Username}}
     {{end}}
   {{end}}
+
   {{$pv := sdict}}
   {{with ($hp.Get (str $id))}}
     {{$pv = sdict .}}
@@ -35,14 +49,14 @@
       {{$val := toInt (index .CmdArgs 1)}}
       {{if le $val 0}}
         {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-        {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") à cause de " $la "."}}
         {{$hp.Set (str $id) $pv}}
         {{if le (toInt ($pv.Get "pv_actuel")) 0}}
-          {{if eq ($pv.Get "mush") "f"}}
+          {{if eq ($pv.Get "mush") 0}}
             {{$hp.Del $user}}
-            {{$msg = print $user " est mort..."}}
+            {{$msg = print $user " est mort à cause de " $la "..."}}
           {{else}}
-            {{$msg = print $user " est KO..."}}
+            {{$msg = print $user " est KO à cause de " $la "..."}}
           {{end}}
         {{end}}
         {{dbSet 0 "HP" $hp}}
@@ -51,7 +65,7 @@
         {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
           {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
         {{end}}
-        {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{$msg = print $user " a regagné " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") grâce à " $la "."}}
         {{$hp.Set (str $id) $pv}}
         {{dbSet 0 "HP" $hp}}
       {{end}}
@@ -78,14 +92,14 @@
     {{$val := toInt (index .CmdArgs 0)}}
     {{if le $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
-        {{if eq ($pv.Get "mush") "f"}}
+        {{if eq ($pv.Get "mush") 0}}
           {{$hp.Del $user}}
-          {{$msg = print $user " est mort..."}}
+          {{$msg = print $user " est mort en se blessant..."}}
         {{else}}
-          {{$msg = print $user " est KO..."}}
+          {{$msg = print $user " est KO en se blessant..."}}
         {{end}}
       {{end}}
       {{dbSet 0 "HP" $hp}}
@@ -94,7 +108,7 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-      {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$msg =  print $user " a regagné " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se soignant."}}
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
@@ -103,5 +117,5 @@
     {{dbSet 0 "HP" $hp}}
   {{end}}
 {{end}}
-{{sendMessage nil $msg}}
+{{sendMessage $log $msg}}
 {{deleteTrigger 1}}
