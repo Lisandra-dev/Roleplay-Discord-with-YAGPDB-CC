@@ -27,25 +27,6 @@
  	{{- end -}}
 {{ end }}
 
-
-{{/* Fruit et biocomposant - A supprimer si vous n'utilisez pas le système de craft */}}
-{{$compo := sdict}}
-{{with (dbGet .Server.ID "compo")}}
-	{{$compo = sdict .Value}}
-{{end}}
-
-{{$log := "735938256038002818"}}
-{{$fruit := "https://i.imgur.com/0atJRWH.png"}}
-
-{{$jardin := cembed 
-	"author" (sdict "name" "Sola-UI" "icon_url" "https://cdn.discordapp.com/attachments/726496591489400872/727978845185245283/download20200605012708.png") 
-	"title" "Production du jardin"
-	"description" "Le jardin a produit 1 biocomposant !"
-	"footer" (sdict "text" (joinStr " " "Biocomposant :" ($compo.Get "biocomposant")))
-	"color" 0x7abac6
-	"thumbnail" (sdict "url" $fruit)
-	"timestamp" .Message.Timestamp}}
-
 {{/*All message database counter*/}}
 
 
@@ -80,29 +61,21 @@
 		{{if or (eq $y (toFloat 1)) (eq $y (toFloat 2))}}
 			{{$str.Thumbnail.Set "url" $nuit}}
 			{{$str.Set "color" 0x1B3175}}
-			{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-			{{sendMessage $log $jardin}}
 			{{sendMessage $chan (cembed $str)}}
 
 			{{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
 				{{$str.Thumbnail.Set "url" $matin}}
 				{{$str.Set "color" 0xDD99DF}}
-				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{sendMessage $log $jardin}}
 				{{sendMessage $chan (cembed $str)}}
 
 			{{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
 				{{$str.Thumbnail.Set "url" $midi}}
 				{{$str.Set "color" 0xF0B535}}
-				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{sendMessage $log $jardin}}
 				{{sendMessage $chan (cembed $str)}}
 			
 			{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
 				{{$str.Thumbnail.Set "url" $soir}}
 				{{$str.Set "color" 0x9593E8}}
-				{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
-				{{sendMessage $log $jardin}}
 				{{sendMessage $chan (cembed $str)}}
 
 	{{/*you can add cycle with just else if eq $y (toFloat number) */}}
@@ -113,17 +86,14 @@
 					{{$time.Set "cycle" 1}}
 					{{$time.Set "jour" (add $jour 1)}}
 					{{$jour:= $time.Get "jour"}}
-					{{$compo.Set "biocomposant" (add ($compo.Get "biocomposant") 1)}}
 					{{$str.Set "title" (joinStr "" "Début du jour : " $jour)}}
 					{{$str.Set "description" "Nous sommes maintenant au cycle 1"}}
 					{{$str.Set "color" 0x1B3175}}
 					{{$str.Thumbnail.Set "url" $nuit}}
 					{{sendMessage $chan (cembed $str)}}
-					{{sendMessage $log $jardin}}
 				{{end}}
 		{{end}}
 	{{else}}
 	{{end}}
 	{{dbSet 0 "time" $time}}
-	{{dbSet .Server.ID "compo" $compo}}
 {{end}}
