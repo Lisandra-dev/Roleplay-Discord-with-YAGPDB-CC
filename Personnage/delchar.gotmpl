@@ -15,16 +15,12 @@
 	{{- end}}
 {{end}}
 
-{{$stats := sdict}}
-{{with (dbGet $id "stats")}}
-	{{$stats = sdict .Value}}
-{{end}}
 
 {{if not $stats}}
 	Le personnage n'était pas dans la base de données !
 {{else}}
 	{{dbDel $id "stats"}}
-		{{$embed := cembed
-		"description" (joinStr "" (title $user) " aka " $id " a bien été supprimé de la base de données")}}
+	{{$embed := cembed
+	  "description" (joinStr "" (title $user) " aka " $id " a bien été supprimé de la base de données")}}
 	{{sendMessage nil $embed}}
 {{end}}
