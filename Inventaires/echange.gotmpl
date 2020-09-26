@@ -59,7 +59,7 @@
 	{{else}}
 		{{$idt = 0}}
 	{{end}}
-	{{$args := index .CmdArgs 0}}{{with (dbGet $idt "economy")}}{{$tEco = sdict .Value}}{{end}}
+	{{$args := index .CmdArgs 1}}{{with (dbGet $idt "economy")}}{{$tEco = sdict .Value}}{{end}}
 
 	{{if ne (toInt $args) 0}}
 		{{$value := toInt $args}}
