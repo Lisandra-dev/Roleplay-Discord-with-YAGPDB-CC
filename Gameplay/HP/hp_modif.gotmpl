@@ -5,13 +5,27 @@
 {{$msg := ""}}
 {{$check := false}}
 {{$id := .User.ID}}
+{{$log := 735938256038002818}}
+{{$la := .Member.Nick}}
+{{if eq (len $la) 0}}
+  {{$la = .User.Username}}
+{{end}}
+{{$h := "<:pv:712052732873408703>"}}
 
 {{if .CmdArgs}}
+  {{if gt (len .CmdArgs) 2}}
+    {{$la = joinStr " " (slice .CmdArgs 2)}}
+  {{end}}
+  
   {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
   {{$name = joinStr "" (split $name "#")}}
   {{$user := ""}}
   {{if $name}}
     {{$user = title $name}}
+      {{with (reFind `<@!?\d{17,}>` .Message.Content)}}
+    {{$id = userArg .}}
+    {{$id = $id.ID}}
+    {{end}}
     {{$idperso := (toRune (lower $name))}}
 	  {{range $idperso}}
 		  {{- $id = add $id . }}
@@ -25,6 +39,7 @@
       {{$user = (userArg (index .CmdArgs 0)).Username}}
     {{end}}
   {{end}}
+
   {{$pv := sdict}}
   {{with ($hp.Get (str $id))}}
     {{$pv = sdict .}}
@@ -35,14 +50,14 @@
       {{$val := toInt (index .CmdArgs 1)}}
       {{if le $val 0}}
         {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-        {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{$msg = joinStr " " $la "a blessé" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
         {{$hp.Set (str $id) $pv}}
         {{if le (toInt ($pv.Get "pv_actuel")) 0}}
-          {{if eq ($pv.Get "mush") "f"}}
-            {{$hp.Del $user}}
-            {{$msg = print $user " est mort..."}}
+          {{if eq ($pv.Get "mush") 0}}
+            {{$hp.Del (str $id)}}
+            {{$msg = print $la " a tué " $user "..."}}
           {{else}}
-            {{$msg = print $user " est KO..."}}
+            {{$msg = print $la " a mis KO " $user "..."}}
           {{end}}
         {{end}}
         {{dbSet 0 "HP" $hp}}
@@ -51,7 +66,7 @@
         {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
           {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
         {{end}}
-        {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+        {{$msg = joinStr " " $la "a soigné" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
         {{$hp.Set (str $id) $pv}}
         {{dbSet 0 "HP" $hp}}
       {{end}}
@@ -78,14 +93,14 @@
     {{$val := toInt (index .CmdArgs 0)}}
     {{if le $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
-        {{if eq ($pv.Get "mush") "f"}}
-          {{$hp.Del $user}}
-          {{$msg = print $user " est mort..."}}
+        {{if eq ($pv.Get "mush") 0}}
+          {{$hp.Del (str $id)}}
+          {{$msg = print $user " s'est tué(e)..."}}
         {{else}}
-          {{$msg = print $user " est KO..."}}
+          {{$msg = print $user " s'est mis(e) KO..."}}
         {{end}}
       {{end}}
       {{dbSet 0 "HP" $hp}}
@@ -94,7 +109,7 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-      {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+      {{$msg =  print $user " s'est soigné(e) de " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
@@ -103,5 +118,5 @@
     {{dbSet 0 "HP" $hp}}
   {{end}}
 {{end}}
-{{sendMessage nil $msg}}
+{{sendMessage $log $msg}}
 {{deleteTrigger 1}}

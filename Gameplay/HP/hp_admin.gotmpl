@@ -4,6 +4,10 @@
 {{$id := .User.ID }}
 {{if $name}}
 	{{$user = title $name}}
+    {{with (reFind `<@!?\d{17,}>` .Message.Content)}}
+    {{$id = userArg .}}
+    {{$id = $id.ID}}
+    {{end}}
   {{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
@@ -58,8 +62,12 @@
           {{$msg = "Usage : `hpadmin (@joueur / #Reroll) -add pvmax implant_regen état_mush (e)`\n Le e indique si c'est un ennemi, si vous le mettez pas, cela sera automatiquement un PNJ allié ou un PJ."}}
         {{end}}
       {{else if eq $flag "-rm"}}
-        {{$hp.Del $id}}
-        {{$msg = joinStr $user "a bien été supprimé du groupe."}}
+        {{if $hp.Get (str $id)}}
+          {{$hp.Del (str $id)}}
+          {{$msg = joinStr " " $user "a bien été supprimé du groupe."}}
+        {{else}}
+          {{$msg = joinStr " " $user "( id :" $id ") ne fait pas parti du groupe."}}
+        {{end}}
       {{else if eq $flag "-edit"}}
         {{$hpP := sdict}}
         {{with ($hp.Get (str $id))}}
