@@ -4,6 +4,18 @@
 {{$id := .User.ID }}
 {{if $name}}
 	{{$user = title $name}}
+<<<<<<< HEAD
+=======
+  {{$rr := sdict}}
+	{{with (dbGet 0 "reroll_List")}}
+		{{$rr = sdict .Value}}
+	{{end}}
+	{{$id = (toInt ($rr.Get $user))}}
+  {{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+>>>>>>> 8cde688... reroll changement
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}

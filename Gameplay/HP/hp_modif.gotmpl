@@ -5,13 +5,35 @@
 {{$msg := ""}}
 {{$check := false}}
 {{$id := .User.ID}}
+<<<<<<< HEAD
 
 {{if .CmdArgs}}
+=======
+{{$log := 735938256038002818}}
+{{$la := .Member.Nick}}
+{{if eq (len $la) 0}}
+  {{$la = .User.Username}}
+{{end}}
+{{$h := "<:pv:712052732873408703>"}}
+{{$user := ""}}
+
+{{if .CmdArgs}}
+  {{if gt (len .CmdArgs) 2}}
+    {{$la = joinStr " " (slice .CmdArgs 2)}}
+  {{end}}
+>>>>>>> 8cde688... reroll changement
   {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
   {{$name = joinStr "" (split $name "#")}}
-  {{$user := ""}}
   {{if $name}}
     {{$user = title $name}}
+<<<<<<< HEAD
+=======
+    {{$rr := sdict}}
+	  {{with (dbGet 0 "reroll_List")}}
+		  {{$rr = sdict .Value}}
+	  {{end}}
+    {{$id = toInt ($rr.Get $user)}}
+>>>>>>> 8cde688... reroll changement
     {{$idperso := (toRune (lower $name))}}
 	  {{range $idperso}}
 		  {{- $id = add $id . }}
@@ -31,6 +53,7 @@
   {{end}}
   {{$val_pv := toInt ($pv.Get "pv_actuel")}}
   {{if eq $check true}}
+<<<<<<< HEAD
     {{$val := toInt (index .CmdArgs 1)}}
     {{if le $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
@@ -43,6 +66,31 @@
         {{else}}
           {{$msg = print $user " est KO..."}}
         {{end}}
+=======
+    {{if ge (len .CmdArgs) 2}}
+      {{$val := toInt (index .CmdArgs 1)}}
+      {{if le $val 0}}
+        {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+        {{$msg = joinStr " " $la "a blessé" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{$hp.Set (str $id) $pv}}
+        {{if le (toInt ($pv.Get "pv_actuel")) 0}}
+          {{if eq ($pv.Get "mush") 0}}
+            {{$hp.Del (str $id)}}
+            {{$msg = print $la " a tué " $user "..."}}
+          {{else}}
+            {{$msg = print $la " a mis KO " $user "..."}}
+          {{end}}
+        {{end}}
+        {{dbSet 0 "HP" $hp}}
+      {{else}}
+        {{$pv.Set "pv_actuel" (add $val_pv $val)}}
+        {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
+          {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
+        {{end}}
+        {{$msg = joinStr " " $la "a soigné" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{$hp.Set (str $id) $pv}}
+        {{dbSet 0 "HP" $hp}}
+>>>>>>> 8cde688... reroll changement
       {{end}}
       {{dbSet 0 "HP" $hp}}
     {{else}}
@@ -79,11 +127,19 @@
       {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
+<<<<<<< HEAD
         {{if eq ($pv.Get "mush") "f"}}
           {{$hp.Del $user}}
           {{$msg = print $user " est mort..."}}
         {{else}}
           {{$msg = print $user " est KO..."}}
+=======
+        {{if eq ($pv.Get "mush") 0}}
+          {{$hp.Del (str $id)}}
+          {{$msg = print $user " s'est tué(e)..."}}
+        {{else}}
+          {{$msg = print $user " s'est mis(e) KO..."}}
+>>>>>>> 8cde688... reroll changement
         {{end}}
       {{end}}
       {{dbSet 0 "HP" $hp}}
@@ -92,7 +148,11 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
+<<<<<<< HEAD
       {{$msg = print $user " a regagné " $val " <:pv:712052732873408703>. \n" $user " a maintenant " (toInt ($pv.Get "pv_actuel")) " <:pv:712052732873408703>."}}
+=======
+      {{$msg =  print $user " s'est soigné(e) de " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+>>>>>>> 8cde688... reroll changement
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}

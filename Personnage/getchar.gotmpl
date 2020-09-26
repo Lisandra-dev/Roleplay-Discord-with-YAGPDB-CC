@@ -1,4 +1,25 @@
+<<<<<<< HEAD
 {{$user := .User.ID}}
+=======
+{{$name := reFind `(\#\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name "#")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$rr := sdict}}
+	{{with (dbGet 0 "reroll_List")}}
+		{{$rr = sdict .Value}}
+	{{end}}
+	{{$user = title $name}}
+	{{$id = (toInt ($rr.Get $user))}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+  {{$user = .User.Username}}
+{{end}}
+>>>>>>> 8cde688... reroll changement
 
 {{if .CmdArgs}}
 	{{if (userArg (index .CmdArgs 0))}}
