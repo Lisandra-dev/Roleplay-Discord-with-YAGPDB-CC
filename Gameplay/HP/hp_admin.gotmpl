@@ -39,6 +39,12 @@
         {{if ge (len .CmdArgs) 4}}
           {{$pvm := index .CmdArgs 2}}
           {{$reg := toInt (reFind `[0-2]` (index .CmdArgs 3))}}
+          {{$en := "n"}}
+          {{if ge (len .CmdArgs) 4}}
+            {{if (reFind `e` (index .CmdArgs 4))}}
+              {{$en := "y"}}
+            {{end}}
+          {{end}}
           {{if not $reg}}
             {{$reg = 0}}
           {{end}}
@@ -46,10 +52,10 @@
           {{if not $mush}}
             {{$mush = 0}}
           {{end}}
-          {{$hp.Set (str $id) (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush "Personnage" $user)}}
-          {{$msg = joinStr " " "PV Maximum :" $pvm "\n" "Implant :" $reg "\n Etat d'hybridation avec le mush :" $mush}}
+          {{$hp.Set (str $id) (sdict "pv_max" $pvm "pv_actuel" $pvm "regen" $reg "mush" $mush "Personnage" $user "Ennemi" $en)}}
+          {{$msg = joinStr " " "PV Maximum :" $pvm "\n" "Implant :" $reg "\n Etat d'hybridation avec le mush :" $mush "\n Ennemi :" $en}}
         {{else}}
-          {{$msg = "Usage : hpadmin (@joueur / #Reroll) -add pvmax implant_regen état_mush"}}
+          {{$msg = "Usage : `hpadmin (@joueur / #Reroll) -add pvmax implant_regen état_mush (e)`\n Le e indique si c'est un ennemi, si vous le mettez pas, cela sera automatiquement un PNJ allié ou un PJ."}}
         {{end}}
       {{else if eq $flag "-rm"}}
         {{$hp.Del $id}}
@@ -76,6 +82,16 @@
           {{$perso := index .CmdArgs 3}}
           {{$hpP.Set "Personnage" $perso}}
           {{$msg = joinStr " " "Edition du nom du personnage de " $user ":" $perso}}
+        {{else if eq $cmd "ennemi"}}
+          {{$en := reFind `(y|n)` (index .CmdArgs 3)}}
+          {{$hpP.Set "Ennemi" $en}}
+          {{$ty := ""}}
+          {{if eq $en "n"}}
+            {{$ty = "allié"}}
+          {{else}}
+            {{$ty = "ennemi"}}
+          {{end}}
+          {{$msg = joinStr " " "Edition du type de personnage de " $user ":" $ty}}
         {{end}}
         {{$hp.Set (str $id) $hpP}}
       {{end}}
@@ -89,7 +105,19 @@
       {{$msg = print .Personnage " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
     {{end}}
   {{else}}
-    {{if (reFind `(all|groupe)` (index .CmdArgs 0))}}
+    {{if (reFind `group(e?)` (index .CmdArgs 0))}}
+      {{range $i, $j := $hp}}
+        {{- if ne $j.Ennemi "y"}}
+          {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+        {{end}}
+      {{- end}}
+    {{else if (reFind `ennemi` (index .CmdArgs 0))}}
+      {{range $i, $j := $hp}}
+        {{- if eq $j.Ennemi "y"}}
+          {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+        {{- end}}
+      {{- end}}
+    {{else if (reFind `all` (index .CmdArgs 0))}}
       {{range $i, $j := $hp}}
         {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
       {{- end}}
