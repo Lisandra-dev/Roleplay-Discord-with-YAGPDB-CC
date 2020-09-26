@@ -4,10 +4,11 @@
 {{$id := .User.ID }}
 {{if $name}}
 	{{$user = title $name}}
-    {{with (reFind `<@!?\d{17,}>` .Message.Content)}}
-    {{$id = userArg .}}
-    {{$id = $id.ID}}
-    {{end}}
+  {{$rr := sdict}}
+	{{with (dbGet 0 "reroll_List")}}
+		{{$rr = sdict .Value}}
+	{{end}}
+	{{$id = (toInt ($rr.Get $user))}}
   {{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}

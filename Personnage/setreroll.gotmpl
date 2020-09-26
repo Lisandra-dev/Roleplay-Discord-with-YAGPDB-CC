@@ -2,10 +2,12 @@
 	{{$cmd := index .CmdArgs 1}}
 	{{$name := toRune (lower (index .CmdArgs 0))}}
 	{{$user := .User.ID}}
+	{{$id := .User.ID}}
 	{{$testU := reFind `<@!?\d{17,}>` .Message.Content}}
 	{{with $testU}}
 		{{$user = userArg .}}
 		{{$user = $user.ID}}
+		{{$id = $user}}
 	{{end}}
 	{{range $name}}
 		{{- $user = (add $user .)}}
@@ -15,7 +17,13 @@
 	{{with (dbGet $user "stats")}}
 		{{$stats = sdict .Value}}
 	{{end}}
-
+	{{$reroll := sdict}}
+	{{with (dbGet 0 "reroll_List")}}
+		{{$reroll = sdict .Value}}
+	{{end}}
+	{{$reroll.Set (title (lower (index .CmdArgs 0))) $id }}
+	{{dbSet 0 "reroll_List" $reroll}}
+	
 	{{if eq $cmd "-all"}}
 		{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
 		{{$stats.Set "i_force" (toInt (index .CmdArgs 3)) }}

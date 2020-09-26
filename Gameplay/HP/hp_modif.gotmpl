@@ -6,43 +6,26 @@
 {{$check := false}}
 {{$id := .User.ID}}
 {{$log := 735938256038002818}}
-<<<<<<< HEAD
-
-{{if .CmdArgs}}
-  {{$ln := reFind `(\&\S*)` .Message.Content }}
-  {{$ln = joinStr "" (split $ln "&")}}
-  {{$la := ""}}
-  {{if $ln}}
-    {{$la = title $ln}}
-  {{else}}
-    {{$la = .Member.Nick}}
-    {{if eq (len $la) 0}}
-      {{$la = .User.Nick}}
-    {{end}}
-  {{end}}
-    
-=======
 {{$la := .Member.Nick}}
 {{if eq (len $la) 0}}
   {{$la = .User.Username}}
 {{end}}
 {{$h := "<:pv:712052732873408703>"}}
+{{$user := ""}}
 
 {{if .CmdArgs}}
   {{if gt (len .CmdArgs) 2}}
     {{$la = joinStr " " (slice .CmdArgs 2)}}
   {{end}}
-  
->>>>>>> ProjetNucleus
   {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
   {{$name = joinStr "" (split $name "#")}}
-  {{$user := ""}}
   {{if $name}}
     {{$user = title $name}}
-      {{with (reFind `<@!?\d{17,}>` .Message.Content)}}
-    {{$id = userArg .}}
-    {{$id = $id.ID}}
-    {{end}}
+    {{$rr := sdict}}
+	  {{with (dbGet 0 "reroll_List")}}
+		  {{$rr = sdict .Value}}
+	  {{end}}
+    {{$id = toInt ($rr.Get $user)}}
     {{$idperso := (toRune (lower $name))}}
 	  {{range $idperso}}
 		  {{- $id = add $id . }}
@@ -67,16 +50,6 @@
       {{$val := toInt (index .CmdArgs 1)}}
       {{if le $val 0}}
         {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-<<<<<<< HEAD
-        {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") à cause de " $la "."}}
-        {{$hp.Set (str $id) $pv}}
-        {{if le (toInt ($pv.Get "pv_actuel")) 0}}
-          {{if eq ($pv.Get "mush") 0}}
-            {{$hp.Del $user}}
-            {{$msg = print $user " est mort à cause de " $la "..."}}
-          {{else}}
-            {{$msg = print $user " est KO à cause de " $la "..."}}
-=======
         {{$msg = joinStr " " $la "a blessé" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
         {{$hp.Set (str $id) $pv}}
         {{if le (toInt ($pv.Get "pv_actuel")) 0}}
@@ -85,7 +58,6 @@
             {{$msg = print $la " a tué " $user "..."}}
           {{else}}
             {{$msg = print $la " a mis KO " $user "..."}}
->>>>>>> ProjetNucleus
           {{end}}
         {{end}}
         {{dbSet 0 "HP" $hp}}
@@ -94,11 +66,7 @@
         {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
           {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
         {{end}}
-<<<<<<< HEAD
-        {{$msg = print $user " a regagné " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") grâce à " $la "."}}
-=======
         {{$msg = joinStr " " $la "a soigné" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
->>>>>>> ProjetNucleus
         {{$hp.Set (str $id) $pv}}
         {{dbSet 0 "HP" $hp}}
       {{end}}
@@ -129,17 +97,10 @@
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
         {{if eq ($pv.Get "mush") 0}}
-<<<<<<< HEAD
-          {{$hp.Del $user}}
-          {{$msg = print $user " est mort en se blessant..."}}
-        {{else}}
-          {{$msg = print $user " est KO en se blessant..."}}
-=======
           {{$hp.Del (str $id)}}
           {{$msg = print $user " s'est tué(e)..."}}
         {{else}}
           {{$msg = print $user " s'est mis(e) KO..."}}
->>>>>>> ProjetNucleus
         {{end}}
       {{end}}
       {{dbSet 0 "HP" $hp}}
@@ -148,11 +109,7 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-<<<<<<< HEAD
-      {{$msg =  print $user " a regagné " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se soignant."}}
-=======
       {{$msg =  print $user " s'est soigné(e) de " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
->>>>>>> ProjetNucleus
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
