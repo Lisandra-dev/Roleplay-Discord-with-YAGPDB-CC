@@ -121,6 +121,12 @@
     {{$hp.Set (str $id) $pv}}
     {{dbSet 0 "HP" $hp}}
   {{end}}
+{{else}}
+  {{$info := ""}}
+  {{with ($hp.Get (str $id))}}
+    {{$info = print "**" .Personnage "**" " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+  {{end}}
+  {{sendMessage nil $info}}
 {{end}}
 {{sendMessage $log $msg}}
 {{deleteTrigger 1}}

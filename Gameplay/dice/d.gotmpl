@@ -13,8 +13,6 @@
 	{{$user = .User.Username}}
 {{end}}
 
-
-
 {{$stats := sdict}}
 {{with (dbGet $id "stats")}}
 	{{$stats = sdict .Value}}
@@ -79,7 +77,7 @@
 	{{$c = joinStr " " .CmdArgs}}
 	{{if $name}}
 		{{$c = joinStr " " (split $c $name) }}
-		{{$c = joinStr " " (split $c "#")}}
+		{{$c = joinStr " " (split $c ">")}}
 	{{end}}
 
 	{{if $manuel}}
@@ -164,7 +162,7 @@
 
 				{{if $name}}
 					{{$c = joinStr " " (split $c $name)}}
-					{{$c = joinStr " " (split $c "#")}}
+					{{$c = joinStr " " (split $c ">")}}
 				{{end}}
 
 				{{$c = joinStr " " $c }}
@@ -259,7 +257,7 @@
 
 					{{if $name}}
 						{{$c = joinStr " " (split $c $name)}}
-						{{$c = joinStr " " (split $c "#")}}
+						{{$c = joinStr " " (split $c ">")}}
 					{{end}}
 
 					{{$c = joinStr " " $c }}

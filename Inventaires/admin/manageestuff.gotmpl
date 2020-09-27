@@ -59,7 +59,7 @@
 		{{end}}
 	{{end}}
 	{{if not $secondflag}}
-		**Usage** : `$managestuff -(add|reset|init) user item amount`
+		**Usage** : `$manageinv -(add|reset|init) user item amount`
 	{{else}}
 		{{$equip := sdict}}
     {{$place := sdict}}
@@ -188,9 +188,8 @@
     {{end}}
   {{end}}
 {{else}}
-**Usage** : `$managestuff -(init|reset|add|rm) user item amount`
+**Usage** : `$manageinv -(init|reset|add|rm) @/>cible item amount`
 > Si reset / init : juste indiquer l'utilisateur
-> Si reroll : #reroll pour l'user (le bot récupère automatiquement, à partir de la DB, l'ID). 
 {{end}}
 {{sendMessage nil $msg}}
 {{deleteTrigger 1}}

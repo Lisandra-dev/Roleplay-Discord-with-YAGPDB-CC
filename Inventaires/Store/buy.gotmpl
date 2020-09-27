@@ -4,7 +4,7 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
-	{{$user = tite $name}}
+	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}

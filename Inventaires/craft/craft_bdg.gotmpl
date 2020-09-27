@@ -176,9 +176,9 @@
     {{end}}
   {{end}}
 {{else}}
-  {{$msg = " **Usage** : `$craft \"objet\" (q[1-100]) (-cu) (#reroll)` "}}
+  {{$msg = " **Usage** : `$craft \"objet\" (q[1-100]) (-cu) (>reroll)` "}}
 {{end}}
-{{dbSet $target "équipement" $inv}}
-{{dbSet $target "place" $place}}
+{{dbSet $id "équipement" $inv}}
+{{dbSet $id "place" $place}}
 {{sendMessage nil $msg}}
 {{deleteTrigger 1}}
