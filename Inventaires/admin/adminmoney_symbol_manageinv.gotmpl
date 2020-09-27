@@ -260,7 +260,7 @@ Vous avez besoin de spécifier une valeur !
 				{{$inv.Set $item $amount}}
 			{{end}}
 				{{$userEco.Set "Inventory" $inv}}
-				Ajout de : {{$amount}} {{$item}} à l'Casier de {{$mention}}.
+				Ajout de : {{$amount}} {{$item}} au casier de {{$mention}}.
 
 		{{else if eq $secondflag "-remove"}}
 			{{if $target}}
@@ -280,7 +280,7 @@ Vous avez besoin de spécifier une valeur !
 						{{$inv.Del $item}}
 					{{end}}
 					{{$userEco.Set "Inventory" $inv}}
-					{{$amount}} : {{$item}} de le casier de {{$mention}} a été retiré.
+					{{$amount}} : {{$item}} du casier de {{$mention}} a été retiré.
 				{{else}}
 					Cet objet n'existe pas dans le casier cible.
 				{{end}}

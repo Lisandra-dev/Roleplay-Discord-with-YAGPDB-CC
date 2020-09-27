@@ -13,7 +13,6 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$user = title $user}}
 
 {{/* Inventory */}}
 {{$equip := sdict}}

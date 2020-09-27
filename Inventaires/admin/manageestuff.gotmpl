@@ -30,7 +30,7 @@
 			{{if ge (len .) 2}}
         {{if $name}}
           {{$target = $id}}
-          {{$user = $name}}
+          {{$user = title $name}}
         {{else}}
           {{with (userArg (index . 1))}}
             {{$target = .}}
@@ -120,9 +120,15 @@
 		      {{$item = "[IMPLANT] " $mimp}}
         {{end}}
         
+        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item)}}
+        {{if and $arme (not (reFind `^\[A\]` $item))}}
+          {{$item = print "[A] " $item}}
+        {{end}}
+        
+        
         {{$sstuff := $place.Get "s_stuff"}}
         {{$sconso := $place.Get "s_conso"}}
-        {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
+        {{if or $arme (reFind `^\[E\]` $item)}}
           {{if and (not $sac) (not $chargeur)}}
             {{if le (toInt $amount) (toInt $sstuff) }}
               {{$place.Set "s_stuff" (sub $sstuff $amount)}}
