@@ -1,10 +1,10 @@
 {{$img := "https://i.imgur.com/98Qds0B.png"}}
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
-	{{$user = $name}}
+	{{$user = tite $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}

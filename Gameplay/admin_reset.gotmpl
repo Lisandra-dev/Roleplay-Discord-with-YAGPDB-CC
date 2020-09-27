@@ -1,29 +1,31 @@
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
-{{$id := ""}}
+{{if eq (len $user) 0}}
+  {{$user = .User.Username}}
+{{end}}
+{{$id := .User.ID}}
 {{if .CmdArgs}}
-	{{if not $name}}
-	{{$id = (userArg (index .CmdArgs 0)).ID}}
-	{{$user = (getMember $id).Nick}}
+	{{if (userArg (index .CmdArgs 0))}}
+	  {{$arg = (userArg (index .CmdArgs 0))}}
+    {{$id = $arg.ID}}
+	  {{$user = (getMember $id).Nick}}
+    {{if eq (len $user) 0}}
+      {{$user = $arg.Username}}
+    {{end}}
 	{{else if $name}}
-		{{$user = $name}}
+		{{$user = title $name}}
+    {{$rr := sdict}}
+    {{with (dbGet 0 "reroll_List")}}
+      {{$rr = sdict .Value}}
+    {{end}}
+    {{$id = toInt ($rr.Get $user)}}
 		{{$idperso := (toRune (lower $name))}}
-		{{if ge (len .CmdArgs) 2}}
-			{{if (userArg (index .CmdArgs 1))}}
-				{{$id = (userArg (index .CmdArgs 2)).ID}}
-			{{else}}
-				{{$id = .User.ID}}
-			{{end}}
-		{{else}}
-			{{$id = .User.ID}}
-		{{end}}
-		{{range $idperso}}
+    {{range $idperso}}
 			{{- $id = add $id . }}
-		{{- end}}
+    {{- end}}
 	{{end}}
 {{end}}
-{{$user = title $user}}
 {{$idict := str $id}}
 
 {{$groupe := sdict}}

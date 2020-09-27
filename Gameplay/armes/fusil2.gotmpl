@@ -11,12 +11,12 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 	{{/* Get player */}}
 
-	{{$name := reFind `(\#\S*)` .Message.Content}}
-	{{$name = joinStr "" (split $name "#")}}
+	{{$name := reFind `(\>\S*)` .Message.Content}}
+	{{$name = joinStr "" (split $name ">")}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}
-		{{$user = $name}}
+		{{$user = title $name}}
 		{{$idperso := (toRune (lower $name))}}
 		{{range $idperso}}
 			{{- $id = add $id . }}

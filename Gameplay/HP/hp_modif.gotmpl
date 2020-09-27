@@ -16,9 +16,13 @@
 {{if .CmdArgs}}
   {{if gt (len .CmdArgs) 2}}
     {{$la = joinStr " " (slice .CmdArgs 2)}}
+    {{with (reFind `(\#\S*)` $la)}}
+      {{$la = joinStr "" (split . "#")}}
+      {{$la = title $la}}
+    {{end}}
   {{end}}
-  {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
-  {{$name = joinStr "" (split $name "#")}}
+  {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
+  {{$name = joinStr "" (split $name ">")}}
   {{if $name}}
     {{$user = title $name}}
     {{$rr := sdict}}
@@ -72,8 +76,8 @@
       {{end}}
     {{end}}
   {{else if eq $check false}}
-    {{$name := reFind `(\#\S*)` (index .CmdArgs 0)}}
-    {{$name = joinStr "" (split $name "#")}}
+    {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
+    {{$name = joinStr "" (split $name ">")}}
     {{$user := .Member.Nick}}
     {{$id = .User.ID}}
     {{if $name}}
@@ -113,7 +117,7 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-    {{end}}
+    ç{{end}}
     {{$hp.Set (str $id) $pv}}
     {{dbSet 0 "HP" $hp}}
   {{end}}

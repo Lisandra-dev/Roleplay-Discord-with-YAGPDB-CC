@@ -1,5 +1,5 @@
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}

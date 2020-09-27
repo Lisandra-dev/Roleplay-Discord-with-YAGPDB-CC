@@ -1,25 +1,23 @@
 {{/* Databases */}}
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if (userArg (index .CmdArgs 1))}}
-  {{$id = (userArg (index .CmdArgs 1)).ID}}
+  {{$arg = (userArg (index .CmdArgs 1))}}
+  {{$id = $arg.ID}}
   {{$user = (getMember $id).Nick}}
-{{end}}
-{{if $name}}
-	{{$user = $name}}
+  {{if eq (len $user) 0}}
+    {{$user = $arg.Username}}
+  {{end}}
+{{else if $name}}
+	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
 	{{- end}}
-{{else if eq (len $user) 0}}
-	{{$user = .User.Username}}
-  {{if (userArg (index .CmdArgs 1))}}
-    {{$user = (userArg (index .CmdArgs 1)).Username}}
-  {{end}}
 {{end}}
-{{$target := .User.ID}}
+
 {{$msg := ""}}
 
 {{$recipe := sdict}}

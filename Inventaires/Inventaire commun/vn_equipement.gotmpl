@@ -7,12 +7,12 @@
 
 {{/* Inventaire personnel */}}
 
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
-	{{$user = $name}}
+	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
@@ -20,7 +20,6 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$user = title $user}}
 
 {{$userEco := sdict}}
 {{with (dbGet $id "economy")}}
