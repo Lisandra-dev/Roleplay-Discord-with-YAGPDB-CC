@@ -73,7 +73,8 @@
 			{{$item = title (index .CmdArgs 1)}}
 			{{if eq (len .CmdArgs) 3}}{{$q = toInt (index .CmdArgs 2)}}{{end}}
 		{{if eq $flag "-arme" "-armes"}}
-			{{$type := title (reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content)}}
+			{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon|^\[A\])` .Message.Content}}
+			{{if and (eq $type "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $type "[A]")}}{{$item = print "[A] " $item}}{{end}}
 			{{if reFind `-bdg` .Message.Content}}{{$item = print "[BDG] " $item}}{{end}}
 		{{if not $type}} Erreur : Vous devez indiquer le type d'arme.
 		{{else}}

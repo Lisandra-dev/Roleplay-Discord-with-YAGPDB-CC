@@ -46,7 +46,7 @@
 {{$univ := reFind `-cu` .Message.Content}}
 {{$bdg := reFind `-bdg` .Message.Content}}
 {{$balle := reFind `(?i)(chargeur|module|implant|poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
-{{$arme := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
+{{$arme := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon|\[A\])` .Message.Content}}
 
 {{/* Variable */}}
 
@@ -121,8 +121,9 @@
 			{{$type := reFind `(?i)(force|résistance|cognition|furtivité|vision)` $item}}
 			{{$reci = title (lower $type)}}
 			{{$item = print "[IMPLANT] " (title (lower $type))}}
-		{{else if and $balle $arme (eq $balle $arme)}}
+		{{else if and $balle $arme (eq $balle $arme) (ne $arme "[A]")}}
 			{{$reci = title (lower $arme)}}
+			{{$item = print "[A] " $item}}
 		{{end}}
 
 		{{if $bdg}}

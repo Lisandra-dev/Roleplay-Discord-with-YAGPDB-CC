@@ -120,11 +120,10 @@
 		      {{$item = "[IMPLANT] " $mimp}}
         {{end}}
         
-        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item)}}
-        {{if and $arme (not (reFind `^\[A\]` $item))}}
+        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
+        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
           {{$item = print "[A] " $item}}
         {{end}}
-        
         
         {{$sstuff := $place.Get "s_stuff"}}
         {{$sconso := $place.Get "s_conso"}}

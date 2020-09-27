@@ -94,6 +94,10 @@
       {{if $sac}}
         {{$item = print "[E] " (title (lower $sac))}}
       {{end}}
+      {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
+      {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
+        {{$item = print "[A] " $item}}
+      {{end}}
       {{$mimp := (lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item))}}
       {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
         {{$item = print "[MODULE] " (title $mimp)}}
@@ -112,7 +116,7 @@
           {{$msg = joinStr "" $user " n'a pas assez de " $item " pour faire cela. "}}
         {{else}}
           {{if le (toInt $amount) (toInt $value)}}
-            {{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $item) (reFind `^\[E\]` $item)}}
+            {{if or $arme (reFind `^\[E\]` $item)}}
               {{if and (not $sac) (not $chargeur) }}
                 {{if le $amount $sstuff }}
                   {{$place.Set "s_stuff" (sub $sstuff $amount)}}

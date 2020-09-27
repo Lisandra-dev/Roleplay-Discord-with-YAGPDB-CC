@@ -66,7 +66,7 @@
     {{$msg = joinStr "" $user " a fixé" $number $item "."}}
   {{end}}
   {{if ($equip.Get $item)}}
-    {{if or (not $compo) (not (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon)` $item)) (not (reFind `(?i)chargeur` $item)) (not (reFind `^\[E\]` $item)) (not (reFind `(?i)^\[X\]` $item))}}
+    {{if or (not $compo) (not (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|^\[A\]|chargeur|^\[E\]|^\[X\])` $item))}}
       {{if (reFind `-bdg` .Message.Content)}}
         {{$item = print "[BDG] " $item}}
       {{end}}

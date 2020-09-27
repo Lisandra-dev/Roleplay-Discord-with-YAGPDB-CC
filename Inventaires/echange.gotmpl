@@ -97,14 +97,17 @@
 
 		{{$mimp := title (lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $i))}}
 		{{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-			{{$item = "[MODULE] " $mimp}}
+			{{$i = print "[MODULE] " $mimp}}
 		{{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-			{{$item = "[IMPLANT] " $mimp}}
+			{{$i = print "[IMPLANT] " $mimp}}
 		{{end}}
 		{{if ge (len .CmdArgs) 4}}{{$q = toInt (index .CmdArgs 2)}}{{end}}
 		{{with (dbGet $idt "équipement")}}{{$invt = sdict .Value}}{{end}}
 		{{$pt := sdict}}{{with (dbGet $idt "place")}}{{$pt = sdict .Value}}{{end}}
-
+		{{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $i)}}
+		{{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
+			{{$i = print "[A] " $i}}
+		{{end}}
 		{{$ss := $pl.Get "s_stuff"}}{{$sconso := $pl.Get "s_conso"}}
 		{{$mst := $pl.Get "max_stuff"}}{{$mc := $pl.Get "max_conso"}}{{$ts := $pt.Get "s_stuff"}}{{$tco := $pt.Get "s_conso"}}{{$tms := $pt.Get "max_stuff"}}{{$tmc := $pt.Get "max_conso"}}{{$sac := (reFind `(?i)(Sacoche|Sac à dos|Sacoche ceinture)` $i)}}
 		{{if not ($inv.Get $i)}}
@@ -112,7 +115,7 @@
 		{{else if gt $q ($inv.Get $i)}}
 			{{$d = "Quantité trop élevé par rapport à la quantité disponible"}}
 		{{else}}
-			{{if or (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau)` $i) (reFind `^\[E\]` $i)}}
+			{{if or $arme (reFind `^\[E\]` $i)}}
 				{{if (not $sac) (not $cha) }}
 					{{if lt $q $ts }} 
 						{{$pt.Set "s_stuff" (sub $ts $q)}}{{$pl.Set "s_stuff" (sub $ss $q)}}
