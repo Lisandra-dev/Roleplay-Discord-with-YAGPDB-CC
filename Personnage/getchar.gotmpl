@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-{{$user := .User.ID}}
-=======
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
@@ -19,25 +16,8 @@
 {{else if eq (len $user) 0}}
   {{$user = .User.Username}}
 {{end}}
->>>>>>> 8cde688... reroll changement
 
 {{if .CmdArgs}}
-<<<<<<< HEAD
-	{{if (userArg (index .CmdArgs 0))}}
-		{{with (userArg (index .CmdArgs 0))}}
-			{{$user = .}}
-			{{$user = $user.ID}}
-		{{end}}
-	{{else}}
-		{{$user = .User.ID}}
-	{{end}}
-{{end}}
-
-
-{{$stats := sdict}}
-{{with (dbGet $user "stats")}}
-	{{$stats = sdict .Value}}
-=======
   {{with (userArg (index .CmdArgs 0))}}
     {{$id = .}}
     {{$id = $id.ID}}
@@ -58,7 +38,6 @@
 {{$stats := sdict}}
 {{with (dbGet $id "stats")}}
 {{$stats = sdict .Value}}
->>>>>>> ea7b53e... 🔥Hot fix
 {{end}}
 
 {{$force:= $stats.Get "force"}}
@@ -73,64 +52,6 @@
 {{$iagi:=$stats.Get "i_agi"}}
 {{$ipreci:=$stats.Get "i_preci"}}
 {{$iintel:=$stats.Get "i_intel"}}
-<<<<<<< HEAD
-
-{{if .CmdArgs}}
-{{if eq (len .CmdArgs) 2}}
-	{{if eq (index .CmdArgs 1) "-stats"}}
-**Statistiques de <@{{$user}}>**
-	:white_small_square: Force : {{$force}}
-	:white_small_square: Endurance : {{$endurance}}
-	:white_small_square: Agilité : {{$agi}}
-	:white_small_square: Précision : {{$preci}}
-	:white_small_square: Intelligence : {{$intel}}
-	:white_small_square: Karma : {{$karma}}
-
-		{{else if eq (index .CmdArgs 1) "-implant"}}
-**Implant de <@{{$user}}>** :
-	:white_small_square: Force : {{$iforce}}
-	:white_small_square: Endurance : {{$iendu}}
-	:white_small_square: Agilité : {{$iagi}}
-	:white_small_square: Précision : {{$ipreci}}
-	:white_small_square: Intelligence : {{$iintel}}
-	{{end}}
-
-{{else if eq (len .CmdArgs) 1}}
-	{{if eq (index .CmdArgs 0) "-stats"}}
-	**Statistiques de <@{{$user}}>**
-	:white_small_square: Force : {{$force}}
-	:white_small_square: Endurance : {{$endurance}}
-	:white_small_square: Agilité : {{$agi}}
-	:white_small_square: Précision : {{$preci}}
-	:white_small_square: Intelligence : {{$intel}}
-	:white_small_square: Karma : {{$karma}}
-
-		{{else if eq (index .CmdArgs 0) "-implant"}}
-	**Implant de <@{{$user}}>** :
-	:white_small_square: Force : {{$iforce}}
-	:white_small_square: Endurance : {{$iendu}}
-	:white_small_square: Agilité : {{$iagi}}
-	:white_small_square: Précision : {{$ipreci}}
-	:white_small_square: Intelligence : {{$iintel}}
-	
-	{{else}}
-	**Statistiques de <@{{$user}}>**
-		:white_small_square: Force : {{$force}}
-		:white_small_square: Endurance : {{$endurance}}
-		:white_small_square: Agilité : {{$agi}}
-		:white_small_square: Précision : {{$preci}}
-		:white_small_square: Intelligence : {{$intel}}
-		:white_small_square: Karma : {{$karma}}
-
-	**Implants de <@{{$user}}>** :
-		:white_small_square: Force : {{$iforce}}
-		:white_small_square: Endurance : {{$iendu}}
-		:white_small_square: Agilité : {{$iagi}}
-		:white_small_square: Précision : {{$ipreci}}
-		:white_small_square: Intelligence : {{$iintel}}
-	{{end}}
-
-=======
   
 {{if .CmdArgs}}
   {{if eq (len .CmdArgs) 2}}
@@ -227,7 +148,6 @@
   :white_small_square: Intelligence : {{$iintel}}
   {{end}}
   {{deleteTrigger 1}}
->>>>>>> ea7b53e... 🔥Hot fix
 {{else}}
 	**Statistiques de <@{{$user}}>**
 		:white_small_square: Force : {{$force}}

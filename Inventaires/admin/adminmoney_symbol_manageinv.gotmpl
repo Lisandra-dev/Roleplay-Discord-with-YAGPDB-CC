@@ -15,8 +15,8 @@
 	{{$serverEco = sdict .Value}}
 {{end}}
 
-{{$name := reFind `(\#\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name "#")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
@@ -96,9 +96,7 @@
 				{{sendMessage nil $embed}}
 			{{else}}
 Vous avez besoin de spécifier une valeur !
-**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
-> Dans le cas d'un reroll : #reroll @joueur
-
+**Usage : ** `$adminmoney -(add|remove|reset|set) @/>cible amount`
 			{{end}}
 		{{else if eq $secondflag "-reset"}}
 			{{$bal = 0}}
@@ -113,7 +111,7 @@ Vous avez besoin de spécifier une valeur !
 				{{sendMessage nil $embed}}
 			{{else}}
 Vous avez besoin de spécifier une valeur !
-**Usage : ** `$adminmoney -(add|remove|reset|set) user amount`
+**Usage : ** `$adminmoney -(add|remove|reset|set) @/>cible amount`
 > Dans le cas d'un reroll : #reroll @joueur
 
 			{{end}}
@@ -178,8 +176,7 @@ Vous avez besoin de spécifier une valeur !
 	{{end}}
 	
 	{{if not $secondflag}}
-**Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
-> Dans le cas d'un reroll : #reroll @joueur
+**Usage** : `$manageinv -(add|remove|reset|clean|set) @/>cible item amount`
 	{{else}}
 		{{$userEco := sdict}}
 		{{if $target}}
@@ -187,8 +184,7 @@ Vous avez besoin de spécifier une valeur !
 			{{$userEco = sdict .Value}}
 		{{end}}
 	{{else}}
-**Usage** : `$manageinv -(add|remove|reset|clean|set) user item amount`
-> Cas de reroll : #reroll @joueur
+**Usage** : `$manageinv -(add|remove|reset|clean|set) @/>cible item amount`
 	{{end}}
 	{{if eq $secondflag "-clean"}}
 		{{if $target}}
@@ -286,11 +282,10 @@ Vous avez besoin de spécifier une valeur !
 		{{end}}
 	{{else}}
 	**Usage** :
-:white_small_square: __Money__ : `$adminmoney -(add|remove|reset|set) user amount`
+:white_small_square: __Money__ : `$adminmoney -(add|remove|reset|set) @/>cible amount`
 :white_small_square: __Symbol__ : `$symbol <symbol>`
-:white_small_square: __Manage inventory__ : `$manageinv -(add|remove|set) user item amount`
-:white_small_square: __Reset inventory__ : `$manageinv -reset user`
-> Dans le cas d'un reroll, l'user est #reroll @joueur
+:white_small_square: __Manage inventory__ : `$manageinv -(add|remove|set) @/>cible item amount`
+:white_small_square: __Reset inventory__ : `$manageinv -reset @/>cible`
 {{end}}
 
 {{/* Database Updates */}}
