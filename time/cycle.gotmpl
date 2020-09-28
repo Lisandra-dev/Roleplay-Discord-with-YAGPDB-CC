@@ -65,17 +65,19 @@
 {{$jour := $time.Get "jour"}}
 {{$cycle := $time.Get "cycle"}}
 {{$seuil := 0}}
+{{$imp := 0}}
 {{$time.Set "cycle" (add $cycle 1)}}
 
 {{range $i, $j := $hp}}
   {{$pv = sdict $j}}
   {{if eq $j.mush 0}}
     {{$id = toInt $i}}
+    {{$imp = mult $j.regen 5}}
     {{with (dbGet $id "stats")}}
       {{$stats = sdict .Value}}
     {{end}}
     {{$seuil = (toInt ($stats.Get "endurance"))}}
-    {{$regen = add (toInt $j.pv_actuel) ($endu.Get (str $seuil))}}
+    {{$regen = add (toInt $j.pv_actuel) ($endu.Get (str $seuil)) $imp}}
   {{else}}
     {{$regen = add (toInt $j.pv_actuel) (mult $j.mush 10)}}
   {{end}}

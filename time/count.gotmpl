@@ -66,6 +66,7 @@
 {{$jour := $time.Get "jour"}}
 {{$cycle := $time.Get "cycle"}}
 {{$seuil := 0}}
+{{$imp := 0}}
 
 {{if not (dbGet 0 "pause")}}
 
@@ -77,7 +78,6 @@
 		{{$x := (toFloat ($time.Get "count"))}}
 		{{$time.Set "count" (add $x 1)}}
 		{{$time.Set "message" (add $message 1)}}
-
 		{{/*Amount of messages needed for cycle, starts from 0*/}}
 		{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
 			{{$time.Set "cycle" (add $cycle 1)}}
@@ -85,12 +85,13 @@
 			{{range $i, $j := $hp}}
 				{{$pv = sdict $j}}
 				{{if eq $j.mush 0}}
+					{{$imp = mult $j.regen 5}}
 					{{$id = toInt $i}}
 					{{with (dbGet $id "stats")}}
 						{{$stats = sdict .Value}}
 					{{end}}
 					{{$seuil = (toInt ($stats.Get "endurance"))}}
-					{{$regen = add (toInt $j.pv_actuel) ($endu.Get (str $seuil))}}
+					{{$regen = add (toInt $j.pv_actuel) ($endu.Get (str $seuil)) $imp}}
 				{{else}}
 					{{$regen = add (toInt $j.pv_actuel) (mult $j.mush 10)}}
 				{{end}}
