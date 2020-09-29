@@ -1,4 +1,4 @@
-# YAGPDB-cc-rp
+# A real Roleplay with Discord !
 Some CC for roleplay using YAGPDB bot. 
 
 Read more [here](https://www.notion.so/Projet-Nucleus-Help-center-522fa32a4fd143b2a5be398b097dfe7f)
@@ -17,4 +17,4 @@ Ce github possède 2 branches :
 
 - La branche RP Nucleus, qui correspond à toutes les fonctions utilisées dans Nucleus, liées aux rôles et sujet, sans commentaire et **inutilisable dans un autre RP** sans aucune modification préalable. C'est aussi la branche principale car elle contient plus de fonction avancé, et c'est plus pratique pour moi pour push et gardé un historique de mes modifications. 
 
-- Une branche FuturRP qui pourrait éventuellement servir à la création de fonction qui serait lié **uniquement** à un autre RP que Nucleus. 
+- Une branche FalconHaven, qui correspond à un second RP. La majorité des fonctions présentes seront des modifications "poussées" de la branche publique. 
