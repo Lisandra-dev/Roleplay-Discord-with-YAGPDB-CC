@@ -19,11 +19,7 @@
 	{{$arme = sdict .Value}}
 {{end}}
 
-{{$fusil := reFindAllSubmatches `fusil` .Message.Content}}
-{{$fusil2 := reFindAllSubmatches `fusil2` .Message.Content}}
-{{$pistolet := reFindAllSubmatches `pistolet` .Message.Content}}
-{{$pistol2 := reFindAllSubmatches `pistolet2` .Message.Content }}
-{{$canon := reFindAllSubmatches `canon` .Message.Content }}
+{{$cmd := reFind `(fusil|fusil2|pistol(et)?|pistol(et)?2|canon|soin)` .Message.Content}}
 
 {{$desc := ""}}
 {{$msgc:=""}}
@@ -31,9 +27,10 @@
 {{$msgp2 := ""}}
 {{$msgf := ""}}
 {{$msgf2 := ""}}
+{{$mss := ""}}
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 
-{{if $fusil}}
+{{if eq $cmd "fusil"}}
 	{{if ($arme.Get "fusil")}}
 		{{$y := $arme.Get "fusil"}}
 		{{$x := sub 12 $y}}
@@ -46,7 +43,26 @@
 		{{ $desc = "Fusil chargé : Il y a actuellement 12 balles à disposition."}}
 	{{end}}
 
-{{else if $fusil2 }}
+{{else if eq $cmd "soin"}}
+	{{$heal := sdict}}
+  {{with (dbGet 0 "healer")}}
+    {{$heal := sdict .Value}}
+  {{end}}
+  {{$id = str $id}}
+	{{if ($heal.Get $id)}}
+		{{$y := $heal.Get $id}}
+		{{$x := sub 8 $y}}
+		{{if lt (toFloat $y) (toFloat 8)}}
+			{{$desc = print "Il reste " (str (toInt $x)) "/8 charges soignantes."}}
+		{{else}}
+			{{$desc = "Module de soin vide."}}
+		{{end}}
+	{{else}}
+		{{$desc = "Vous ne possédez pas de module soignant, ou vous ne l'avez jamais utilisé... "}}
+	{{end}}
+
+
+{{else if eq $cmd "fusil2"}}
 	{{if ($arme.Get "fusil2")}}
 		{{$y := $arme.Get "fusil2"}}
 		{{$x := sub 12 $y}}
@@ -59,7 +75,7 @@
 		{{ $desc = "Fusil secondaire chargé : Il y a actuellement 12 balles à disposition."}}
 	{{end}}
 
-{{else if $pistolet}}
+{{else if eq $cmd "pistolet" "pistol"}}
 	{{if ($arme.Get "pistol")}}
 		{{$a := $arme.Get "pistol"}}
 		{{$b := sub 8 $a}}
@@ -72,7 +88,7 @@
 		{{$desc = "Pistolet chargé : Il y a actuellement 8 balles à disposition."}}
 	{{end}}
 
-{{else if $pistol2}}
+{{else if eq $cmd "pistolet2" "pistol2"}}
 	{{if ($arme.Get "pistol2")}}
 		{{$a := $arme.Get "pistol2"}}
 		{{$b := sub 8 $a}}
@@ -85,7 +101,7 @@
 		{{$desc = "Pistolet secondaire chargé : Il y a actuellement 8 balles à disposition."}}
 	{{end}}
 
-{{else if $canon}}
+{{else if eq $cmd "canon"}}
 	{{if ($arme.Get "canon")}}
 		{{$c := $arme.Get "canon"}}
 		{{$d := sub 20 $c}}
@@ -103,62 +119,80 @@
 			{{$ca := toFloat ($arme.Get "canon")}}
 			{{$canon := (sub 20 $ca)}}
 			{{if lt (toFloat $ca) (toFloat 20)}}
-				{{$msgc = (joinStr "" "Il reste " (toString (toInt $canon)) "/20 balles dans votre canon.")}}
+				{{$msgc = print "[" (toString (toInt $canon)) "/20]"}}
 			{{else}}
-				{{$msgc = "Canon vide."}}
+				{{$msgc = "[0/20]"}}
 			{{end}}
 		{{else}}
-			{{$msgc = "Canon chargé : Il y a actuellement 20 balles à disposition."}}
+			{{$msgc = "[20/20]"}}
+		{{end}}
+		
+		{{$heal := sdict}}
+  	{{with (dbGet 0 "healer")}}
+    	{{$heal := sdict .Value}}
+  	{{end}}
+  	{{$id = str $id}}
+		
+		{{if ($heal.Get $id)}}
+			{{$y := $heal.Get $id}}
+			{{$x := sub 8 $y}}
+			{{if lt (toFloat $y) (toFloat 8)}}
+				{{$mss = print "[" (str (toInt $x)) "/8]"}}
+			{{else}}
+				{{$mss = "[0/8]"}}
+			{{end}}
+		{{else}}
+			{{$mss = "[X]"}}
 		{{end}}
 
 		{{if ($arme.Get "fusil")}}
 			{{$fu := $arme.Get "fusil"}}
 			{{$fusil := (toFloat (sub 12 $fu))}}
 			{{if lt (toFloat $fu) (toFloat 12)}}
-				{{$msgf = (joinStr "" "Il reste " (toString (toInt $fusil)) "/12 balles de fusil")}}
+				{{$msgf = print "[" (toString (toInt $fusil)) "/12]"}}
 			{{else}}
-				{{$msgf = "Fusil vide."}}
+				{{$msgf = "[0/12]"}}
 			{{end}}
 		{{else}}
-			{{$msgf = "Fusil chargé : Il y a actuellement 12 balles à disposition."}}
+			{{$msgf = "[12/12]"}}
 		{{end}}
 
 		{{if ($arme.Get "fusil2")}}
 			{{$fu2 := ($arme.Get "fusil2")}}
 			{{$fusil2 := (toFloat (sub 12 $fu2 ))}}
 			{{if lt (toFloat $fu2) (toFloat 12)}}
-				{{$msgf2 = (joinStr "" "Il reste " (toString (toInt $fusil2)) "/12 balles de fusil secondaire.")}}
+				{{$msgf2 = print "[" (toString (toInt $fusil2)) "/12]"}}
 			{{else}}
-				{{$msgf2 = "Fusil secondaire vide."}}
+				{{$msgf2 = "[0/12]"}}
 			{{end}}
 		{{else}}
-			{{$msgf2 = "Fusil secondaire chargé : Il y a actuellement 12 balles à disposition."}}
+			{{$msgf2 = "[12/12]"}}
 		{{end}}
 
 		{{if ($arme.Get "pistol")}}
 			{{$pi := ($arme.Get "pistol")}}
 			{{$pistol := (toFloat (sub 8 $pi))}}
 			{{if lt (toFloat $pi) (toFloat 8)}}
-				{{$msgp = (joinStr "" "Il reste " (toString (toInt $pistolet )) "/8 balles de pistolet.")}}
+				{{$msgp = print "[" (toString (toInt $pistol )) "/8]"}}
 			{{else}}
-				{{$msgp = "Pistolet vide."}}
+				{{$msgp = "[0/8]"}}
 			{{end}}
 		{{else}}
-			{{$msgp = "Pistolet chargé : Il y a actuellement 8 balles à disposition."}}
+			{{$msgp = "[8/8]"}}
 		{{end}}
 		{{if ($arme.Get "pistol2")}}
 			{{$pi2 := ($arme.Get "pistol2")}}
-			{{$pistol2 = (toFloat (sub 8 $pi2))}}
+			{{$pistol2 := (toFloat (sub 8 $pi2))}}
 			{{if lt (toFloat $pi2) (toFloat 8)}}
-				{{$msgp2 = (joinStr "" "Il reste " (toString (toInt $pistol2 )) "/8 balles de pistolet secondaire.")}}
+				{{$msgp2 = print "[" (toString (toInt $pistol2 )) "/8]"}}
 			{{else}}
-				{{$msgp2 = "Pistolet secondaire vide."}}
+				{{$msgp2 = "[0/8]"}}
 			{{end}}
 		{{else}}
-			{{$msgp2 = "Pistolet secondaire chargé : Il y a actuellement 8 balles à disposition."}}
+			{{$msgp2 = "[8/8]"}}
 		{{end}}
 
-		{{$desc = (joinStr "" ":white_small_square: **Canon** : " $msgc "\n:white_small_square: **Fusil** : " $msgf "\n:white_small_square: **Fusil secondaire** : " $msgf2 "\n:white_small_square: **Pistolet** : " $msgp "\n:white_small_square: **Pistolet secondaire** : " $msgp2 "\n")}}
+		{{$desc = (joinStr "" ":white_small_square: **Canon** : " $msgc "\n:white_small_square: **Fusil** : " $msgf "\n:white_small_square: **Fusil secondaire** : " $msgf2 "\n:white_small_square: **Pistolet** : " $msgp "\n:white_small_square: **Pistolet secondaire** : " $msgp2 "\n :white_small_square: **Soin** : " $mss)}}
 {{end}}
 
 {{$embed := cembed

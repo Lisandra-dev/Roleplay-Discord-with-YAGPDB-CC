@@ -114,6 +114,9 @@
 			
 		{{range $i, $j := $heal}}
 			{{$heal.Set $i (add $j 1)}}
+			{{if ge $j 8}}
+				{{$heal.Set $i 8}}
+			{{end}}
 		{{end}}
 		{{dbSet 0 "healer"}}
 
