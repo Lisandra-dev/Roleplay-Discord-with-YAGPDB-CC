@@ -1,0 +1,65 @@
+{{$img := "https://i.imgur.com/fWnxoZ4.png"}}
+
+{{if not (reFind `(\x60(.*)\x60)` .Message.Content) }}
+	{{/* Groupe dictionnaire */}}
+	{{$groupe := sdict}}
+	{{with (dbGet .Server.ID "groupe")}}
+		{{$groupe = sdict .Value}}
+	{{end}}
+
+  {{/* Get player */}}
+	{{$name := reFind `(\>\S*)` .Message.Content}}
+	{{$name = joinStr "" (split $name ">")}}
+	{{$user := .Member.Nick}}
+	{{$id:= .User.ID}}
+	{{if $name}}
+		{{$user = title $name}}
+		{{$idperso := (toRune (lower $name))}}
+		{{range $idperso}}
+			{{- $id = add $id . }}
+		{{- end}}
+	{{else if eq (len $user) 0}}
+		{{$user = .User.Username}}
+	{{end}}
+  {{/* get PA */}}
+	{{$pa := $groupe.Get (str $id)}}
+	{{if not $pa}}
+		{{$groupe.Set (str $id) 4}}
+		{{$pa = 4}}
+	{{end}}
+	{{dbSet .Server.ID "groupe" $groupe}}
+  {{$heal := sdict}}
+  {{with (dbGet 0 "healer")}}
+    {{$heal := sdict .Value}}
+  {{end}}
+  {{$id = str $id}}
+
+  {{$desc := ""}}
+  	{{/* Function */}}
+	{{if gt $pa 2}}
+    {{if not ($heal.Get $id)}}
+      {{$heal.Set $id 1}}
+      {{$desc = (joinStr "" "Il reste 3/4 charges soignantes.")}}
+    {{else}}
+      {{$heal.Set $id (add ($heal.Get $id) 1)}}
+      {{$y := $heal.Get $id}}
+      {{$x := sub 4 $y}}
+      {{if lt (toFloat $y) (toFloat 4)}}
+        {{$desc = joinStr "" "Il reste" (toString (toInt $x)) "/4 charges soignantes"}}
+      {{else if eq (toFloat $y) (toFloat 4)}}
+        {{$desc = "Dernière charge utilisée."}}
+      {{else}}
+        {{$desc = "Action impossible : plus de charges disponibles."}}
+      {{end}}
+    {{end}}
+  {{else}}
+    {{$desc = "PA insuffisants pour réaliser l'action."}}
+  {{end}}
+  {{$embed := cembed 
+  "author" (sdict "name" $user "icon_url" $img)
+  "color" 0x7d5590
+  "description" $desc}}
+  {{$idm := sendMessageRetID nil $embed}}
+  {{dbSet 0 "healer" $heal}}
+  {{deleteMessage nil $idm 30}}
+{{end}}

@@ -1,0 +1,29 @@
+{{/* Get player */}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
+{{$user := .Member.Nick}}
+{{$id:= .User.ID}}
+{{if $name}}
+  {{$user = title $name}}
+  {{with (dbGet 0 "reroll_List")}}
+    {{$rr = sdict .Value}}
+  {{end}}
+  {{$id = (toInt ($rr.Get $user))}}
+  {{$idperso := (toRune (lower $name))}}
+  {{range $idperso}}
+    {{- $id = add $id . }}
+  {{- end}}
+{{else if eq (len $user) 0}}
+  {{$user = .User.Username}}
+{{end}}
+{{$id = str $id}}
+
+{{with (dbGet 0 "healer")}}
+  {{$heal := sdict .Value}}
+{{end}}
+
+{{if $heal.Get $id}}
+  {{$heal.Del $id}}
+{{else}}
+  La cible n'existe pas dans la base de donnée de HEALER.
+{{end}}
