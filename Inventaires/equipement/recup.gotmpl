@@ -88,6 +88,7 @@
     {{with ($depot.Get $chan)}}
       {{$di = sdict .}}
     {{end}}
+    
     {{if or $arme (reFind `^\[E\]` $item)}}
       {{if and (not $sac) (not $chargeur)}}
         {{if le (toInt $amount) (toInt $sstuff) }}

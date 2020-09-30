@@ -88,8 +88,6 @@
     {{$dI = sdict .}}
   {{end}}
 
-
-
   {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
     {{if or $arme (reFind `^\[E\]` $item)}}
       {{if and (not $sac) (not $chargeur)}}
@@ -175,7 +173,7 @@
 {{else}}
   **Usage** : `$depot item quantité (>reroll)`
 {{end}}
-{{$msg = print $msg "\n <:next:723131844643651655> <#" ..Channel.ID ">" }}
+{{$msg = print $msg "\n <:next:723131844643651655> <#" .Channel.ID ">" }}
 {{sendMessage $log $msg}}
 {{deleteTrigger 1}}
 {{dbSet 0 "depot_sol" $depot}}
