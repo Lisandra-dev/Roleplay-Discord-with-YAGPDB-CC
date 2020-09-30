@@ -159,14 +159,14 @@
               {{$equip.Set $item 1}}
               {{$msg = joinStr "" $user " a obtenu " $item "."}}
             {{end}}
-          {{else if $chargeur}}
-            {{if and (le $amount (toInt $sconso))}}
-              {{$place.Set "s_conso" (sub $sconso $amount)}}
-              {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-              {{$msg = joinStr "" $user " a obtenu " $amount " " $item "."}}
-            {{else}}
-              {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
-            {{end}}
+          {{end}}
+        {{else if $chargeur}}
+          {{if and (le $amount (toInt $sconso))}}
+            {{$place.Set "s_conso" (sub $sconso $amount)}}
+            {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+            {{$msg = joinStr "" $user " a obtenu " $amount " " $item "."}}
+          {{else}}
+            {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
           {{end}}
         {{else if and (not $compo) (not ((reFind `\[X\]` $item)))}}
           {{if and (le $amount (toInt $sconso))}}
