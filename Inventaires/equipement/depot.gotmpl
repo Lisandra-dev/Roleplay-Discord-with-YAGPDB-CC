@@ -2,6 +2,7 @@
 {{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
+{{$log := 735938256038002818}}
 {{if $name}}
 	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
@@ -22,6 +23,14 @@
 {{with (dbGet $id "place")}}
   {{$place = sdict .Value}}
 {{end}}
+
+{{$depot := sdict}}
+{{with (dbGet 0 "depot_sol")}}
+  {{$depot := sdict .Value}}
+{{end}}
+{{$chan := str .Channel.ID}}
+
+
 {{$sstuff := $place.Get "s_stuff"}}
 {{$sconso := $place.Get "s_conso"}}
 {{$mstuff := $place.Get "max_stuff"}}
@@ -73,16 +82,26 @@
   {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
     {{$item = print "[A] " $item}}
   {{end}}
+  
+  {{$dI := sdict}}
+  {{with ($depot.Get $chan)}}
+    {{$dI = sdict .}}
+  {{end}}
+
+
+
   {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
     {{if or $arme (reFind `^\[E\]` $item)}}
       {{if and (not $sac) (not $chargeur)}}
         {{if lt $amount $mstuff}}
           {{$place.Set "s_stuff" (add $sstuff $amount)}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+          {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
         {{else if eq $amount $mstuff}}
           {{$place.Set "s_stuff" $mstuff}}
         {{end}}
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+        {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
       {{else if $sac}}
         {{if eq $item "[E] Sac À Dos" }}
           {{$sstuff = sub $sstuff 3}}
@@ -95,6 +114,7 @@
             {{$place.Set "max_stuff" 2}}
             {{$place.Set "max_conso" 5}}
             {{$equip.Del $item}}
+            {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
             {{$msg = joinStr "" $user " a abandonné son " $item}}
           {{end}}
         {{else if eq $item "[E] Sacoche" }}
@@ -108,6 +128,7 @@
             {{$place.Set "max_stuff" 2}}
             {{$place.Set "max_conso" 5}}
             {{$equip.Del $item}}
+            {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
             {{$msg = joinStr "" $user " a abandonné sa " $item}}
           {{end}}
         {{else if eq $item "[E] Sacoche Ceinture"}}
@@ -121,36 +142,43 @@
             {{$place.Set "max_stuff" 2}}
             {{$place.Set "max_conso" 5}}
             {{$equip.Del $item}}
+           {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
             {{$msg = joinStr "" $user " a abandonné sa " $item}}
           {{end}}
         {{end}}
-      {{else if and (not $compo) (not (reFind `\[X\]` $item))}}
-        {{if lt $amount (toInt $mconso)}}
-          {{$place.Set "s_conso" (add $amount $sconso)}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-        {{$msg = joinStr "" $user "a abandonné" $nb $item "."}}
-        {{else if eq $amount (toInt $mconso)}}
-          {{$place.Set "s_conso" $mconso}}
-          {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
-        {{end}}
-      {{else if or $compo (reFind `\[X\]` $item)}}
+      {{end}}
+    {{else if and (not $compo) (not (reFind `\[X\]` $item))}}
+      {{if lt $amount (toInt $mconso)}}
+        {{$place.Set "s_conso" (add $amount $sconso)}}
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+        {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
+        {{$msg = joinStr "" $user "a abandonné" $nb $item "."}}
+      {{else if eq $amount (toInt $mconso)}}
+        {{$place.Set "s_conso" $mconso}}
+        {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+        {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
       {{end}}
-      {{if eq (toInt ($equip.Get $item)) 0}}
-        {{$equip.Del $item}}
-      {{end}}
-      {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 
-      {{dbSet $id "équipement" $equip }}
-      {{dbSet $id "place" $place}}
-    {{else}}
-      {{$msg = joinStr "" $user " : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez." }}
+    {{else if or $compo (reFind `\[X\]` $item)}}
+      {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
+      {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
     {{end}}
+    {{if eq (toInt ($equip.Get $item)) 0}}
+      {{$equip.Del $item}}
+    {{end}}
+    {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 
+    {{dbSet $id "équipement" $equip }}
+    {{dbSet $id "place" $place}}
+  {{else}}
+    {{$msg = joinStr "" $user " : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez." }}
   {{end}}
+  {{$depot.Set $chan $dI}}
 {{else}}
   **Usage** : `$depot item quantité (>reroll)`
 {{end}}
-{{sendMessage nil $msg}}
+{{$msg = print $msg "\n <:next:723131844643651655> <#" ..Channel.ID ">" }}
+{{sendMessage $log $msg}}
 {{deleteTrigger 1}}
+{{dbSet 0 "depot_sol" $depot}}
 
 
 
