@@ -85,6 +85,6 @@
 	{{end}}
 	{{$author := (joinStr " " "Casier de :" (title $user))}}
 	{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
-	{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
+	{{addMessageReactions nil $id "◀️" "▶️" "🗑️" "📱"}}
 {{end}}
 {{deleteTrigger 1}}

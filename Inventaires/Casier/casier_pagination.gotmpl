@@ -10,7 +10,7 @@
 {{$del := false}}
 {{$check := ""}}
 {{ $action := $.Reaction.Emoji.Name }} {{/* The action being ran */}}
-{{ $validEmojis := cslice "▶️" "◀️" "🗑️" }} {{/* Valid emojis */}}
+{{ $validEmojis := cslice "▶️" "◀️" "🗑️" "📱" }} {{/* Valid emojis */}}
 {{ $isValid := false }} {{/* Whether this is actually a valid embed / leaderboard embed */}}
 {{ $page := 0 }} {{/* The current page */}}
 {{if $embed.Author}}
@@ -73,6 +73,10 @@
 		{{if le $page 1}}
 			{{$page =1}}
 		{{end}}
+	{{else if eq $action "📱"}}
+		{{range $i, $j := $inv}}
+			{{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+		{{end}}
 	{{else}}
 		{{$del = true}}
 		{{$page = 1}}
@@ -95,16 +99,16 @@
 				{{range (seq $start $stop)}}
 				{{$data = (print $data "\n" (index $cslice .))}}
 				{{end}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+				{{$footer = print "Page: " $page " / " $end " | #" $id }}
 			{{else}}
 				{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+				{{$footer = print "Page: " $page " / " $end " | #" $id }}
 			{{end}}
 		{{else}}
 			{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+			{{$footer = print "Page: " $page " / " $end " | #" $id }}
 		{{end}}
-			{{$desc = print "" $data ""}}
+		{{$desc = print "" $data ""}}
 	{{end}}
 
 

@@ -77,5 +77,5 @@
 {{$title := (joinStr " " "Équipement de" (title $user))}}
 
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/ha7nksE.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
-{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
+{{addMessageReactions nil $id "◀️" "▶️" "🗑️" "📱"}}
 {{deleteTrigger 1}}
