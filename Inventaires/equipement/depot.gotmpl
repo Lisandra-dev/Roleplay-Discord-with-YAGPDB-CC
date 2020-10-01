@@ -158,7 +158,7 @@
       {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
       {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
     {{end}}
-    {{if eq (toInt ($equip.Get $item)) 0}}
+    {{if le (toInt ($equip.Get $item)) 0}}
       {{$equip.Del $item}}
     {{end}}
     {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 

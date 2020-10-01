@@ -91,9 +91,9 @@
     {{end}}
     {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
     {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-      {{$item = "[MODULE] " $mimp}}
+      {{$item = print "[MODULE] " $mimp}}
     {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-      {{$item = "[IMPLANT] " $mimp}}
+      {{$item = print "[IMPLANT] " $mimp}}
     {{end}}
     {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
     {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
@@ -175,7 +175,7 @@
         {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
         {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}        
       {{end}}
-      {{if eq (toInt ($equip.Get $item)) 0}}
+      {{if le (toInt ($equip.Get $item)) 0}}
         {{$equip.Del $item}}
       {{end}}
      {{$msg = joinStr "" $msg "\n" $mention " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 

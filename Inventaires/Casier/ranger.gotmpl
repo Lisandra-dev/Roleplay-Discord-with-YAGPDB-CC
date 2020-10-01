@@ -196,7 +196,7 @@
           {{$inv.Set $item (add (toInt ($inv.Get $item)) $amount)}}
           {{$msg = joinStr "" $user " range dans son casier " $amount " " $item "."}}
         {{end}}
-        {{if eq (toInt ($equip.Get $item)) 0}}
+        {{if le (toInt ($equip.Get $item)) 0}}
           {{$equip.Del $item}}
         {{end}}
         {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables."}} 

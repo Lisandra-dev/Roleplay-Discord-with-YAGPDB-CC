@@ -180,7 +180,7 @@ Vous avez besoin de spécifier une valeur !
 			{{end}}
 		{{end}}
 	{{end}}
-	{{$typ := reFind `(?i)(chargeur|Sacoche|Sac à dos|Sacoche ceinture|bc|lc|cb|sf|cu|perforant|burst|soutien|altération|schéma|passif|force|résistance|Cognition|furtivité|vision|vitalité|guérison)` $item}}
+	{{$typ := reFind `(?i)(chargeur|Sacoche|Sac à dos|Sacoche ceinture|bc|lc|cb|sf|cu|perforant|burst|soutien|altération|schéma|passif|force|résistance|Cognition|furtivité|vision|vitalité|guérison|poigne|épée|masse|pistolet|fusil|canon|\[A\])` $item}}
 	{{$typ = lower $typ}}
 
 	{{if eq $typ "chargeur"}}
@@ -199,9 +199,11 @@ Vous avez besoin de spécifier une valeur !
 	{{else if eq $typ "cu"}}
 		{{$item = "[C] Composant Universel"}}
 	{{else if eq $typ "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-		{{$item = "[MODULE] " $typ}}
+		{{$item = print "[MODULE] " $typ}}
 	{{else if eq $typ "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-		{{$item = "[IMPLANT] " $typ}}
+		{{$item = print "[IMPLANT] " $typ}}
+	{{else if and (ne $typ "chargeur") (eq $typ "fusil" "pistolet" "poigne" "épée" "masse" "canon") (ne $typ "[A]")}}
+		{{$item = print "[A] " (title (lower $item)) }}
 	{{end}}
 	
 	{{if not $secondflag}}
@@ -274,7 +276,7 @@ Vous avez besoin de spécifier une valeur !
 				{{end}}
 				{{if $inv.Get $item}}
 					{{$value := (sub (toInt ($inv.Get $item)) $amount)}}
-					{{if ne $value 0}}
+					{{if gt $value 0}}
 						{{$inv.Set $item $value}}
 					{{else}}
 						{{$inv.Del $item}}

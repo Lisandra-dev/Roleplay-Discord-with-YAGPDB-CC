@@ -46,10 +46,13 @@ Erreur : Nombre d'argument invalide.
 		{{end}}
 		
 		{{if eq $flag "-arme" "-armes"}}
-			{{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
+			{{$type := reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|\[A\])` .Message.Content}}
 			{{if not $type}}
-        Erreur : Oublie du type d'arme
+        Erreur : Oublie du type d'arme (attention, grenade et projectiles ne sont pas des armes mais des consommables !)
 			{{else}}
+				{{if not (reFind `\[A\]` $item)}}
+					{{$item = print "[A] " $item}}
+				{{end}}
 				{{$armes.Set $item (add ($armes.Get $item) $q)}}
 				{{$log = (joinStr " " "Rajout de" $q $item "à l'inventaire du Nucleus")}}
 				{{sendMessage nil $log}}

@@ -48,7 +48,7 @@
       {{end}}
 
       {{if eq $flag "-arme" "-armes"}}
-        {{$type := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
+        {{$type := reFind `(?i)(poigne|épée|masse||pistolet|fusil|canon|\[A\])` .Message.Content}}
         {{if not $type}}
           Erreur : Oublie du type d'arme
         {{else}}
