@@ -277,22 +277,22 @@
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Ultra critique** " $comm " *+40 PV + Bonus (+5 si capacité)* \n"
+		"description" (joinStr "" "**Ultra critique** " $comm " *20 PV + Bonus.* \n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{$rc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite critique** " $comm " *+40 PV (+5 si capacité).*\n"
+		"description" (joinStr "" "**Réussite critique** " $comm " *20 PV.*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
 {{$regen := sub 9 $d }}
-{{$regen := mult $regen 5}}
+{{$regen = div (mult $regen 5) 2}}
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV (+5 si capacité).*\n"
+		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV.*\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
@@ -305,7 +305,7 @@
 
 {{$ec := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Echec critique du soin**" $comm "*Votre cible gagne une altération*.\n"
+		"description" (joinStr "" "**Echec critique du soin**" $comm "*Votre cible écope d'une altération*...\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0xEFA3EA }}
 
