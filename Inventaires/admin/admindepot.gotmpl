@@ -58,21 +58,21 @@
       {{if eq $flag "-rm"}}
         {{if ($di.Get $item)}}
           {{if ne $q 0}}
-            {{$di.Del $item}}
-            {{print "Tous les " $item " ont été supprimé du dépôt."}}
+            {{$di.Set $item (sub (toInt ($di.Get $item)) $q )}}
+            {{(print $q $item " a bien été supprimé de <#" $chan ">.")}}
           {{else }}
-            {{$di.Set $item (sub ($di.Get $item) $q )}}
-            {{(print $q $item " a bien été supprimé du dépot.")}}
+            {{$di.Del $item}}
+            {{print "Tous les " $item " ont été supprimé de <#" $chan ">."}}
           {{end}}
         {{else}}
-          L'objet n'existe pas dans le dépot.
+         {{print "L'objet n'existe pas dans <#" $chan ">."}}
         {{end}}
-        {{if le ($di.Get $item) 0}}
+        {{if le (toInt ($di.Get $item)) 0}}
           {{$di.Del $item}}
         {{end}}
       {{else if eq $flag "-add"}}
-        {{$di.Set $item (add ($depot.Get $item) $q)}}
-        {{(print $q $item " a bien été rajouté au dépot.")}}    
+        {{$di.Set $item (add ($di.Get $item) $q)}}
+        {{(print $q $item " a bien été rajouté dans <#" $chan ">.")}}    
       {{else if eq $flag "-reset"}}
         {{$depot.Del $chan}}
         {{(print "Le channel <#" $chan "> a bien été vidé.")}}    
@@ -95,7 +95,8 @@
   {{else}}
     {{$msg = print "La pièce **<#" $chan ">** est vide."}}
   {{end}}
-  {{sendMessage nil $msg}}
+  {{$idm := sendMessageRetID nil $msg}}
+{{deleteMessage nil $idm 60}}
 {{else if and (eq $cmd "$adminview") (hasRoleID 709795313279565906)}}
   {{$msg := ""}}
   {{range $i, $j := $depot}}
@@ -106,4 +107,3 @@
   {{sendMessage nil $msg}}
 {{end}}
 {{deleteTrigger 1}}
-{{deleteResponse 30}}
