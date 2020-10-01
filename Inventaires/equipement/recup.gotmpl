@@ -31,7 +31,7 @@
 
 {{$depot := sdict}}
 {{with (dbGet 0 "depot_sol")}}
-  {{$depot := sdict .Value}}
+  {{$depot = sdict .Value}}
 {{end}}
 {{$sstuff := $place.Get "s_stuff"}}{{$sconso := $place.Get "s_conso"}}{{$mstuff := $place.Get "max_stuff"}}{{$mconso := $place.Get "max_conso"}}
 
@@ -81,14 +81,13 @@
   {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
     {{$item = print "[A] " $item}}
   {{end}}
-  {{if or (not ($depot.Get $item)) (lt (toInt ($depot.Get $item)) (toInt $amount))}}
+  {{$di := sdict}}
+  {{with ($depot.Get $chan)}}
+    {{$di = sdict .}}
+  {{end}}
+  {{if or (not ($di.Get $item)) (lt (toInt ($di.Get $item)) (toInt $amount))}}
     {{$msg = print $item " n'existe pas."}}
-  {{else}}
-    {{$di := sdict}}
-    {{with ($depot.Get $chan)}}
-      {{$di = sdict .}}
-    {{end}}
-    
+  {{else}}    
     {{if or $arme (reFind `^\[E\]` $item)}}
       {{if and (not $sac) (not $chargeur)}}
         {{if le (toInt $amount) (toInt $sstuff) }}
@@ -152,7 +151,7 @@
     {{if eq (toInt ($di.Get $item)) 0}}
       {{$di.Del $item}}
     {{end}}
-    {{if eq (toInt ($depot.Get $chan) 0)}}
+    {{if eq (toInt ($depot.Get $chan)) 0}}
       {{$depot.Del $chan}}
     {{end}}
     
