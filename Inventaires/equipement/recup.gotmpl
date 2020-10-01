@@ -160,7 +160,8 @@
     {{dbSet $id "place" $place}}
     {{$depot.Set $chan $di}}
     {{dbSet 0 "depot_sol" $depot}}
+    {{$idm := sendMessageRetID nil $msg}}
+    {{deleteMessage nil $idm 60}}
   {{end}}
 {{end}}
 {{deleteTrigger 1}}
-{{sendMessage nil $msg}}
