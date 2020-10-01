@@ -271,17 +271,17 @@
 
 {{$img:="https://i.imgur.com/CmgNFYu.png"}}
 {{$pv := sub 10 $d }}
-{{$pvall := mult $pv 3}}
+{{$pvall := mult $pv 4}}
 
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a un empoisonnement de" $pv " PV sur 3 tours (" $pvall " PV en tout).\n"
+	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a un empoisonnement de" $pv " PV sur 4PA (" $pvall " PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
 {{$rc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Réussite critique** " $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 3 tours (" $pvall " PV en tout).\n"
+	"description" (joinStr "" "**Réussite critique** " $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 4PA (" $pvall " PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
@@ -289,7 +289,7 @@
 
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 3 tours (-" $pvall " PV en tout).\n"
+		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un empoisonnement de " $pv " PV sur 4PA (-" $pvall " PV en tout).\n"
 		"<:next:723131844643651655> *[" $res "]*" )
 		"color" 0x4D399E }}
 
@@ -301,7 +301,7 @@
 
 {{$ec:= cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Echec critique de l'empoisonnement** " $comm "\n Votre cible gagne une régénération de 3 PV sur 3 tours (+9 PV en tout).\n"
+	"description" (joinStr "" "**Echec critique de l'empoisonnement** " $comm "\n Votre cible gagne une régénération de 3 PV sur 4PA (+9 PV en tout).\n"
 	"<:next:723131844643651655> *[" $res "]*" )
 	"color" 0x4D399E }}
 
