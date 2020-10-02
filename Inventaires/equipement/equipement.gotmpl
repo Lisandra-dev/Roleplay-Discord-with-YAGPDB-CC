@@ -58,7 +58,7 @@
 				{{$data = (print $data "\n" (index $cslice .))}}
 			{{else}}
 				{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+				{{$footer = print "Page : " $page " / " $end " | #" $id }}
 			{{end}}
 		{{else}}
 			{{$data = "Il n'y a rien ici..."}}
