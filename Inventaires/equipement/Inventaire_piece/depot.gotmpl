@@ -3,6 +3,7 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{$log := 735938256038002818}}
+{{$reste := ""}}
 {{if $name}}
 	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
@@ -103,7 +104,7 @@
           {{$sstuff = sub $sstuff 3}}
           {{$sconso = sub $sconso 9}}
           {{if or (le $sstuff 0) (le $sconso 0)}}
-            {{$msg = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
+            {{$reste = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
           {{else}}
             {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
             {{$place.Set "s_stuff" $sstuff}}
@@ -117,7 +118,7 @@
           {{$sstuff = sub $sstuff 2}}
           {{$sconso = sub $sconso 6}}
           {{if or (le $sstuff 0) (le $sconso 0)}}
-            {{$msg = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
+            {{$reste = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
           {{else}}
             {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
             {{$place.Set "s_stuff" $sstuff}}
@@ -131,7 +132,7 @@
           {{$sstuff = sub $sstuff 1}}
           {{$sconso = sub $sconso 3}}
           {{if or (lt $sstuff 0) (lt $sconso 0)}}
-            {{$msg = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
+            {{$reste = joinStr "" $user ", votre " $item " est rempli, vous ne pouvez pas le laisser ! Vous devez le vider avant."}}
           {{else}}
             {{$dI.Set $item (add (toInt ($dI.Get $item)) $amount)}}
             {{$place.Set "s_stuff" $sstuff}}
@@ -161,20 +162,22 @@
     {{if le (toInt ($equip.Get $item)) 0}}
       {{$equip.Del $item}}
     {{end}}
-    {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 
+    {{$reste = joinStr "" "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}} 
     {{dbSet $id "équipement" $equip }}
     {{dbSet $id "place" $place}}
     {{$depot.Set $chan $dI}}
     {{dbSet 0 "depot_sol" $depot}}
   {{else}}
-    {{$msg = joinStr "" $user " : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez." }}
+    {{$reste = joinStr "" $user " : L'objet n'existe pas dans l'équipement ou il n'y a en a pas assez." }}
   {{end}}
 {{else}}
   **Usage** : `$depot item quantité (>reroll)`
 {{end}}
 {{$msg = print $msg "\n <:next:723131844643651655> <#" .Channel.ID ">" }}
 {{sendMessage $log $msg}}
+{{$idr := sendMessageRetID nil $reste}}
 {{deleteTrigger 1}}
+{{deleteMessage nil $idr 60}}
 
 
 

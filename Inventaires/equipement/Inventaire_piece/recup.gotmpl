@@ -3,6 +3,8 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{$chan := str .Channel.ID}}
+{{$reste := ""}}
+{{$log := 735938256038002818}}
 {{if $name}}
  {{$rr := sdict}}
 	{{with (dbGet 0 "reroll_List")}}
@@ -86,7 +88,7 @@
     {{$di = sdict .}}
   {{end}}
   {{if or (not ($di.Get $item)) (lt (toInt ($di.Get $item)) (toInt $amount))}}
-    {{$msg = print $item " n'existe pas."}}
+    {{$reste = print $item " n'existe pas."}}
   {{else}}    
     {{if or $arme (reFind `^\[E\]` $item)}}
       {{if and (not $sac) (not $chargeur)}}
@@ -95,11 +97,11 @@
           {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
           {{$di.Set $item (sub ($di.Get $item) (toInt $amount))}}
         {{else}}
-          {{$msg = print $user " n'a pas assez de place dans son inventaire pour récupérer " $nb " " $item "."}}
+          {{$reste = print $user " n'a pas assez de place dans son inventaire pour récupérer " $nb " " $item "."}}
         {{end}}
       {{else if $sac}}
         {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
-          {{$msg = joinStr "" $user " possède déjà un sac. Merci de retirer l'ancien."}}
+          {{$reste = joinStr "" $user " possède déjà un sac. Merci de retirer l'ancien."}}
         {{else}}
           {{if eq $item "[E] Sac À Dos" }}
             {{$place.Set "s_stuff" (add $sstuff 3)}}
@@ -127,7 +129,7 @@
         {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
         {{$di.Set $item (sub ($di.Get $item) (toInt $amount))}}
       {{else}}
-        {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
+        {{$reste = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
       {{end}}
     {{else if and (not $compo) (not ((reFind `\[X\]` $item)))}}
       {{if and (le $amount (toInt $sconso))}}
@@ -135,7 +137,7 @@
         {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
         {{$di.Set $item (sub ($di.Get $item) (toInt $amount))}}
       {{else}}
-        {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
+        {{$reste = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
       {{end}}
     {{else if or $compo (reFind `\[X\]` $item)}}
       {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -155,13 +157,14 @@
       {{$depot.Del $chan}}
     {{end}}
     
-    {{$msg = joinStr "" $msg "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}}
+    {{$reste = joinStr "" "\n" $user " : il vous reste " ($place.Get "s_stuff") " places d'équipements et " ($place.Get "s_conso") " places de consommables. "}}
     {{dbSet $id "équipement" $equip }}
     {{dbSet $id "place" $place}}
     {{$depot.Set $chan $di}}
     {{dbSet 0 "depot_sol" $depot}}
-    {{$idm := sendMessageRetID nil $msg}}
+    {{$idm := sendMessageRetID nil $reste}}
     {{deleteMessage nil $idm 60}}
+    {{sendMessage $log $msg}}
   {{end}}
 {{end}}
 {{deleteTrigger 1}}
