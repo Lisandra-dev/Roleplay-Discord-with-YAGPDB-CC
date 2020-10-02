@@ -1,4 +1,4 @@
-{{$cmd := reFind `^\$(admindepot|view|adminview)` .Message.Content}}
+{{$cmd := reFind `^\$(admindepot|adminview)` .Message.Content}}
 {{$depot := sdict}}
 {{with (dbGet 0 "depot_sol")}}
   {{$depot = sdict .Value}}
@@ -85,25 +85,5 @@
     **Usage** : `$admindepot -(add|rm|reset) item channel q`
   {{end}}
   {{dbSet 0 "depot_sol" $depot}}
-{{else if eq $cmd "$view"}}
-  {{$msg := ""}}
-  {{if ($depot.Get $chan)}}
-    {{range $i, $j := ($depot.Get $chan)}}
-      {{$msg = print $msg "\n ▫️ " $i " : " $j }}
-    {{end}}
-    {{$msg = print "**Inventaire de la pièce : <#" $chan ">**\n" $msg}}
-  {{else}}
-    {{$msg = print "La pièce **<#" $chan ">** est vide."}}
-  {{end}}
-  {{$idm := sendMessageRetID nil $msg}}
-{{deleteMessage nil $idm 60}}
-{{else if and (eq $cmd "$adminview") (hasRoleID 709795313279565906)}}
-  {{$msg := ""}}
-  {{range $i, $j := $depot}}
-    {{range $v, $k := ($depot.Get $i)}}
-      {{$msg = print $msg "\n 🔹 <#" $i "> : \n<:tr:724626754282717194>▫️" $v " : " $k }}
-    {{end}}
-  {{end}}
-  {{sendMessage nil $msg}}
 {{end}}
 {{deleteTrigger 1}}

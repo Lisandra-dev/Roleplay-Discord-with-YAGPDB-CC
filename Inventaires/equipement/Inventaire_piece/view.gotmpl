@@ -1,0 +1,58 @@
+{{$depot := sdict}}
+{{with (dbGet 0 "depot_sol")}}
+  {{$depot = sdict .Value}}
+{{end}}
+{{$item := ""}}
+{{$q := 1}}
+{{$chargeur := ""}}
+{{$chan := str .Channel.ID}}
+{{$sol := sdict}}
+{{with ($depot.Get $chan)}}
+  {{$sol = sdict .}}
+{{end}}
+
+{{$desc := "Il n'y a rien ici."}}
+{{$footer := print "Page : 1/1 | #" $chan}}
+{{$end := ""}}
+{{$cslice := cslice}}
+{{range $k, $v := $sol}}
+  {{$cslice = $cslice.Append (printf ":white_small_square: ** %-10v **  : [%v]" $k $v)}}
+{{end}}
+{{if $cslice}}
+{{/* hell starts */}}
+	{{$page := "1"}}
+	{{if .CmdArgs}}
+		{{$index := 0}}
+		{{if ge (len .CmdArgs) 2}}
+			{{$index = 1}}
+		{{end}}
+		{{$page = or (toInt (index .CmdArgs $index)) 1}}
+		{{$page = toString $page}}
+	{{end}}
+		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+	{{$footer = print "Page: " $page " / " $end " | #" $chan }}
+	{{$start := (mult 10 (sub $page 1))}}
+	{{$stop := (mult $page 10)}}
+	{{$data := ""}}
+	{{if ge $stop (len $cslice)}}
+		{{$stop = (len $cslice)}}
+	{{end}}
+	{{if not (eq $page "0")}}
+		{{if and (le $start $stop) (ge (len $cslice) $start) (le $stop (len $cslice))}}
+			{{range (seq $start $stop)}}
+				{{$data = (print $data "\n" (index $cslice .))}}
+			{{else}}
+        {{$data = "Il n'y a rien ici..."}}
+        {{$footer = print "Page : " $page " / " $end " | #" $chan}}
+      {{end}}
+    {{else}}
+      {{$data = "Il n'y a rien ici..."}}
+      {{$footer = print "Page : " $page " / " $end " | #" $chan}}
+    {{end}}
+    {{$desc = print "" $data ""}}
+  {{end}}
+{{end}}
+{{$idm := sendMessageRetID nil (cembed "author" (sdict "name" (print "Pièce : " (getChannel (toInt $chan)).Name)) "thumbnail" (sdict "url" "https://i.imgur.com/RMtR5SH.png") "color" 0x464e8d "description" $desc "footer" (sdict "text" $footer))}}
+{{addMessageReactions nil $idm "◀️" "▶️" "🗑️" "📱"}}
+{{deleteTrigger 1}}
+{{deleteMessage nil $idm 300}}
