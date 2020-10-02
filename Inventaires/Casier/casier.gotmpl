@@ -58,7 +58,7 @@
 			{{$page = or (toInt (index .CmdArgs $index)) 1}}
 			{{$page = toString $page}}
 		{{end}}
-			{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
 		{{$footer = print "Page: " $page " / " $end " | #" $id }}
 		{{$start := (mult 10 (sub $page 1))}}
 		{{$stop := (mult $page 10)}}
