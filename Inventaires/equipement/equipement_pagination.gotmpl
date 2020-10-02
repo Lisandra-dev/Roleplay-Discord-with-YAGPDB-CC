@@ -44,7 +44,7 @@
 		{{with (dbGet $id "place")}}
 			{{$place = sdict .Value}}
 		{{end}}
-		{{$desc := "Tu n'as rien d'équipé ! N'hésite pas à aller voir ton casier, l'inventaire du Nucleus, ou le shop !"}}
+		{{$desc := "Tu n'as rien d'équipé ! N'hésite pas à aller voir ton casier, l'inventaire du Nucleus, ou le magasin !"}}
 		{{$footer := print "Page: 1 / 1 | #" $id }}
 		{{$cslice := cslice}}
 		{{range $k,$v := $equip}}
