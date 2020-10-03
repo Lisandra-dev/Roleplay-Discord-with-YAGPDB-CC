@@ -95,7 +95,7 @@
     {{end}}
     {{$val_pv := toInt ($pv.Get "pv_actuel")}}
     {{$val := toInt (index .CmdArgs 0)}}
-    {{if le $val 0}}
+    {{if lt $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
       {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
       {{$hp.Set (str $id) $pv}}
@@ -108,7 +108,7 @@
         {{end}}
       {{end}}
       {{dbSet 0 "HP" $hp}}
-    {{else}}
+    {{else if gt $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
@@ -117,7 +117,7 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-    ç{{end}}
+    {{end}}
     {{$hp.Set (str $id) $pv}}
     {{dbSet 0 "HP" $hp}}
   {{end}}
