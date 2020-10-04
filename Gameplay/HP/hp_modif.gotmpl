@@ -54,7 +54,7 @@
       {{$val := toInt (index .CmdArgs 1)}}
       {{if le $val 0}}
         {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-        {{$msg = joinStr " " $la "a blessé" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{$msg = print $la " a blessé " $user " de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
         {{$hp.Set (str $id) $pv}}
         {{if le (toInt ($pv.Get "pv_actuel")) 0}}
           {{if eq ($pv.Get "mush") 0}}
@@ -70,7 +70,7 @@
         {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
           {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
         {{end}}
-        {{$msg = joinStr " " $la "a soigné" $user "de" $val $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{$msg = print $la " a soigné " $user " de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
         {{$hp.Set (str $id) $pv}}
         {{dbSet 0 "HP" $hp}}
       {{end}}
@@ -97,7 +97,7 @@
     {{$val := toInt (index .CmdArgs 0)}}
     {{if lt $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-      {{$msg = print $user " a perdu " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
+      {{$msg = print $user " a perdu " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
         {{if eq ($pv.Get "mush") 0}}
@@ -113,7 +113,7 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-      {{$msg =  print $user " s'est soigné(e) de " $val " <:pv:712052732873408703> (**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+      {{$msg =  print $user " s'est soigné(e) de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
@@ -124,7 +124,7 @@
 {{else}}
   {{$info := ""}}
   {{with ($hp.Get (str $id))}}
-    {{$info = print "**" .Personnage "**" " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+    {{$info = print "**" .Personnage "**" " : " .pv_actuel "/" .pv_max " " $h "."}}
   {{end}}
   {{sendMessage nil $info}}
 {{end}}
