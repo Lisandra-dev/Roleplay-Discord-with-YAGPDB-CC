@@ -60,11 +60,6 @@
 	{{$str.Thumbnail.Set "url" $midi}}
 	{{$str.Set "color" 0xF0B535}}
 	{{ sendMessage nil (cembed $str)}}
-
-{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
-	{{$str.Thumbnail.Set "url" $soir}}
-	{{$str.Set "color" 0x9593E8}}
-	{{ sendMessage nil (cembed $str)}}
 {{end}}
 
 {{deleteTrigger 1}}

@@ -2,9 +2,15 @@
 {{$chan:= 716988208205791342}} {{/* Change the channel ID you want send the embed */}}
 
 {{/*Thumbnail*/}}
-{{$nuit:="https://i.imgur.com/e04keB7.png"}}
+{{$aube := "https://i.imgur.com/vvQxj4h.png"}}
 {{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
 {{$midi:="https://i.imgur.com/AFOj90o.png"}}
+{{$aprem := ""}}
+{{$soir := ""}}
+{{$nuit:="https://i.imgur.com/e04keB7.png"}}
+{{$emo := cslice "🕐" "🕑" "🕒" "🕓" "🕜" "🕛" "🕚" "🕙" "🕘" "🕗" "🕖" "🕕" "🕔" "🕝" "🕞" "🕟" "🕠" "🕡" "🕢" "🕣" "🕤" "🕥" "🕧" "🕦"}}
+
+
 {{$soir:="https://i.imgur.com/xSDYgqD.png"}}
 
 {{/* Time dict */}}
@@ -12,20 +18,6 @@
 {{with (dbGet 0 "time")}}
 	{{$time = sdict .Value}}
 {{end}}
-
-{{/* Embed */}}
-{{$embed := cembed
-	"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
-	"description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
-	"color" 0xDD99DF
-	"thumbnail" (sdict "url" "")
-	"timestamp" .Message.Timestamp}}
-{{$str := structToSdict $embed}}
-{{ range $k, $v := $str }}
- 	{{- if eq (kindOf $v true) "struct" }}
- 		{{- $str.Set $k (structToSdict $v) }}
- 	{{- end -}}
-{{ end }}
 
 {{/*All message database counter*/}}
 
@@ -51,32 +43,53 @@
 	{{/*Amount of messages needed for cycle, starts from 0*/}}
 		{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
 			{{$time.Set "cycle" (add $cycle 1)}}
+      {{/* Embed */}}
+      {{$embed := cembed
+  	    "title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
+  	    "description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
+  	    "color" 0xDD99DF
+  	    "thumbnail" (sdict "url" "")
+  	    "timestamp" .Message.Timestamp}}
+      {{$str := structToSdict $embed}}
+      {{ range $k, $v := $str }}
+ 	      {{- if eq (kindOf $v true) "struct" }}
+ 		      {{- $str.Set $k (structToSdict $v) }}
+ 	      {{- end -}}
+      {{ end }}
+      
 
 	{{/*reset count for new cycle*/}}
 		{{$time.Set "count" 0}}
 		{{$time.Set "message" 0}}
 		{{$y := toFloat ($time.Get "cycle")}}
+    {{$emo = shuffle $emo}}
+    {{$time.Set "emoji" ( index $emo 1)}}
 
 	{{/*thumbnail cycle*/}}
-		{{if or (eq $y (toFloat 1)) (eq $y (toFloat 2))}}
-			{{$str.Thumbnail.Set "url" $nuit}}
-			{{$str.Set "color" 0x1B3175}}
-			{{sendMessage $chan (cembed $str)}}
-
-			{{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
-				{{$str.Thumbnail.Set "url" $matin}}
-				{{$str.Set "color" 0xDD99DF}}
-				{{sendMessage $chan (cembed $str)}}
-
-			{{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
-				{{$str.Thumbnail.Set "url" $midi}}
-				{{$str.Set "color" 0xF0B535}}
-				{{sendMessage $chan (cembed $str)}}
-			
-			{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
-				{{$str.Thumbnail.Set "url" $soir}}
-				{{$str.Set "color" 0x9593E8}}
-				{{sendMessage $chan (cembed $str)}}
+  {{if eq $y (toFloat 1)}}
+    {{$str.Thumbnail.Set "url" $aube}}
+    {{$str.Set "color" 0xEB94C5}}
+    {{sendMessage $chan (cembed $str)}}
+  {{else if eq $y (toFloat 2)}}
+    {{$str.Thumbnail.Set "url" $matin}}
+    {{$str.Set "color" 0xDD99DF}}
+    {{sendMessage $chan (cembed $str)}}
+  {{else if eq $y (toFloat 3)}}
+    {{$str.Thumbnail.Set "url" $midi}}
+    {{$str.Set "color" 0x0xF0B535}}
+    {{sendMessage $chan (cembed $str)}}
+  {{else if eq $y (toFloat 4)}}
+    {{$str.Thumbnail.Set "url" $aprem}}
+    {{$str.Set "color" 0xF6B227}}
+    {{sendMessage $chan (cembed $str)}}
+  {{else if eq $y (toFloat 5)}}
+    {{$str.Thumbnail.Set "url" $soir}}
+    {{$str.Set "color" 0xF67327}}
+    {{sendMessage $chan (cembed $str)}}
+  {{else if eq $y (toFloat 6)}}
+    {{$str.Thumbnail.Set "url" $nuit}}
+    {{$str.Set "color" 0x1B3175}}
+    {{sendMessage $chan (cembed $str)}}
 
 	{{/*you can add cycle with just else if eq $y (toFloat number) */}}
 
