@@ -13,71 +13,76 @@
     {{if ge (len .CmdArgs) 3}}
       {{$flag := lower (reFind `\-(rm|add|reset)` (index .CmdArgs 0))}}
       {{$item = title (index .CmdArgs 1)}}
-      {{$chan = str (index .CmdArgs 2)}}
-      {{if eq (len .CmdArgs) 4}}
-        {{$q = toInt (index .CmdArgs 3)}}
-      {{end}}
-      {{$chargeur = reFind `(?i)chargeur` $item}}
-        {{if $chargeur}}
-          {{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
-          {{$item = print "[CHARGEUR] " (title (lower $weap))}}
+      {{$chan = index .CmdArgs 2|reFind `\d{17,}`|getChannel}}
+      {{$chan = str $chan.ID}}
+      {{if (getChannel (toInt $chan))}}
+        {{if eq (len .CmdArgs) 4}}
+          {{$q = toInt (index .CmdArgs 3)}}
         {{end}}
-        {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
-        {{if $compo}}
-          {{if eq $compo "bc" "BC" "Bc"}}
-            {{$item = "[C] Biocomposant"}}
-          {{else if eq $compo "lc" "LC" "Lc"}}
-            {{$item = "[C] Liquide Cytomorphe"}}
-          {{else if eq $compo "cb" "CB" "Cb"}}
-            {{$item = "[C] Cellule Bionotropique"}}
-          {{else if eq $compo "sf" "SF" "Sf"}}
-            {{$item = "[C] Substrat Ferreux"}}
-          {{else if eq $compo "cu" "CU" "Cu"}}
-            {{$item = "[C] Composant Universel"}}
+        {{$chargeur = reFind `(?i)chargeur` $item}}
+          {{if $chargeur}}
+            {{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
+            {{$item = print "[CHARGEUR] " (title (lower $weap))}}
           {{end}}
-        {{end}}
-        {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
-        {{if $sac}}
-          {{$item = print "[E] " (title (lower $sac))}}
-        {{end}}
-        {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
-        {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-          {{$item = "[MODULE] " $mimp}}
-        {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-          {{$item = "[IMPLANT] " $mimp}}
-        {{end}}
-        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
-        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
-          {{$item = print "[A] " $item}}
-        {{end}}
-        {{$di := sdict}}
-        {{with ($depot.Get $chan)}}
-          {{$di = sdict .}}
-        {{end}}
+          {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+          {{if $compo}}
+            {{if eq $compo "bc" "BC" "Bc"}}
+              {{$item = "[C] Biocomposant"}}
+            {{else if eq $compo "lc" "LC" "Lc"}}
+              {{$item = "[C] Liquide Cytomorphe"}}
+            {{else if eq $compo "cb" "CB" "Cb"}}
+              {{$item = "[C] Cellule Bionotropique"}}
+            {{else if eq $compo "sf" "SF" "Sf"}}
+              {{$item = "[C] Substrat Ferreux"}}
+            {{else if eq $compo "cu" "CU" "Cu"}}
+              {{$item = "[C] Composant Universel"}}
+            {{end}}
+          {{end}}
+          {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
+          {{if $sac}}
+            {{$item = print "[E] " (title (lower $sac))}}
+          {{end}}
+          {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
+          {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+            {{$item = "[MODULE] " $mimp}}
+          {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
+            {{$item = "[IMPLANT] " $mimp}}
+          {{end}}
+          {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
+          {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
+            {{$item = print "[A] " $item}}
+          {{end}}
+          {{$di := sdict}}
+          {{with ($depot.Get $chan)}}
+            {{$di = sdict .}}
+          {{end}}
 
-      {{if eq $flag "-rm"}}
-        {{if ($di.Get $item)}}
-          {{if ne $q 0}}
-            {{$di.Set $item (sub (toInt ($di.Get $item)) $q )}}
-            {{(print $q $item " a bien été supprimé de <#" $chan ">.")}}
-          {{else }}
-            {{$di.Del $item}}
-            {{print "Tous les " $item " ont été supprimé de <#" $chan ">."}}
+        {{if eq $flag "-rm"}}
+          {{if ($di.Get $item)}}
+            {{if ne $q 0}}
+              {{$di.Set $item (sub (toInt ($di.Get $item)) $q )}}
+              {{(print $q $item " a bien été supprimé de <#" $chan ">.")}}
+            {{else }}
+              {{$di.Del $item}}
+              {{print "Tous les " $item " ont été supprimé de <#" $chan ">."}}
+            {{end}}
+          {{else}}
+          {{print "L'objet n'existe pas dans <#" $chan ">."}}
           {{end}}
-        {{else}}
-         {{print "L'objet n'existe pas dans <#" $chan ">."}}
+          {{if le (toInt ($di.Get $item)) 0}}
+            {{$di.Del $item}}
+          {{end}}
+        {{else if eq $flag "-add"}}
+          {{$di.Set $item (add ($di.Get $item) $q)}}
+          {{(print $q " " $item " a bien été rajouté dans <#" $chan ">.")}}    
+        {{else if eq $flag "-reset"}}
+          {{$depot.Del $chan}}
+          {{(print "Le channel <#" $chan "> a bien été vidé.")}}    
         {{end}}
-        {{if le (toInt ($di.Get $item)) 0}}
-          {{$di.Del $item}}
-        {{end}}
-      {{else if eq $flag "-add"}}
-        {{$di.Set $item (add ($di.Get $item) $q)}}
-        {{(print $q $item " a bien été rajouté dans <#" $chan ">.")}}    
-      {{else if eq $flag "-reset"}}
-        {{$depot.Del $chan}}
-        {{(print "Le channel <#" $chan "> a bien été vidé.")}}    
+        {{$depot.Set $chan $di}}
+      {{else}}
+        Invalide channel
       {{end}}
-      {{$depot.Set $chan $di}}
     {{else}}
       **Usage** : `$admindepot -(add|rm|reset) item channel q`
     {{end}}
@@ -85,5 +90,14 @@
     **Usage** : `$admindepot -(add|rm|reset) item channel q`
   {{end}}
   {{dbSet 0 "depot_sol" $depot}}
+{{else if and (eq $cmd "$adminview") (hasRoleID 709795313279565906)}}
+  {{$msg := ""}}
+  {{$sa := ""}}
+  {{range $i, $j := $depot}}
+    {{range $v, $k := ($depot.Get $i)}}
+      {{$msg = print "\n" $msg "🔹 <#" $i "> \n<:tr:724626754282717194>▫️" $v " : " $k }}
+    {{end}}
+  {{end}}
+  {{sendMessage nil $msg}}
 {{end}}
 {{deleteTrigger 1}}
