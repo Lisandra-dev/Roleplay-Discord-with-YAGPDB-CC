@@ -41,7 +41,7 @@
 
 {{if .CmdArgs}}
 	{{$idt := .User.ID }}
-	{{if (reFind `(\@\S*)` (index .CmdArgs 0))}}
+	{{if (reFind `(\#\S*)` (index .CmdArgs 0))}}
 		{{$t = joinStr "" (split (index .CmdArgs 0) "@")}}
 		{{$re := sdict}}
 		{{with (dbGet 0 "reroll_List")}}{{$re = sdict .Value}}{{end}}
@@ -50,7 +50,7 @@
 			{{- $idt = add $idt .}}
 		{{- end}}
 		{{$ci = title $t}}
-	{{else if not (reFind `(\@\S*)` (index .CmdArgs 0))}}
+	{{else if not (reFind `(\#\S*)` (index .CmdArgs 0))}}
 		{{with (userArg (index .CmdArgs 0))}}
 			{{$t = .}}{{$idt = $t.ID}}{{$ci = (getMember $t).Nick}}
 		{{else}}
