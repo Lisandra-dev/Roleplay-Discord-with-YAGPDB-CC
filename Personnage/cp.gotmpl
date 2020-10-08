@@ -1,0 +1,150 @@
+{{$msg := ""}}
+{{$hp := sdict }}
+{{with (dbGet 0 "HP")}}
+  {{$hp = sdict .Value}}
+{{end}}
+{{$rr := sdict}}
+{{with (dbGet 0 "reroll_List")}}
+  {{$rr = sdict .Value}}
+{{end}}
+{{$id := .User.ID }}
+{{$user := ""}}
+{{$idt := .User.ID }}
+{{$tu := ""}}
+
+
+{{if .CmdArgs}}
+  {{if ge (len .CmdArgs) 2}}
+    {{$name := reFind `(\>\S*)` .Message.Content}}
+    {{$name = joinStr "" (split $name ">")}}
+    {{$user := .Member.Nick}}
+    {{if $name}}
+      {{$user = title $name}}
+      {{$id = (toInt ($rr.Get $user))}}
+      {{$idperso := (toRune (lower $name))}}
+      {{range $idperso}}
+        {{- $id = add $id . }}
+      {{- end}}
+    {{else}}
+      {{with (userArg (index .CmdArgs 0))}}
+        {{$target = .}}
+        {{$target = $target.ID}}
+        {{$user = (getMember $target).Nick}}
+        {{if eq (len $user) 0}}
+          {{$user = .}}
+          {{$user = $user.Username}}
+        {{end}}
+      {{end}}
+    {{end}}
+
+    {{$target := reFind `(\#\S*)` .Message.Content}}
+    {{$target = joinStr "" (split $target "@")}}
+    {{if $target}}
+      {{$tu = title $target}}
+      {{$idt = (toInt ($rr.Get $tu))}}
+      {{$idperso := (toRune (lower $target))}}
+      {{range $idperso}}
+        {{- $idt = add $idt . }}
+      {{- end}}
+    {{else}}
+      {{with (userArg (index .CmdArgs 1))}}
+        {{$target := .}}
+        {{$idt = $target.ID}}
+        {{$tu = (getMember $idt).Nick}}
+        {{if eq (len $user) 0}}
+          {{$tu = .}}
+          {{$tu = $user.Username}}
+        {{end}}
+      {{end}}
+    {{end}}
+
+    {{$source := sdict}}
+    {{with (dbGet $id "stats")}}
+      {{$source = sdict .Value}}
+    {{end}}
+    {{$equip := sdict}}
+    {{with (dbGet $id "équipement")}}
+      {{$equip = sdict .Value}}
+    {{end}}
+    {{$place := sdict}}
+    {{with (dbGet $id "place")}}
+      {{$place = sdict .Value}}
+    {{end}}
+    {{$eco := sdict}}
+    {{with (dbGet $id "economy")}}
+      {{$eco = sdict .Value}}
+    {{end}}
+    {{$hpP := sdict}}
+    {{with ($hp.Get (str $id))}}
+      {{$hpP = sdict .}}
+    {{end}}
+    {{if $source}}
+      {{if (reFind `\-(del(ete)?|rm|remove|d)` .Message.Content)}}
+        {{$hp.Set (str $idt) $hpP}}
+        {{dbSet $idt "stats" $source}}
+        {{dbSet $idt "équipement" $equip}}
+        {{dbSet $idt "place" $place}}
+        {{dbSet $idt "economy" $eco}}
+        {{dbDel $id "stats"}}
+        {{dbDel $id "équipement"}}
+        {{dbDel $id "place"}}
+        {{$hp.Del (str $id)}}
+        {{dbSet 0 "HP" $hp}}
+        {{dbDel "economy"}}
+        {{$msg = print $msg "\n L'utilisateur " $user " a bien été supprimé"}}
+      {{else if (reFind `\-((é|e)change|intervert|v)` .Message.Content)}}
+        {{$tstats := sdict}}
+        {{with (dbGet $idt "stats")}}
+          {{$tstats = sdict .Value}}
+        {{end}}
+        {{$tequip := sdict}}
+        {{with (dbGet $idt "équipement")}}
+          {{$tequip = sdict .Value}}
+        {{end}}
+        {{$tplace := sdict}}
+        {{with (dbGet $idt "place")}}
+          {{$tplace = sdict .Value}}
+        {{end}}
+        {{$teco := sdict }}
+        {{with (dbGet $idt "economy")}}
+          {{$teco = sdict .Value}}
+        {{end}}
+        {{$hpT := sdict}}
+        {{with ($hp.Get (str $idt))}}
+          {{$hpT = sdict .}}
+        {{end}}
+        {{if and $tstats $tequip $tplace $teco $hpT}}
+          {{dbSet $id "stats" $tstats}}
+          {{dbSet $id "équipement" $tequip}}
+          {{dbSet $id "place" $tplace}}
+          {{dbSet $id "economy" $teco}}
+          {{dbSet $idt "stats" $source}}
+          {{dbSet $idt "équipement" $equip}}
+          {{dbSet $idt "place" $place}}
+          {{dbSet $idt "economy" $eco}}
+          {{$hp.Set (str $id) $hpT}}
+          {{$hp.Set (str $idt) $hpP}}
+          {{dbSet 0 "HP" $hp}}
+        {{else}}
+          {{$msg = print $tu " n'existe pas dans la base de donnée."}}
+        {{end}}
+      {{else}}
+        {{$msg = print "Copie de " $user " sur " $tu}}
+        {{dbSet $idt "stats" $source}}
+        {{dbSet $idt "équipement" $equip}}
+        {{dbSet $idt "place" $place}}
+        {{dbSet $idt "economy" $eco}}
+        {{$hp.Set (str $idt) $hpP}}
+        {{dbSet 0 "HP" $hp}}
+      {{end}}
+    {{else}}
+      {{$msg = print $user " n'existe pas, merci de créer un nouveau personnage."}}
+    {{end}}
+  {{else}}
+    {{$msg = print "**Usage** : `$cp @/>source @target -(échange|intervert|v|delete|rm) "}}
+  {{end}}
+{{else}}
+  {{$msg = print "**Usage** : `$cp @/>source @target -(échange|intervert|v|delete|rm) "}}
+{{end}}
+{{sendMessage nil $msg}}
+{{deleteTrigger 1}}
