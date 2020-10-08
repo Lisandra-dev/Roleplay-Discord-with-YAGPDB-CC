@@ -92,10 +92,15 @@
   {{dbSet 0 "depot_sol" $depot}}
 {{else if and (eq $cmd "$adminview") (hasRoleID 709795313279565906)}}
   {{$msg := ""}}
-  {{$sa := ""}}
-  {{range $i, $j := $depot}}
-    {{range $v, $k := ($depot.Get $i)}}
-      {{$msg = print "\n" $msg "🔹 <#" $i "> \n<:tr:724626754282717194>▫️" $v " : " $k }}
+  {{$o := ""}}
+    {{range $i, $j := $depot}}
+      {{range $v, $k := ($depot.Get $i)}}
+      {{if eq $i $o}}
+        {{$msg = print "\n" $msg "\n<:tr:724626754282717194>▫️" $v " : " $k }}
+      {{else}}
+        {{$msg = print "\n" $msg "\n 🔹 <#" $i "> \n<:tr:724626754282717194>▫️" $v " : " $k }}
+      {{end}}
+    {{$o = $i}}
     {{end}}
   {{end}}
   {{sendMessage nil $msg}}
