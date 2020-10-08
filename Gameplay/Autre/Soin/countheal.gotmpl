@@ -30,10 +30,10 @@
 	{{dbSet .Server.ID "groupe" $groupe}}
   {{$heal := sdict}}
   {{with (dbGet 0 "healer")}}
-    {{$heal := sdict .Value}}
+    {{$heal = sdict .Value}}
   {{end}}
   {{$id = str $id}}
-
+  
   {{$desc := ""}}
   	{{/* Function */}}
 	{{if gt $pa 2}}
@@ -45,7 +45,7 @@
       {{$y := $heal.Get $id}}
       {{$x := sub 8 $y}}
       {{if lt (toFloat $y) (toFloat 8)}}
-        {{$desc = joinStr "" "Il reste" (toString (toInt $x)) "/8 charges soignantes dans votre module de soin."}}
+        {{$desc = joinStr "" "Il reste " (toString (toInt $x)) "/8 charges soignantes dans votre module de soin."}}
       {{else if eq (toFloat $y) (toFloat 8)}}
         {{$desc = "Dernière charge utilisée."}}
       {{else}}
