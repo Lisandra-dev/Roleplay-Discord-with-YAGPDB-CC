@@ -74,7 +74,7 @@
 {{$mstuff := $place.Get "max_stuff"}}
 {{$mconso := $place.Get "max_conso"}}
 {{$author := (joinStr "" "Équipement [" $sstuff "/" $mstuff "] | Consommable [" $sconso "/" $mconso "]") }}
-{{$title := (joinStr " " "Équipement de" (title $user))}}
+{{$title := (joinStr " " "Équipement de" $user)}}
 
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/ha7nksE.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) "title" $title)}}
 {{addMessageReactions nil $id "◀️" "▶️" "🗑️" "📱"}}

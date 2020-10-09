@@ -13,7 +13,6 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$user = title $user}}
 
 {{$userEco := sdict}}
 {{with (dbGet $id "economy")}}
@@ -33,7 +32,7 @@
 
 {{if (dbGet 0 "mission")}}
 	{{$embed := cembed
-	"author" (sdict "name" (joinStr " " (title $user) "ERREUR — Casier inaccessible"))
+	"author" (sdict "name" (joinStr " " $user "ERREUR — Casier inaccessible"))
 	"description" "Vous ne vous trouvez actuellement pas sur le Nucleus, il vous êtes donc impossible d'accéder à votre casier !"
 	"timestamp" currentTime
 	"thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") 
@@ -83,7 +82,7 @@
 
 	{{/* hell ends */}}
 	{{end}}
-	{{$author := (joinStr " " "Casier de :" (title $user))}}
+	{{$author := (joinStr " " "Casier de :" $user)}}
 	{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
 	{{addMessageReactions nil $id "◀️" "▶️" "🗑️" "📱"}}
 {{end}}

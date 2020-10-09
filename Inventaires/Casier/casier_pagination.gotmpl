@@ -58,7 +58,7 @@
 	{{range $k,$v := $inv}}
 		{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v** : [%v]" $k $v)}}
 	{{end}}
-	{{$author := (joinStr " " "Casier de :" (title $user))}}
+	{{$author := (joinStr " " "Casier de :" $user)}}
 	
 	{{/* Pagination */}}
 		{{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}

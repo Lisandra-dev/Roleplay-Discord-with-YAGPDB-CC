@@ -56,7 +56,7 @@
 		{{$dm := ""}}
 		{{$mconso := $place.Get "max_conso"}}
 		{{$author := (joinStr "" "Équipement [" $sstuff "/" $mstuff "] | Consommable [" $sconso "/" $mconso "]") }}
-		{{$title := (joinStr " " "Équipement de" (title $user))}}
+		{{$title := (joinStr " " "Équipement de" $user)}}
 		{{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
 		{{ if eq $action "▶️" }}
 			{{ $page = add $page 1 }} {{/* Update page according to emoji */}}

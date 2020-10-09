@@ -24,7 +24,7 @@
 		{{$rr.Del $user}}
 		{{dbSet 0 "reroll_List" $rr}}
 		{{$embed := cembed
-			"description" (joinStr "" (title $user) " aka " $id " a bien été supprimé de la base de données")}}
+			"description" (joinStr "" $user " aka " $id " a bien été supprimé de la base de données")}}
 		{{sendMessage nil $embed}}
 	{{end}}
 {{end}}
