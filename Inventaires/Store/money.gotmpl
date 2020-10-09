@@ -29,7 +29,7 @@
 {{if $serverEco.Get "symbol"}}
 	{{$symbol = $serverEco.Get "symbol"}}
 {{end}}
-{{$user = joinStr " " "Porte monnaie |" (title $user)}}
+{{$user = joinStr " " "Porte monnaie |" $user}}
 
 {{/* Balance */}}
 {{$bal := (toInt ($userEco.Get "balance"))}}

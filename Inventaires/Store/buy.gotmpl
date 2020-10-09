@@ -139,7 +139,7 @@
 						{{end}}
 					{{end}}
 		      {{if not .reply}}
-					{{$user = joinStr " " "Achat | " (title $user)}}
+					{{$user = joinStr " " "Achat | " $user}}
 		        {{sendMessage nil (cembed
 		          "author" (sdict "name" $user "icon_url" $img)
 		          "description" (print "Vous avez acheté " $amount " " $initem " pour " (mult .buyprice $amount) " " $symbol ".")
@@ -156,7 +156,7 @@
 	{{dbSet .Server.ID "economy" $serverEco}}
 	{{dbSet $id "economy" $userEco}}
 {{else}}
-{{$user = joinStr " " "Achat impossible | " (title $user)}}
+{{$user = joinStr " " "Achat impossible | " $user}}
 	{{sendMessage nil (cembed
 		"author" (sdict "name" $user "icon_url" $img)
 		"description" "La boutique est actuellement indisponible ! Vous ne pouvez rien acheter. "
