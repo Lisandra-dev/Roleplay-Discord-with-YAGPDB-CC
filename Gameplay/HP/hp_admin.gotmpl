@@ -17,7 +17,6 @@
 	{{$user = .User.Username}}
 {{end}}
 
-
 {{$hp := sdict }}
 {{with (dbGet 0 "HP")}}
   {{$hp = sdict .Value}}
@@ -45,9 +44,9 @@
           {{$pvm := index .CmdArgs 2}}
           {{$reg := toInt (reFind `[0-2]` (index .CmdArgs 3))}}
           {{$en := "n"}}
-          {{if ge (len .CmdArgs) 4}}
-            {{if (reFind `e` (index .CmdArgs 4))}}
-              {{$en := "y"}}
+          {{if ge (len .CmdArgs) 5}}
+            {{if (reFind `e` (index .CmdArgs 5))}}
+              {{$en = "y"}}
             {{end}}
           {{end}}
           {{if not $reg}}
@@ -111,24 +110,24 @@
 {{if eq $cmd "?hp" "?pv"}}
   {{if not .CmdArgs}}
     {{with ($hp.Get (str $id))}}
-      {{$msg = print .Personnage " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+      {{$msg = print "**" .Personnage "** : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
     {{end}}
   {{else}}
     {{if (reFind `group(e?)` (index .CmdArgs 0))}}
       {{range $i, $j := $hp}}
         {{- if ne $j.Ennemi "y"}}
-          {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+          {{- $msg = print $msg "**" $j.Personnage "** : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
         {{end}}
       {{- end}}
     {{else if (reFind `ennemi` (index .CmdArgs 0))}}
       {{range $i, $j := $hp}}
-        {{- if eq $j.Ennemi "y"}}
-          {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+        {{- if and ($j.Ennemi) (eq $j.Ennemi "y")}}
+          {{- $msg = print $msg "**" $j.Personnage "** : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
         {{- end}}
       {{- end}}
     {{else if (reFind `all` (index .CmdArgs 0))}}
       {{range $i, $j := $hp}}
-        {{- $msg = print $msg $j.Personnage " : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
+        {{- $msg = print $msg "**" $j.Personnage "** : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
       {{- end}}
     {{else}}
       {{$name := reFind `(\>\S*)` .Message.Content}}
@@ -153,7 +152,7 @@
         {{end}}
       {{end}}
       {{with ($hp.Get (str $id))}}
-        {{$msg = print .Personnage " : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
+        {{$msg = print "**" .Personnage "** : " .pv_actuel "/" .pv_max " <:pv:712052732873408703>"}}
       {{end}}
     {{end}}
   {{end}}
