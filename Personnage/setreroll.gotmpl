@@ -39,7 +39,7 @@
 				{{$stats.Set "karma" (toInt (index .CmdArgs 11))}}
 				{{dbSet $user "stats" $stats}}
 		
-				{{print "** Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  "\n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")"\n**Implant** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
+				{{print "** Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  "\n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma") "\n**Implant** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
 
 			{{else if and (eq $cmd "-stats") (ge (len .CmdArgs) 8)}}
 				{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
