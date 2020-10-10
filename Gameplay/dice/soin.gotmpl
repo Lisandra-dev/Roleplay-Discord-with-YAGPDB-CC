@@ -125,10 +125,10 @@
 				{{$d = (toInt 0)}}
 			{{end}}
 
-			{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " (toString $x) " : " $arg1 " | " $imp " : " $idb " | Seuil : " $seuil )}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " (toString $x) " : " $arg1 " | " $imp " : " $idb}}
   	{{else}}
 			{{$d = sub $d $idb}}
-			{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt (index .CmdArgs 0)) (toInt 0) }}
@@ -195,7 +195,7 @@
 				{{end}}
 
 
-				{{$res = (joinStr "" "Dé : " $d " " $v " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil )}}
+				{{$res = print "Dé : " $d " " $v " | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb}}
 			{{else}}
 
 						{{if eq $arg 0}}
@@ -214,11 +214,11 @@
 							{{$d = (toInt 0)}}
 						{{end}}
 
-				{{$res = (joinStr "" "Dé : " (toString $d) " " $v " |  " $arg1 " : " (toString $x) " | " $imp " : " $idb " | Seuil : " $seuil)}}
+				{{$res =print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " |  " $arg1 " : " (toString $x) " | " $imp " : " $idb}}
 			{{end}}
 		{{else}}
 			{{$d = sub $d $idb}}
-			{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 		{{end}}
 	{{end}}
 
@@ -268,7 +268,7 @@
 		{{end}}
 	{{end}}
 {{else}}
-	{{$res = (joinStr "" "Dé : " (toString $d) " " $v " | " $imp " : " $idb " | Seuil : " $seuil )}}
+	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 {{end}}
 
 {{$r := ""}}
@@ -277,14 +277,14 @@
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Ultra critique** " $comm " *20 PV + Bonus.* \n"
-		"<:next:723131844643651655> *[" $res "]*" )
+		"description" (joinStr "" "**Ultra critique** " $comm "*+20 PV + Bonus.")
+		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{$rc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite critique** " $comm " *20 PV.*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
+		"description" (joinStr "" "**Réussite critique** " $comm " *+20 PV.")
+		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{$regen := sub 9 $d }}
@@ -292,21 +292,20 @@
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV.*\n"
-		"<:next:723131844643651655> *[" $res "]*" )
+		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV.*")
+		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
-
 
 {{$echec := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Echec du soin** " $comm "\n"
-		"<:next:723131844643651655> *[" $res "]*" )
+		"description" (joinStr "" "**Echec du soin** " $comm)
+		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{$ec := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Echec critique du soin**" $comm "*Votre cible écope d'une altération*...\n"
-		"<:next:723131844643651655> *[" $res "]*" )
+		"description" (joinStr "" "**Echec critique du soin**" $comm "*Votre cible écope d'une altération*...")
+		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{if eq $d (toInt 0)}}

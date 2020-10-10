@@ -149,8 +149,8 @@
 			{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
 				{{$embed := cembed
 				"author" (sdict "name" $user "icon_url" $img)
-				"description" (joinStr "" $msg "\n"
-				"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
+				"description" (joinStr "" $msg)
+				"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $imp " : " $idb "]"))
 				"color" 0x63AFE1}}
 				{{sendMessage nil $embed}}
 			{{else}}
@@ -170,8 +170,8 @@
 				{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
 					{{$embed := cembed
 					"author" (sdict "name" $user "icon_url" $img)
-					"description" (joinStr "" $msg " ▬ " $c " : " "\n"
-					"<:next:723131844643651655> [*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
+					"description" (joinStr "" $msg " ▬ " $c " : ")
+					"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $imp " : " $idb "]"))
 					"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
 
@@ -244,8 +244,8 @@
 				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
 					{{$embed := cembed
 						"author" (sdict "name" $user "icon_url" $img)
-						"description" (joinStr "" $msg "\n"
-						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $x " : " $arg1 " | " $y " " $arg2 " | " $imp " : " $idb " | Seuil : " $seuil "*]")
+						"description" (joinStr "" $msg)
+						"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $x " : " $arg1 " | " $y " " $arg2 " | " $imp " : " $idb "]"))
 						"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
 
@@ -264,9 +264,9 @@
 
 						{{$embed := cembed
 							"author" (sdict "name" $user "icon_url" $img)
-						"description" (joinStr "" $msg " ▬ " $c " : " "\n"
-						"<:next:723131844643651655>[*Dé : " $d " (" $v ") | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb " | Seuil : " $seuil "*]")
-						"color" 0x63AFE1}}
+							"description" (joinStr "" $msg " ▬ " $c " : " )
+							"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb "]"))
+							"color" 0x63AFE1}}
 						{{sendMessage nil $embed}}
 
 
@@ -309,9 +309,9 @@
 
 		{{$embed := cembed
 			"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" $msg " ▬ " (joinStr " " $c) " : " "\n"
-	"<:next:723131844643651655>[*Dé : " $d  " (" $v ") "  " | " $imp " : " $idb " | Seuil : " $seuil "* ]")
-		"color" 0x63AFE1}}
+			"description" (joinStr "" $msg " ▬ " (joinStr " " $c) " : " )
+			"footer" (sdict "text" (print "[Dé : " $d  " (" $v ") | Seuil : " $seuil  " | " $imp " : " $idb "]"))
+			"color" 0x63AFE1}}
 		{{sendMessage nil $embed}}
 	{{end}}
 
@@ -347,8 +347,8 @@
 {{end}}
 	{{$embed := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $msg "\n"
-	"<:next:723131844643651655>[*Dé : " $d "* ]")
+	"description" (joinStr "" $msg )
+	"footer" (sdict "text" (print "[Dé : " $d "]"))
 	"color" 0x63AFE1}}
 	{{sendMessage nil $embed}}
 {{end}}
