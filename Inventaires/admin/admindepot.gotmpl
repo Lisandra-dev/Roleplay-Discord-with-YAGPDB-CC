@@ -20,9 +20,11 @@
           {{$q = toInt (index .CmdArgs 3)}}
         {{end}}
         {{$chargeur = reFind `(?i)chargeur` $item}}
+        {{$check := false}}
           {{if $chargeur}}
             {{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
             {{$item = print "[CHARGEUR] " (title (lower $weap))}}
+            {{$check = true}}
           {{end}}
           {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
           {{if $compo}}
@@ -48,8 +50,8 @@
           {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
             {{$item = "[IMPLANT] " $mimp}}
           {{end}}
-          {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
-          {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
+          {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\])` $item)}}
+          {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
             {{$item = print "[A] " $item}}
           {{end}}
           {{$di := sdict}}

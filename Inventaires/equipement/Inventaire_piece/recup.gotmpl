@@ -53,11 +53,13 @@
   {{$msg = print $user " a récupéré " $nb " " $item " dans <#" $chan ">."}}
   {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
   {{$chargeur := reFind `(?i)chargeur` $item}}
+  {{$cver := false}}
   {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
   {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
   {{if $chargeur}}
     {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
     {{$item = print "[CHARGEUR] " $item}}
+    {{$cver = true}}
   {{else if $compo}}
     {{if eq $compo "bc" "BC" "Bc"}}
       {{$item = "[C] Biocomposant"}}
@@ -76,7 +78,7 @@
     {{$item = print "[MODULE] " $mimp}}
   {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
     {{$item = print "[IMPLANT] " $mimp}}
-  {{else if and (reFind `-bdg` .Message.Content) (not $compo) (not $mimp) (not $chargeur) (not $sac) (not (reFind `\[X\]` $item))}}
+  {{else if and (reFind `-bdg` .Message.Content) (not $compo) (not $mimp) (ne $cver true) (not $sac) (not (reFind `\[X\]` $item))}}
     {{$item = print "[BDG]" $item }}
   {{end}}
   {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
@@ -91,7 +93,7 @@
     {{$reste = print $item " n'existe pas."}}
   {{else}}    
     {{if or $arme (reFind `^\[E\]` $item)}}
-      {{if and (not $sac) (not $chargeur)}}
+      {{if and (not $sac) (ne $cver true)}}
         {{if le (toInt $amount) (toInt $sstuff) }}
           {{$place.Set "s_stuff" (sub $sstuff $amount)}}
           {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -123,15 +125,7 @@
           {{$di.Set $item (sub ($di.Get $item) (toInt $amount))}}
         {{end}}
       {{end}}
-    {{else if $chargeur}}
-      {{if and (le $amount (toInt $sconso))}}
-        {{$place.Set "s_conso" (sub $sconso $amount)}}
-        {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-        {{$di.Set $item (sub ($di.Get $item) (toInt $amount))}}
-      {{else}}
-        {{$reste = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
-      {{end}}
-    {{else if and (not $compo) (not ((reFind `\[X\]` $item)))}}
+    {{else if or (ne $cver true) (and (not $compo) (not ((reFind `\[X\]` $item))))}}
       {{if and (le $amount (toInt $sconso))}}
         {{$place.Set "s_conso" (sub $sconso $amount)}}
         {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}

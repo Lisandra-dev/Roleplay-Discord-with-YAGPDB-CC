@@ -46,8 +46,8 @@ Erreur : Nombre d'argument invalide.
 		{{end}}
 		
 		{{if eq $flag "-arme" "-armes"}}
-			{{$type := reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|\[A\])` .Message.Content}}
-			{{if not $type}}
+			{{$type := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|\[A\]|\[CHARGEUR\])` .Message.Content)}}
+			{{if or (not $type) (eq $type "[chargeur]")}}
         Erreur : Oublie du type d'arme (attention, grenade et projectiles ne sont pas des armes mais des consommables !)
 			{{else}}
 				{{if not (reFind `\[A\]` $item)}}

@@ -1,39 +1,10 @@
-{{$compo := sdict}}
-{{with (dbGet .Server.ID "compo")}}
-	{{$compo = sdict .Value}}
-{{end}}
-
-{{$armes := sdict}}
-{{with (dbGet 0 "armelist")}}
-	{{$armes = sdict .Value}}
-{{end}}
-
-{{$module := sdict}}
-{{with (dbGet .Server.ID "module")}}
-	{{$module = sdict .Value}}
-{{end}}
-
-{{$implant := sdict }}
-{{with (dbGet .Server.ID "implant")}}
-	{{$implant = sdict .Value}}
-{{end}}
-
-{{$chargeur := sdict}}
-{{with (dbGet 0 "chargeur_Multi")}}
-	{{$chargeur = sdict .Value}}
-{{end}}
-
-{{$soin := sdict}}
-{{with (dbGet 0 "soin")}}
-	{{$soin = sdict .Value}}
-{{end}}
-
-{{/* Inventaire personnel */}}
-
-{{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
-{{$user := .Member.Nick}}
-{{$id := .User.ID }}
+{{$compo := sdict}}{{with (dbGet .Server.ID "compo")}}{{$compo = sdict .Value}}{{end}}
+{{$armes := sdict}}{{with (dbGet 0 "armelist")}}{{$armes = sdict .Value}}{{end}}
+{{$module := sdict}}{{with (dbGet .Server.ID "module")}}{{$module = sdict .Value}}{{end}}
+{{$implant := sdict }}{{with (dbGet .Server.ID "implant")}}{{$implant = sdict .Value}}{{end}}
+{{$chargeur := sdict}}{{with (dbGet 0 "chargeur_Multi")}}{{$chargeur = sdict .Value}}{{end}}
+{{$soin := sdict}}{{with (dbGet 0 "soin")}}{{$soin = sdict .Value}}{{end}}
+{{$name := reFind `(\>\S*)` .Message.Content}}{{$name = joinStr "" (split $name ">")}}{{$user := .Member.Nick}}{{$id := .User.ID }}
 {{if $name}}
 	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
@@ -43,27 +14,10 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-
-{{$userEco := sdict}}
-{{with (dbGet $id "economy")}}
-	{{$userEco = sdict .Value}}
-{{end}}
-
-{{$serverEco := sdict}}
-{{with (dbGet .Server.ID "economy")}}
-	{{$serverEco = sdict .Value}}
-{{end}}
-
-{{/* Inventory */}}
-{{$inv := sdict}}
-{{if ($userEco.Get "Inventory")}}
-	{{$inv = sdict ($userEco.Get "Inventory")}}
-{{end}}
-
-{{/* Fonction */}}
-
+{{$userEco := sdict}}{{with (dbGet $id "economy")}}{{$userEco = sdict .Value}}{{end}}
+{{$serverEco := sdict}}{{with (dbGet .Server.ID "economy")}}{{$serverEco = sdict .Value}}{{end}}
+{{$inv := sdict}}{{if ($userEco.Get "Inventory")}}{{$inv = sdict ($userEco.Get "Inventory")}}{{end}}
 {{$flag := reFind `\-(?i)(armes?|modules?|implants?|conso|BC|LC|CB|SF|CU|bc|lc|cb|sf|cu|chargeur)` .Message.Content}}{{$bdg := reFind `\-(?i)bdg` .Message.Content}}{{$flag := lower $flag}}{{$log := ""}}{{$q := 1}}{{$item := ""}}
-
 {{if (dbGet 0 "mission")}}Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas utiliser cette commande pour le moment.
 {{else}}
 	{{if .CmdArgs}}
@@ -72,21 +26,15 @@
 			{{$item = title (index .CmdArgs 1)}}
 			{{if eq (len .CmdArgs) 3}}{{$q = toInt (index .CmdArgs 2)}}{{end}}
 			{{if eq $flag "-arme" "-armes"}}
-				{{$typ := reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|^\[A\])` .Message.Content}}
-				{{if and (eq $typ "poigne" "épée" "masse" "pistolet" "fusil" "canon") (ne $typ "[A]")}}{{$item = print "[A] " $item}}{{end}}
+				{{$typ := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|^\[A\]|^\[CHARGEUR\])` .Message.Content)}}
+				{{if and (eq $typ "poigne" "épée" "masse" "pistolet" "fusil" "canon") (ne $typ "[a]") (ne $typ "[chargeur]")}}{{$item = print "[A] " $item}}{{end}}
 				{{if reFind `-bdg` .Message.Content}}{{$item = print "[BDG] " $item}}{{end}}
-				{{if not $typ}} Erreur : Oublie du type d'arme
+				{{if or (not $typ) (eq $typ "[chargeur]")}} Erreur : Oublie du type d'arme
 				{{else}}
-					{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}
-						{{$inv.Set $item (sub ($inv.Get $item) $q)}}
-						{{if $armes.Get $item}}
-							{{$armes.Set $item (add ($armes.Get $item) $q)}}
-						{{else}}
-							{{$armes.Set $item $q}}
-						{{end}}
-					{{if le ($inv.Get $item) 0}}
-							{{$inv.Del $item}}
-						{{end}}
+					{{if and ($inv.Get $item) (ge (toInt ($inv.Get $item)) $q)}}{{$inv.Set $item (sub ($inv.Get $item) $q)}}
+						{{if $armes.Get $item}}{{$armes.Set $item (add ($armes.Get $item) $q)}}
+						{{else}}{{$armes.Set $item $q}}{{end}}
+					{{if le ($inv.Get $item) 0}}{{$inv.Del $item}}{{end}}
 						{{$log = joinStr " " $user "a posé" $q $item "dans l'inventaire du Nucleus."}}{{dbSet 0 "armelist" $armes}}
 					{{else}}{{$user}} ne possède pas {{$q}} {{$item}} pour faire cela.{{end}}
 				{{end}}

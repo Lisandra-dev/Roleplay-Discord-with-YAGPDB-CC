@@ -16,7 +16,7 @@
 {{$msg := ""}}
 
 {{if (dbGet 0 "mission")}}
-	Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas équiper d'objet !
+	{{print "Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas équiper d'objet !"}}
 {{else}}
   {{if .CmdArgs}}
     {{if $name}}
@@ -71,9 +71,11 @@
         {{end}}
       {{end}}
       {{$chargeur := reFind `(?i)chargeur` $item}}
+      {{$check := false}}
       {{if $chargeur}}
         {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
         {{$item = print "[CHARGEUR] " $item}}
+        {{$check = true}}
       {{end}}
       
       {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
@@ -94,8 +96,8 @@
       {{if $sac}}
         {{$item = print "[E] " (title (lower $sac))}}
       {{end}}
-      {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
-      {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
+      {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\])` $item)}}
+      {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
         {{$item = print "[A] " $item}}
       {{end}}
       {{$mimp := (lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item))}}
@@ -103,7 +105,7 @@
         {{$item = print "[MODULE] " (title $mimp)}}
       {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
         {{$item = print "[IMPLANT] " (title $mimp)}}
-      {{else if and (reFind `-bdg` .Message.Content) (not $mimp) (not $chargeur) (not $sac) (not $compo) (not (reFind `\[X\]` $item))}}
+      {{else if and (reFind `-bdg` .Message.Content) (not $mimp) (ne $check true) (not $sac) (not $compo) (not (reFind `\[X\]` $item))}}
         {{$item = print "[BDG] " $item}}
       {{end}}
       {{if $inv.Get $item}}
@@ -117,7 +119,7 @@
         {{else}}
           {{if le (toInt $amount) (toInt $value)}}
             {{if or $arme (reFind `^\[E\]` $item)}}
-              {{if and (not $sac) (not $chargeur) }}
+              {{if and (not $sac) (ne $check true) }}
                 {{if le $amount $sstuff }}
                   {{$place.Set "s_stuff" (sub $sstuff $amount)}}
                   {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -153,7 +155,7 @@
                   {{$equip.Set $item 1}}
                   {{$msg = joinStr "" $user " a pris " $item "du casier."}}
                 {{end}}
-              {{else if $chargeur}}
+              {{else if or (eq $check true) (and (not $compo) (not (reFind `\[X\]` $item)))}}
                 {{if and (le $amount (toInt $sconso))}}
                   {{$place.Set "s_conso" (sub $sconso $amount)}}
                   {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -165,18 +167,6 @@
                 {{else}}
                   {{$msg = joinStr " " $user "n'a pas assez de place dans son inventaire."}}
                 {{end}}
-              {{end}}
-            {{else if and (not $compo) (not (reFind `\[X\]` $item))}}
-              {{if le $amount (toInt $sconso)}}
-                {{$place.Set "s_conso" (sub $sconso $amount)}}
-                {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-                {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
-                {{if eq (str $q) "all"}}
-                  {{$amount = "tous les"}}
-                {{end}}
-                {{$msg = joinStr "" $user " a pris " $amount " " $item " du casier."}}
-              {{else}}
-                {{$msg = joinStr " " $user "n'a pas assez de place dans son inventaire."}}
               {{end}}
             {{else if or $compo (reFind `\[X\]` $item)}}
               {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
