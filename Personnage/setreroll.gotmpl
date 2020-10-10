@@ -1,32 +1,31 @@
 {{if .CmdArgs}}
-	{{if ge (len .CmdArgs 1)}}
-		{{$cmd := index .CmdArgs 1}}
+	{{if ge (len .CmdArgs) 1}}
 		{{$name := toRune (lower (index .CmdArgs 0))}}
-		{{$user := .User.ID}}
-		{{$id := .User.ID}}
-		{{$testU := reFind `<@!?\d{17,}>` .Message.Content}}
-		{{with $testU}}
-			{{$user = userArg .}}
-			{{$user = $user.ID}}
-			{{$id = $user}}
-		{{end}}
-		{{range $name}}
-			{{- $user = (add $user .)}}
-		{{- end}}
+		{{if ge (len .CmdArgs) 2}}
+			{{$cmd := index .CmdArgs 1}}
+			{{$user := .User.ID}}
+			{{$id := .User.ID}}
+			{{$testU := reFind `<@!?\d{17,}>` .Message.Content}}
+			{{with $testU}}
+				{{$user = userArg .}}
+				{{$user = $user.ID}}
+				{{$id = $user}}
+			{{end}}
+			{{range $name}}
+				{{- $user = (add $user .)}}
+			{{- end}}
 
-		{{$stats := sdict}}
-		{{with (dbGet $user "stats")}}
-			{{$stats = sdict .Value}}
-		{{end}}
-		{{$reroll := sdict}}
-		{{with (dbGet 0 "reroll_List")}}
-			{{$reroll = sdict .Value}}
-		{{end}}
-		{{$reroll.Set (title (lower (index .CmdArgs 0))) $id }}
-		{{dbSet 0 "reroll_List" $reroll}}
-		
-		{{if eq $cmd "-all"}}
-			{{if ge (len .CmdArgs 13)}}
+			{{$stats := sdict}}
+			{{with (dbGet $user "stats")}}
+				{{$stats = sdict .Value}}
+			{{end}}
+			{{$reroll := sdict}}
+			{{with (dbGet 0 "reroll_List")}}
+				{{$reroll = sdict .Value}}
+			{{end}}
+			{{$reroll.Set (title (lower (index .CmdArgs 0))) $id }}
+			{{dbSet 0 "reroll_List" $reroll}}
+			{{if ge (len .CmdArgs) 13}}
 				{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
 				{{$stats.Set "i_force" (toInt (index .CmdArgs 3)) }}
 				{{$stats.Set "endurance" (toInt (index .CmdArgs 4))}}
@@ -40,27 +39,10 @@
 				{{$stats.Set "karma" (toInt (index .CmdArgs 12))}}
 				{{dbSet $user "stats" $stats}}
 		
-		**Statistiques de {{index .CmdArgs 0}}**
-		:white_small_square: Force : {{($stats.Get "force")}}
-		:white_small_square: Endurance : {{($stats.Get "endurance")}}
-		:white_small_square: Agilité : {{($stats.Get "agi")}}
-		:white_small_square: Précision : {{($stats.Get "preci")}}
-		:white_small_square: Intelligence : {{($stats.Get "intelligence")}}
-		:white_small_square: Karma : {{($stats.Get "karma")}}
+				{{print "** Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  "\n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")}}
+				{{print "**Implant de " (index .CmdArgs 0) "** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
 
-	**Implant de {{index .CmdArgs 0}}** :
-		:white_small_square: Force : {{($stats.Get "i_force")}}
-		:white_small_square: Endurance : {{($stats.Get "i_endu")}}
-		:white_small_square: Agilité : {{($stats.Get "i_agi")}}
-		:white_small_square: Précision : {{($stats.Get "i_preci")}}
-		:white_small_square: Intelligence : {{($stats.Get "i_intel")}}
-
-		{{else}}
-			{{print "Il n'y a pas assez d'argument. \n **Usage** : `$setrr <nom> -all force implant endurance implant agilité implant précision implant intelligence implant karma"}}
-		{{end}}
-
-		{{else if eq $cmd "-stats"}}
-			{{if ge (len .CmdArgs 8)}}
+			{{else if and (eq $cmd "-stats") (ge (len .CmdArgs) 8)}}
 				{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
 				{{$stats.Set "endurance" (toInt (index .CmdArgs 3))}}
 				{{$stats.Set "agi" (toInt (index .CmdArgs 4))}}
@@ -68,43 +50,26 @@
 				{{$stats.Set "intelligence" (toInt (index .CmdArgs 6))}}
 				{{$stats.Set "karma" (toInt (index .CmdArgs 7))}}
 				{{dbSet $user "stats" $stats}}
-		**Statistiques de {{index .CmdArgs 0}}**
-		:white_small_square: Force : {{($stats.Get "force")}}
-		:white_small_square: Endurance : {{($stats.Get "endurance")}}
-		:white_small_square: Agilité : {{($stats.Get "agi")}}
-		:white_small_square: Précision : {{($stats.Get "preci")}}
-		:white_small_square: Intelligence : {{($stats.Get "intelligence")}}
-		:white_small_square: Karma : {{($stats.Get "karma")}}
-			{{else}}
-				{{print "Il n'y a pas assez d'argument.\n **Usage** `$setrr <nom> -stats force endurance agilité précision intelligence karma"}}
-			{{end}}
-		{{else if eq $cmd "-implant"}}
-			{{if ge (len .CmdArgs) 7}}
+				{{print "**Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  " \n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")}}
+
+			{{else if and (eq $cmd "-implant") ( ge (len .CmdArgs) 7)}}
 				{{$stats.Set "i_force" (toInt (index .CmdArgs 2)) }}
 				{{$stats.Set "i_endu" (toInt (index .CmdArgs 3))}}
 				{{$stats.Set "i_agi" (toInt (index .CmdArgs 4))}}
 				{{$stats.Set "i_preci" (toInt (index .CmdArgs 5))}}
 				{{$stats.Set "i_intel" (toInt (index .CmdArgs 6))}}
 				{{dbSet $user "stats" $stats}}
-		**Implant de {{index .CmdArgs 0}}** :
-		:white_small_square: Force : {{($stats.Get "i_force")}}
-		:white_small_square: Endurance : {{($stats.Get "i_endu")}}
-		:white_small_square: Agilité : {{($stats.Get "i_agi")}}
-		:white_small_square: Précision : {{($stats.Get "i_preci")}}
-		:white_small_square: Intelligence : {{($stats.Get "i_intel")}}
+				{{print "**Implant de " (index .CmdArgs 0) "** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n  :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
 			{{else}}
-				{{print "Il n'y a pas assez d'argument \n **Usage** : `$setrr <nom> -implant force endurance agilité précision intelligence"}}
+				{{print "**Usage** : `$setrr nom (@mention) -(stats|implant) Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`\n> La mention n'est pas obligatoire*"}}
 			{{end}}
 		{{else}}
-		**Usage** : `$setrr nom (@mention) <-(all|stats|implant)> Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`
-		> La mention n'est pas obligatoire
+			{{print "**Usage** : `$setrr nom (@mention) -(stats|implant) Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`\n > La mention n'est pas obligatoire"}}
 		{{end}}
 	{{else}}
-**Usage** : `$setrr nom (@mention) <-(all|stats|implant)> Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`
-> La mention n'est pas obligatoire*
-{{end}}
+		{{print "Il n'y a pas de flag ! N'oubliez pas d'indiquer ce que vous souhaitez mettre. \n**Usage** : `$setrr nom (@mention) -(stats|implant) Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`\n> La mention n'est pas obligatoire"}}
+	{{end}}
 {{else}}
-**Usage** : `$setrr nom (@mention) <-(all|stats|implant)> Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`
-> La mention n'est pas obligatoire
+	{{print "Il n'y a pas de flag ! N'oubliez pas d'indiquer ce que vous souhaitez mettre. \n**Usage** : `$setrr nom (@mention) -(stats|implant) Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`\n> La mention n'est pas obligatoire"}}
 {{end}}
 {{deleteTrigger 1}}
