@@ -1,102 +1,63 @@
-{{$desc := ""}}
-{{$col := 16777215}}
-{{$p := 0}}
-{{$r := .Member.Roles}}
-{{range .Guild.Roles}}
-	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
-	{{$p = .Position}}
-	{{$col = .Color}}
-	{{end}}
-{{end}}
-
-{{$chan := "735938256038002818"}}
-
-{{/* Groupe dictionnaire */}}
-
-{{$groupe := sdict}}
-{{with (dbGet .Server.ID "groupe")}}
-	{{$groupe = sdict .Value}}
-{{end}}
-
-{{/* Get joueur */}}
-
-{{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
-{{$user := .Member.Nick}}
-{{$id:= .User.ID}}
-{{if $name}}
-	{{$user = title $name}}
-	{{$idperso := (toRune (lower $name))}}
-	{{range $idperso}}
-		{{- $id = add $id . }}
-	{{- end}}
-{{else if eq (len $user) 0}}
-	{{$user = .User.Username}}
-{{end}}
-
-{{$idict := str $id}}
-
-{{/* Compétence */}}
-{{$nameatq := (dbGet $id "cdatq").Value}}
-{{$namesupp := (dbGet $id "cdsupp").Value}}
-{{$atq := (toInt (dbGet $id $nameatq).Value)}}
-{{$supp := (toInt (dbGet $id $namesupp).Value)}}
-
-{{/* PA ID search */}}
-{{$bool := false}}
-{{range $i, $j := $groupe}}
-	{{- if eq $idict $i}}
-		{{- $bool = true}}
-	{{- end -}}
-{{end}}
-
-{{if eq $bool false}}
-	{{$groupe.Set $idict 2}}
-	{{$desc = joinStr " " "2 PA RESTANTS."}}
-	{{if $nameatq}}
-		{{if lt $atq 6}}
-			{{$x:= dbIncr $id $atq 2}}
-		{{else if ge $atq 6}}
-			{{dbDel $id "cdatq"}}
-			{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-				"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
-				"color" 0xDFAA58}}
-			{{ $idM := sendMessageRetID $chan $embed }}
-			{{dbDel $id $atq}}
+{{$cat := .Channel.ParentID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}
+	{{$desc := ""}}
+	{{$col := 16777215}}
+	{{$p := 0}}
+	{{$r := .Member.Roles}}
+	{{range .Guild.Roles}}
+		{{if and (in $r .ID) (.Color) (lt $p .Position)}}
+		{{$p = .Position}}
+		{{$col = .Color}}
 		{{end}}
 	{{end}}
 
-	{{if $namesupp}}
-		{{if lt $supp 8}}
-			{{$x := dbIncr $id $supp 2}}
-		{{else if eq $supp 4}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-					"description" (joinStr "" "Support : " $namesupp " terminé.")
-					"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID $chan $embed }}
-		{{else if ge $supp 8}}
-			{{dbDel $id "cdsupp"}}
-			{{ $embed := cembed
-				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-				"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
-				"color" 0xDFAA58}}
-			{{ $idM := sendMessageRetID $chan $embed }}
-			{{dbDel $id $supp}}
-		{{end}}
+	{{$chan := "735938256038002818"}}
+
+	{{/* Groupe dictionnaire */}}
+
+	{{$groupe := sdict}}
+	{{with (dbGet .Server.ID "groupe")}}
+		{{$groupe = sdict .Value}}
 	{{end}}
 
-	{{else}}
-		{{$j := $groupe.Get $idict}}
-		{{$j = sub $j 2}}
-		{{if ge $j 0}}
-			{{$desc = joinStr " " $j "PA RESTANT(S)"}}
-			{{if $nameatq}}
+	{{/* Get joueur */}}
+
+	{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
+	{{$user := .Member.Nick}}
+	{{$id:= .User.ID}}
+	{{if $name}}
+		{{$user = title $name}}
+		{{$idperso := (toRune (lower $name))}}
+		{{range $idperso}}
+			{{- $id = add $id . }}
+		{{- end}}
+	{{else if eq (len $user) 0}}
+		{{$user = .User.Username}}
+	{{end}}
+
+	{{$idict := str $id}}
+
+	{{/* Compétence */}}
+	{{$nameatq := (dbGet $id "cdatq").Value}}
+	{{$namesupp := (dbGet $id "cdsupp").Value}}
+	{{$atq := (toInt (dbGet $id $nameatq).Value)}}
+	{{$supp := (toInt (dbGet $id $namesupp).Value)}}
+
+	{{/* PA ID search */}}
+	{{$bool := false}}
+	{{range $i, $j := $groupe}}
+		{{- if eq $idict $i}}
+			{{- $bool = true}}
+		{{- end -}}
+	{{end}}
+
+	{{if eq $bool false}}
+		{{$groupe.Set $idict 2}}
+		{{$desc = joinStr " " "2 PA RESTANTS."}}
+		{{if $nameatq}}
 			{{if lt $atq 6}}
-				{{$x:= dbIncr $id $nameatq 2}}
-			{{else if eq $atq 6}}
+				{{$x:= dbIncr $id $atq 2}}
+			{{else if ge $atq 6}}
 				{{dbDel $id "cdatq"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
@@ -106,17 +67,18 @@
 				{{dbDel $id $atq}}
 			{{end}}
 		{{end}}
+
 		{{if $namesupp}}
 			{{if lt $supp 8}}
-				{{$x := dbIncr $id $namesupp 2}}
+				{{$x := dbIncr $id $supp 2}}
 			{{else if eq $supp 4}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-					"description" (joinStr "" "Support : " $namesupp " terminé.")
-					"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID $chan $embed }}
-			{{else if eq $supp 8}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+						"description" (joinStr "" "Support : " $namesupp " terminé.")
+						"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID $chan $embed }}
+			{{else if ge $supp 8}}
 				{{dbDel $id "cdsupp"}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
@@ -126,18 +88,58 @@
 				{{dbDel $id $supp}}
 			{{end}}
 		{{end}}
-	{{else if lt $j 0}}
-		{{$j = 0}}
-		{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION. "}}
+
+		{{else}}
+			{{$j := $groupe.Get $idict}}
+			{{$j = sub $j 2}}
+			{{if ge $j 0}}
+				{{$desc = joinStr " " $j "PA RESTANT(S)"}}
+				{{if $nameatq}}
+				{{if lt $atq 6}}
+					{{$x:= dbIncr $id $nameatq 2}}
+				{{else if eq $atq 6}}
+					{{dbDel $id "cdatq"}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
+						"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID $chan $embed }}
+					{{dbDel $id $atq}}
+				{{end}}
+			{{end}}
+			{{if $namesupp}}
+				{{if lt $supp 8}}
+					{{$x := dbIncr $id $namesupp 2}}
+				{{else if eq $supp 4}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+						"description" (joinStr "" "Support : " $namesupp " terminé.")
+						"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID $chan $embed }}
+				{{else if eq $supp 8}}
+					{{dbDel $id "cdsupp"}}
+					{{ $embed := cembed
+						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+						"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
+						"color" 0xDFAA58}}
+					{{ $idM := sendMessageRetID $chan $embed }}
+					{{dbDel $id $supp}}
+				{{end}}
+			{{end}}
+		{{else if lt $j 0}}
+			{{$j = 0}}
+			{{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION. "}}
+		{{end}}
+		{{$groupe.Set $idict $j}}
 	{{end}}
-	{{$groupe.Set $idict $j}}
+
+
+	{{$embed := cembed
+		"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
+		"description" $desc
+		"color" $col}}
+		{{$idPA := sendMessageRetID nil $embed}}
+		{{deleteMessage nil $idPA 30}}
+	{{dbSet .Server.ID "groupe" $groupe}}
 {{end}}
-
-
-{{$embed := cembed
-	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
-	"description" $desc
-	"color" $col}}
-	{{$idPA := sendMessageRetID nil $embed}}
-	{{deleteMessage nil $idPA 30}}
-{{dbSet .Server.ID "groupe" $groupe}}

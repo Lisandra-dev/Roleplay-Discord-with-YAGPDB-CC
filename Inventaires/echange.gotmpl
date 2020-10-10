@@ -14,7 +14,7 @@
 {{/* DB */}}
 {{$sE := sdict}}{{with (dbGet .Server.ID "economy")}}{{$sE = sdict .Value}}{{end}}
 {{if $sE.Get "symbol"}}{{$mon = $sE.Get "symbol"}}{{end}}
-{{$n := reFind `(\>\S*)` .Message.Content}}{{$n = joinStr "" (split $n ">")}}{{$u := .Member.Nick}}{{$id := .user.ID }}
+{{$n := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}{{$n = joinStr "" (split $n ">")}}{{$n = joinStr "" (split $n "<")}}{{$u := .Member.Nick}}{{$id := .user.ID }}
 {{if $n}}
 	{{$u = $n}}
 	{{$re := sdict}}
@@ -34,8 +34,8 @@
 
 {{if .CmdArgs}}
 	{{$idt := .User.ID }}
-	{{if (reFind `(\#\S*)` (index .CmdArgs 0))}}
-		{{$t = joinStr "" (split (index .CmdArgs 0) "@")}}
+	{{if or (reFind `(\#\S*)` (index .CmdArgs 0)) (reFind `(\$(.*)\$)` (index .CmdArgs 0))}}
+		{{$t = joinStr "" (split (index .CmdArgs 0) "#")}}{{$t = joinStr "" (split (index .CmdArgs 0) "$")}}
 		{{$re := sdict}}
 		{{with (dbGet 0 "reroll_List")}}{{$re = sdict .Value}}{{end}}
 		{{$idt = (toInt ($re.Get (title $t)))}}{{$idC := (toRune (lower $t))}}
@@ -43,7 +43,7 @@
 			{{- $idt = add $idt .}}
 		{{- end}}
 		{{$ci = title $t}}
-	{{else if not (reFind `(\#\S*)` (index .CmdArgs 0))}}
+	{{else if or (not (reFind `(\#\S*)` (index .CmdArgs 0))) (not (reFind `(\$(.*)\$)` (index .CmdArgs 0)))}}
 		{{with (userArg (index .CmdArgs 0))}}
 			{{$t = .}}{{$idt = $t.ID}}{{$ci = (getMember $t).Nick}}
 		{{else}}

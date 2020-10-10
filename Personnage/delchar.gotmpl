@@ -1,5 +1,4 @@
-{{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
 {{$user := .User.Username }}
 {{$id := .User.ID}}
 {{if .CmdArgs}}
@@ -20,6 +19,47 @@
 	{{if not (dbGet $id "stats")}}
 		Le personnage n'était pas dans la base de données !
 	{{else}}
+		{{$groupe := sdict}}
+		{{with (dbGet .Server.ID "groupe")}}
+			{{$groupe = sdict .Value}}
+		{{end}}
+
+		{{$bool := "false"}}
+		{{range $i, $j := $groupe}}
+			{{- if eq (str $id) $i}}
+				{{- $bool = "true"}}
+			{{- end -}}
+		{{end}}
+		{{dbDel $id "recharge"}}
+		{{dbDel $id "arme"}}
+		{{$atq := (dbGet $id "cdatq").Value}}
+		{{$supp := (dbGet $id "cdsupp").Value}}
+		{{dbDel $id $atq}}
+		{{dbDel $id $supp}}
+		{{dbDel $id "cdatq"}}
+		{{dbDel $id "cdsupp"}}
+
+		{{if eq $bool "true"}}
+			{{$groupe.Del (str $id)}}
+		{{end}}
+		{{dbSet .Server.ID "groupe" $groupe}}
+		{{$heal := sdict}}
+		{{with (dbGet 0 "healer")}}
+			{{$heal = sdict .Value}}
+		{{end}}
+		{{if $heal.Get (str $id)}}
+			{{$heal.Del (str $id)}}
+			{{dbSet 0 "healer" $heal}}
+		{{end}}
+		
+		{{$hp := sdict }}
+		{{with (dbGet 0 "HP")}}
+			{{$hp = sdict .Value}}
+		{{end}}
+		{{if $hp.Get (str $id)}}
+      {{$hp.Del (str $id)}}
+			{{dbSet 0 "HP" $hp}}
+		{{end}}
 		{{dbDel $id "stats"}}
 		{{$rr.Del $user}}
 		{{dbSet 0 "reroll_List" $rr}}

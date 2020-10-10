@@ -5,7 +5,8 @@ It will also count the number of balls used, and will return this message to tel
 If you change the value of the if, you must change the value in the "$x := sub".  */}}
 
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
-{{if not (reFind `(\x60(.*)\x60)` .Message.Content) }}
+{{$cat := .Channel.ParentID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}
 	{{/* Groupe dictionnaire */}}
 	{{$groupe := sdict}}
 	{{with (dbGet .Server.ID "groupe")}}
@@ -13,8 +14,9 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{end}}
 
 	{{/* Get player */}}
-	{{$name := reFind `(\>\S*)` .Message.Content}}
+	{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
 	{{$name = joinStr "" (split $name ">")}}
+		{{$name = joinStr "" (split $name "<")}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}

@@ -1,6 +1,5 @@
 {{/* Databases */}}
-{{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if (userArg (index .CmdArgs 1))}}
@@ -94,8 +93,8 @@
         {{$sf := mult ($i.Get "Substrat Ferreux") $q}}
         {{$lc := mult ($i.Get "Liquide Cytomorphe") $q}}
         {{$cb := mult ($i.Get "Cellule Bionotropique") $q}}
-        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\])` $item)}}
-        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]")}}
+        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\])` $item)}}
+        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
           {{$item = print "[A] " $item}}
         {{end}}
 

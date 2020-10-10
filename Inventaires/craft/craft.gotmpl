@@ -15,8 +15,7 @@
 
 {{/* Personnage */}}
 
-{{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
@@ -224,7 +223,7 @@
 					{{sendMessage nil $log}}
 				{{else}}
 					{{$msg := joinStr "" "Le Nucleus n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
-					{{sendMessage nil $log}}
+					{{sendMessage nil $msg}}
 				{{end}}
 
 			{{else if $univ }}
@@ -246,7 +245,7 @@
 				{{end}}
 			{{else}}
 				{{$msg := joinStr "" $user "n'a pas les composants nécessaires pour fabriquer" $q " " $item "."}}
-				{{sendMessage nil $log}}
+				{{sendMessage nil $msg}}
 			{{end}}
 		{{else}}
 		{{$msg = "L'objet ne possède pas de recette."}}

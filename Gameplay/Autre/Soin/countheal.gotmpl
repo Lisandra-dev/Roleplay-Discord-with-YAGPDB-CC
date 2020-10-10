@@ -1,15 +1,16 @@
 {{$img := "https://i.imgur.com/fWnxoZ4.png"}}
 
-{{if not (reFind `(\x60(.*)\x60)` .Message.Content) }}
-	{{/* Groupe dictionnaire */}}
+{{$img := "https://i.imgur.com/YeIsRmw.png"}}
+{{$cat := .Channel.ParentID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}	{{/* Groupe dictionnaire */}}
 	{{$groupe := sdict}}
 	{{with (dbGet .Server.ID "groupe")}}
 		{{$groupe = sdict .Value}}
 	{{end}}
 
   {{/* Get player */}}
-	{{$name := reFind `(\>\S*)` .Message.Content}}
-	{{$name = joinStr "" (split $name ">")}}
+  {{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
+	{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}

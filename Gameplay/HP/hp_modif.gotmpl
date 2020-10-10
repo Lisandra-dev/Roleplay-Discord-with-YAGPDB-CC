@@ -21,8 +21,8 @@
       {{$la = title $la}}
     {{end}}
   {{end}}
-  {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
-  {{$name = joinStr "" (split $name ">")}}
+  {{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
+	{{$name = joinStr "" (split $name "<")}}  {{$name = joinStr "" (split $name ">")}}
   {{if $name}}
     {{$user = title $name}}
     {{$rr := sdict}}

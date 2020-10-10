@@ -1,5 +1,7 @@
-{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
 {{$name = joinStr "" (split $name ">")}}
+{{$name = joinStr "" (split $name "<")}}
+
 {{$user := .Member.Nick}}
 {{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
@@ -78,6 +80,8 @@
 	{{if $name}}
 		{{$c = joinStr " " (split $c $name) }}
 		{{$c = joinStr " " (split $c ">")}}
+		{{$c = joinStr " " (split $c "<")}}
+
 	{{end}}
 
 	{{if $manuel}}
@@ -163,6 +167,7 @@
 				{{if $name}}
 					{{$c = joinStr " " (split $c $name)}}
 					{{$c = joinStr " " (split $c ">")}}
+					{{$c = joinStr " " (split $c "<")}}
 				{{end}}
 
 				{{$c = joinStr " " $c }}
@@ -258,6 +263,8 @@
 					{{if $name}}
 						{{$c = joinStr " " (split $c $name)}}
 						{{$c = joinStr " " (split $c ">")}}
+						{{$c = joinStr " " (split $c "<")}}
+
 					{{end}}
 
 					{{$c = joinStr " " $c }}
