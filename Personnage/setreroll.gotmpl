@@ -25,22 +25,21 @@
 			{{end}}
 			{{$reroll.Set (title (lower (index .CmdArgs 0))) $id }}
 			{{dbSet 0 "reroll_List" $reroll}}
-			{{if ge (len .CmdArgs) 13}}
-				{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
-				{{$stats.Set "i_force" (toInt (index .CmdArgs 3)) }}
-				{{$stats.Set "endurance" (toInt (index .CmdArgs 4))}}
-				{{$stats.Set "i_endu" (toInt (index .CmdArgs 5))}}
-				{{$stats.Set "agi" (toInt (index .CmdArgs 6))}}
-				{{$stats.Set "i_agi" (toInt (index .CmdArgs 7))}}
-				{{$stats.Set "preci" (toInt (index .CmdArgs 8))}}
-				{{$stats.Set "i_preci" (toInt (index .CmdArgs 9))}}
-				{{$stats.Set "intelligence" (toInt (index .CmdArgs 10))}}
-				{{$stats.Set "i_intel" (toInt (index .CmdArgs 11))}}
-				{{$stats.Set "karma" (toInt (index .CmdArgs 12))}}
+			{{if ge (len .CmdArgs) 12}}
+				{{$stats.Set "force" (toInt (index .CmdArgs 1)) }}
+				{{$stats.Set "i_force" (toInt (index .CmdArgs 2)) }}
+				{{$stats.Set "endurance" (toInt (index .CmdArgs 3))}}
+				{{$stats.Set "i_endu" (toInt (index .CmdArgs 4))}}
+				{{$stats.Set "agi" (toInt (index .CmdArgs 5))}}
+				{{$stats.Set "i_agi" (toInt (index .CmdArgs 6))}}
+				{{$stats.Set "preci" (toInt (index .CmdArgs 7))}}
+				{{$stats.Set "i_preci" (toInt (index .CmdArgs 8))}}
+				{{$stats.Set "intelligence" (toInt (index .CmdArgs 9))}}
+				{{$stats.Set "i_intel" (toInt (index .CmdArgs 10))}}
+				{{$stats.Set "karma" (toInt (index .CmdArgs 11))}}
 				{{dbSet $user "stats" $stats}}
 		
-				{{print "** Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  "\n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")}}
-				{{print "**Implant de " (index .CmdArgs 0) "** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
+				{{print "** Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  "\n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")"\n**Implant** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
 
 			{{else if and (eq $cmd "-stats") (ge (len .CmdArgs) 8)}}
 				{{$stats.Set "force" (toInt (index .CmdArgs 2)) }}
