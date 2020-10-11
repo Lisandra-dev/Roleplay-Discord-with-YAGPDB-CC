@@ -54,7 +54,11 @@
       {{$val := toInt (index .CmdArgs 1)}}
       {{if le $val 0}}
         {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-        {{$msg = print $la " a blessé " $user " de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{if eq ($pv.Get "Ennemi") "n"}}
+          {{$msg = print $la " a blessé " $user " de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{else}}
+          {{$msg = print $la " a blessé " $user " de " $val " " $h}}
+        {{end}}
         {{$hp.Set (str $id) $pv}}
         {{if le (toInt ($pv.Get "pv_actuel")) 0}}
           {{if eq ($pv.Get "mush") 0}}
@@ -70,7 +74,11 @@
         {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
           {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
         {{end}}
-        {{$msg = print $la " a soigné " $user " de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{if eq ($pv.Get "Ennemi") "n"}}
+          {{$msg = print $la " a soigné " $user " de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+        {{else}}
+          {{$msg = print $la " a soigné " $user " de " $val " " $h}}
+        {{end}}
         {{$hp.Set (str $id) $pv}}
         {{dbSet 0 "HP" $hp}}
       {{end}}
@@ -97,7 +105,11 @@
     {{$val := toInt (index .CmdArgs 0)}}
     {{if lt $val 0}}
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
-      {{$msg = print $user " a perdu " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
+      {{if eq ($pv.Get "Ennemi") "n"}}
+        {{$msg = print $user " a perdu " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
+      {{else}}
+        {{$msg = print $user " a perdu " $val " " $h}}
+      {{end}}
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
         {{if eq ($pv.Get "mush") 0}}
@@ -113,7 +125,11 @@
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
-      {{$msg =  print $user " s'est soigné(e) de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+      {{if eq ($pv.Get "Ennemi") "n"}}
+        {{$msg =  print $user " s'est soigné(e) de " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ")."}}
+      {{else}}
+        {{$msg =  print $user " s'est soigné(e) de " $val " " $h}}
+      {{end}}      
       {{if ge (toInt ($pv.Get "pv_actuel")) (toInt ($pv.Get "pv_max"))}}
         {{$pv.Set "pv_actuel" ($pv.Get "pv_max")}}
       {{end}}
@@ -124,7 +140,9 @@
 {{else}}
   {{$info := ""}}
   {{with ($hp.Get (str $id))}}
-    {{$info = print "**" .Personnage "**" " : " .pv_actuel "/" .pv_max " " $h "."}}
+    {{if ne .Ennemi "n"}}
+      {{$info = print "**" .Personnage "**" " : " .pv_actuel "/" .pv_max " " $h "."}}
+    {{end}}
   {{end}}
   {{sendMessage nil $info}}
 {{end}}
