@@ -44,7 +44,7 @@
           {{$pvm := index .CmdArgs 2}}
           {{$reg := toInt (reFind `[0-2]` (index .CmdArgs 3))}}
           {{$en := "n"}}
-          {{if ge (len .CmdArgs) 5}}
+          {{if ge (len .CmdArgs) 6}}
             {{if (reFind `e` (index .CmdArgs 5))}}
               {{$en = "y"}}
             {{end}}

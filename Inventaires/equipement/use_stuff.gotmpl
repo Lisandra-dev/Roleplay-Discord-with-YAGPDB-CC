@@ -32,7 +32,7 @@
   {{$hpS = sdict .Value}}
 {{end}}
 {{$hp := sdict}}
-{{with ($hpS.Get $user)}}
+{{with ($hpS.Get (str $id))}}
   {{$hp = sdict .}}
 {{end}}
 
