@@ -1,7 +1,6 @@
 {{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
 {{$name = joinStr "" (split $name ">")}}
 {{$name = joinStr "" (split $name "<")}}
-
 {{$user := .Member.Nick}}
 {{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
@@ -14,6 +13,7 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 {{$stats := sdict}}
 {{with (dbGet $id "stats")}}
@@ -81,7 +81,6 @@
 		{{$c = joinStr " " (split $c $name) }}
 		{{$c = joinStr " " (split $c ">")}}
 		{{$c = joinStr " " (split $c "<")}}
-
 	{{end}}
 
 	{{if $manuel}}

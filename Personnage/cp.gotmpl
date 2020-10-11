@@ -34,8 +34,7 @@
           {{$user = $user.Username}}
         {{end}}
       {{end}}
-    {{end}}
-
+    {{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
     {{$target := or (reFind `(\#\S*)` .Message.Content) (reFind `(\$(.*)\$)` .Message.Content)}}
     {{$target = joinStr "" (split $target "#")}}{{$target = joinStr "" (split $target "$")}}
     {{if $target}}
@@ -55,7 +54,7 @@
           {{$tu = $user.Username}}
         {{end}}
       {{end}}
-    {{end}}
+    {{end}}{{with ($hpS.Get (str $idt))}}{{$tu = .Personnage}}{{end}}
 
     {{$source := sdict}}
     {{with (dbGet $id "stats")}}

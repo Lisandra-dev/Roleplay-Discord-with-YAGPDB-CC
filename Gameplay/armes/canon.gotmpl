@@ -28,6 +28,7 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{else if eq (len $user) 0}}
 		{{$user = .User.Username}}
 	{{end}}
+	{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 
 	{{/* get PA */}}

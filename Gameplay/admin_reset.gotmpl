@@ -25,7 +25,8 @@
 			{{- $id = add $id . }}
    		 {{- end}}
 	{{end}}
-{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+
 {{$idict := str $id}}
 
 {{$groupe := sdict}}

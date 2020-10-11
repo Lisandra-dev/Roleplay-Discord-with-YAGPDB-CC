@@ -26,7 +26,7 @@
 	{{- end}}
 {{else if eq (len $u) 0}}
 	{{$u = .User.Username}}
-{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$u = .Personnage}}{{end}}
 {{$u = title $u}}{{$t := ""}}
 {{$uEco := sdict}}{{with (dbGet $id "economy")}}{{$uEco = sdict .Value}}{{end}}
 {{$inv := sdict}}{{with (dbGet $id "équipement")}}{{$inv = sdict .Value}}{{end}}
@@ -42,7 +42,6 @@
 		{{range $idC}}
 			{{- $idt = add $idt .}}
 		{{- end}}
-		{{$ci = title $t}}
 	{{else if or (not (reFind `(\#\S*)` (index .CmdArgs 0))) (not (reFind `(\$(.*)\$)` (index .CmdArgs 0)))}}
 		{{with (userArg (index .CmdArgs 0))}}
 			{{$t = .}}{{$idt = $t.ID}}{{$ci = (getMember $t).Nick}}
@@ -51,7 +50,7 @@
 		{{end}}
 	{{else}}
 		{{$idt = 0}}
-	{{end}}
+	{{end}}{{$ci = title $t}}{{with ($hpS.get (str $idt))}}{{$ci = .Personnage}}{{end}}
 	{{$args := index .CmdArgs 1}}{{with (dbGet $idt "economy")}}{{$tEco = sdict .Value}}{{end}}
 
 	{{if ne (toInt $args) 0}}

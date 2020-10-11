@@ -21,11 +21,10 @@
   {{if .CmdArgs}}
     {{if $name}}
       {{$target = $id}}
-      {{$user = $name}}
     {{else}}
       {{$target = .User.ID}}
-      {{$user = (getMember $target).Nick}}
     {{end}}
+    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
     {{$userEco := sdict}}
     {{if $target}}
       {{with (dbGet $target "economy")}}

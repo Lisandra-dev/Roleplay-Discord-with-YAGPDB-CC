@@ -13,7 +13,7 @@
 	{{- end}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 {{$userEco := sdict}}{{with (dbGet $id "economy")}}{{$userEco = sdict .Value}}{{end}}
 {{$serverEco := sdict}}{{with (dbGet .Server.ID "economy")}}{{$serverEco = sdict .Value}}{{end}}
 {{$inv := sdict}}{{if ($userEco.Get "Inventory")}}{{$inv = sdict ($userEco.Get "Inventory")}}{{end}}

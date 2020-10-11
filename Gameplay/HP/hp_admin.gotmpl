@@ -21,6 +21,8 @@
 {{with (dbGet 0 "HP")}}
   {{$hp = sdict .Value}}
 {{end}}
+{{with ($hp.Get (str $id))}}{{$user = .Personnage}}{{end}}
+
 {{$cmd := lower (reFind `(?i)(\$(adminhp|hpadmin)|\?(hp|pv))` .Message.Content)}}
 {{$msg := ""}}
 

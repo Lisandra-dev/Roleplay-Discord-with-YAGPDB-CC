@@ -42,7 +42,7 @@
     {{if eq (len $user) 0}}
       {{$user = (userArg (index .CmdArgs 0)).Username}}
     {{end}}
-  {{end}}
+  {{end}}{{with ($hp.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
   {{$pv := sdict}}
   {{with ($hp.Get (str $id))}}

@@ -12,9 +12,7 @@
 	{{- end}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}
-
-
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 {{/* Databases */}}
 {{$store := (dbGet .Server.ID "store").Value}}
 {{$userEco := sdict}}
