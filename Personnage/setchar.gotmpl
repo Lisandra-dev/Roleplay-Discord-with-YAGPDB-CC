@@ -1,10 +1,15 @@
 {{$user:= .User.ID}}
+{{$arg := ""}}
 {{with (reFind `<@!?\d{17,}>` .Message.Content)}}
-	{{$user = userArg .}}
-	{{$user = $user.ID}}
+	{{$arg = userArg .}}
+	{{$user = $arg.ID}}
+{{end}}
+{{$char := getMember ($user).Nick}}
+{{if eq (len $char) 0}}
+	{{$char = $arg.Username}}
 {{end}}
 {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
-{{$hpS.Set (str $id) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $user "Ennemi" "n")}}
+{{$hpS.Set (str $user) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $user "Ennemi" "n")}}
       
 
 {{/* Stats dictionnaire */}}
