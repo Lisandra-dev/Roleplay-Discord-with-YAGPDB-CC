@@ -22,9 +22,9 @@
     {{$ochan := str .Channel.ID}}
     {{$chan := ""}}
     {{$chan = reFind `\<\#\d{17,}\>` .Message.Content}}
-    {{$chan = joinStr "" (split $chan "#")}}
-    {{$chan = joinStr "" (split $chan "<")}}
-    {{$chan = joinStr "" (split $chan ">")}}
+    {{$chan = reReplace "#" $chan ""}}
+    {{$chan = reReplace ">" $chan ""}}
+    {{$chan = reReplace "<" $chan ""}}
     {{$nchan := str $chan}}
     {{$na := getChannel $chan}}
     {{$na = $na.Name}}
@@ -64,7 +64,10 @@
       {{$n := ""}}
       {{range $i, $j := $ori}}
       {{$o = print $o "▫️ **" $j "**\n"}}
-      {{end}} 
+      {{end}}
+      {{if eq (len $o) 0}}
+        {{$o = "Cette pièce est vide..."}}
+      {{end}}
       {{range $i, $j := $nri}}
         {{$n = print $n "▫️ **" $j "**\n"}}
       {{end}}
@@ -74,8 +77,10 @@
       
       {{$omsg := cembed 
         "title" (print $oname)
-        "Description" (joinStr " " "Personnes présentes : \n" $o )
-        "timestamp" .Current.Time}}
+        "Description" (joinStr " " $o )
+        "timestamp" .Current.Time
+        "color" 0x8c385f
+        "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")}}
       {{editMessage (toInt $ochan) $ido (complexMessageEdit "embed" $omsg "content" "")}}
       {{$nmsg := cembed 
         "title" (print (title $na))
