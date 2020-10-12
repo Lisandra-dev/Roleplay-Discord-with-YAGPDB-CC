@@ -46,8 +46,8 @@
     {{if ($ori.Get (str $id))}}
       {{$ori.Del (str $id)}}
     {{end}}
-    {{$room.Set $nchan $nri}}
     {{$room.Set $ochan $ori}}
+    {{$room.Set $nchan $nri}}
     {{dbSet 0 "room" $room}}
     
     {{/* Update message */}}
@@ -79,7 +79,7 @@
       {{editMessage (toInt $ochan) $ido (complexMessageEdit "embed" $omsg "content" "")}}
       {{$nmsg := cembed 
         "title" (print (title $na))
-        "Description" (joinStr " " "Personnes présentes :\n" $n )
+        "Description" (joinStr " " $n )
         "timestamp" .Current.Time
         "color" 0x8c385f
         "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")}}
