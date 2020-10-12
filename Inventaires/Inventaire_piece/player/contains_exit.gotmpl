@@ -1,29 +1,30 @@
 {{/* player */}}
 
 {{$cat := .Channel.ParentID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}
-  {{$name := reFind `(\>\S*)` .Message.Content}}
-  {{$name = joinStr "" (split $name ">")}}
+{{if (reFind `\<\#\d{17,}\>` .Message.Content )}}
+  {{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $cat 716275263918571550) )}}
   {{$user := .Member.Nick}}
   {{$id := .User.ID }}
-  {{$log := 735938256038002818}}
-  {{$reste := ""}}
-  {{if $name}}
-  	{{$user = title $name}}
-  	{{$idperso := (toRune (lower $name))}}
-  	{{range $idperso}}
-  		{{- $id = add $id . }}
-  	{{- end}}
-  {{else if eq (len $user) 0}}
-  	{{$user = .User.Username}}
-  {{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
-  
-  {{/* find pièce*/}}
-  {{$ochan := str .Channel.ID}}
-  {{$chan := ""}}
-  {{if (reFind `\#\d{17,}` .Message.Content)}}
-    {{$chan = reFind `\#\d{17,}` .Message.Content}}
+    {{$name := reFind `([^(#\d+)]>\S*)` .Message.Content}}
+    {{$name = reReplace `\s` $name ""}}
+    {{$name = reReplace `>` $name ""}}
+    {{if $name}}
+      {{$user = title $name}}
+      {{$idperso := (toRune (lower $name))}}
+      {{range $idperso}}
+        {{- $id = add $id . }}
+      {{- end}}
+    {{else if eq (len $user) 0}}
+      {{$user = .User.Username}}
+    {{end}}
+    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+    {{/* find pièce*/}}
+    {{$ochan := str .Channel.ID}}
+    {{$chan := ""}}
+    {{$chan = reFind `\<\#\d{17,}\>` .Message.Content}}
     {{$chan = joinStr "" (split $chan "#")}}
+    {{$chan = joinStr "" (split $chan "<")}}
+    {{$chan = joinStr "" (split $chan ">")}}
     {{$nchan := str $chan}}
     {{$na := getChannel $chan}}
     {{$na = $na.Name}}
@@ -33,7 +34,6 @@
     {{with (dbGet 0 "room")}}
       {{$room = sdict .Value}}
     {{end}}
-    
     {{$nri := sdict}}
     {{with ($room.Get $nchan)}}
       {{$nri = sdict .}}
@@ -80,7 +80,9 @@
       {{$nmsg := cembed 
         "title" (print (title $na))
         "Description" (joinStr " " "Personnes présentes :\n" $n )
-        "timestamp" .Current.Time}}
+        "timestamp" .Current.Time
+        "color" 0x8c385f
+        "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")}}
       {{editMessage (toInt $nchan) $idn (complexMessageEdit "embed" $nmsg "content" "")}}
     {{end}}
   {{end}}
