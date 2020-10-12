@@ -41,6 +41,7 @@
     {{$dm := ""}}
     {{$nomchan := title (getChannel (toInt $chan)).Name}}
     {{$nomchan = reReplace `-` $nomchan " " }}
+    {{$nomchan = title $nomchan}}
     {{$author := print "Pièce : " $nomchan }}
     {{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
     {{ if eq $action "▶️" }}

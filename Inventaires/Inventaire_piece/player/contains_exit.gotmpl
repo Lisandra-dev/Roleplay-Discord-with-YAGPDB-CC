@@ -24,6 +24,7 @@
   {{$nchan := str $chan}}
   {{$na := getChannel $chan}}
   {{$na = $na.Name}}
+  {{$na = reReplace `-` $na " "}}
   {{/* dict room */}}
   {{$room := sdict}}
   {{with (dbGet 0 "room")}}
@@ -64,9 +65,12 @@
     {{range $i, $j := $nri}}
       {{$n = print $n "▫️ **" $j "**\n"}}
     {{end}}
+    {{$oname := title .Channel.Name}}
+    {{$oname = reReplace `-` $oname " " }}
+    {{$oname = title $oname}}
     
     {{$omsg := cembed 
-      "title" (print (title .Channel.Name))
+      "title" (print $oname)
       "Description" (joinStr " " "Personnes présentes : \n" $o )
       "timestamp" .Current.Time}}
     {{editMessage (toInt $ochan) $ido (complexMessageEdit "embed" $omsg "content" "")}}

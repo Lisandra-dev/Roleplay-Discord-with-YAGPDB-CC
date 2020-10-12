@@ -54,6 +54,7 @@
 {{end}}
 {{$nomchan := title (getChannel (toInt $chan)).Name}}
 {{$nomchan = reReplace `-` $nomchan " " }}
+{{$nomchan = title $nomchan}}
 {{$idm := sendMessageRetID nil (cembed "author" (sdict "name" (print "Pièce : " $nomchan))  "thumbnail" (sdict "url" "https://i.imgur.com/RMtR5SH.png") "color" 0x464e8d "description" $desc "footer" (sdict "text" $footer))}}
 {{addMessageReactions nil $idm "◀️" "▶️" "🗑️" "📱"}}
 {{deleteTrigger 1}}

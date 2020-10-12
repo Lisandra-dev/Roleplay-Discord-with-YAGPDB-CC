@@ -5,6 +5,7 @@
   {{$nchan = str $chan.ID}}
 {{end}}
   {{$chan = title $chan.Name}}
+  {{$chan = reReplace `-` $chan " "}}
   {{$mdic := sdict}}
   {{with (dbGet 0 "room_msg")}}
     {{$mdic = sdict .Value}}
