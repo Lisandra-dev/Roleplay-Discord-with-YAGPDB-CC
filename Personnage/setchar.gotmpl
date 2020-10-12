@@ -3,6 +3,9 @@
 	{{$user = userArg .}}
 	{{$user = $user.ID}}
 {{end}}
+{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
+{{$hpS.Set (str $id) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $user "Ennemi" "n")}}
+      
 
 {{/* Stats dictionnaire */}}
 

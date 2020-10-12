@@ -1,0 +1,54 @@
+{{/* player */}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{$log := 735938256038002818}}
+{{$reste := ""}}
+{{if $name}}
+	{{$user = title $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+
+{{/* find pièce*/}}
+{{$ochan = str .Channel.ID}}
+{{$nchan = index .CmdArgs 2|reFind `\d{17,}`|getChannel}}
+{{$nchan = str $chan.ID}}
+
+{{/* dict room */}}
+{{room := sdict}}
+{{with (dbGet 0 "room")}}
+  {{$room = sdict .Value}}
+{{end}}
+
+{{$nri := sdict}}
+{{with ($room.Get $nchan)}}
+  {{$nri = sdict .}}
+{{end}}
+{{$nri.Set (str $id) $user}}
+{{$ori := sdict}}
+{{with ($room.Get $ochan)}}
+  {{$ori = sdict .}}
+{{end}}
+{{if ($ori.Get (str $id))}}
+  {{$ori.Del (str $id)}}
+{{end}}
+{{$room.Set $nchan $nri}}
+{{$room.Set $ochan $ori}}
+{{dbSet 0 "room" $room}}
+
+{{/* Update message */}}
+{{$mdic := sdict}}
+{{with (dbGet 0 "room_msg")}}
+  {{$mdic = sdict .Value}}
+{{end}}
+
+{{if and ($mdic.Get $ochan) ($mdic.Get $nchan)}}
+{{$ido := $mdic.Get $ochan}}
+{{$idn := $mdic.Get $nchan}}
+{{}}

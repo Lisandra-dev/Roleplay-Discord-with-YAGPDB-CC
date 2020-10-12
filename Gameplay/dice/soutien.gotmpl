@@ -1,6 +1,5 @@
-{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name ">")}}
-{{$name = joinStr "" (split $name "<")}}
 
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}

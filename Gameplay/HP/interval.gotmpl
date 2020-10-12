@@ -8,7 +8,7 @@
 {{range $i, $j := $hp}}
   {{if ne $j.Ennemi "y"}}
     {{ if lt (toInt $j.pv_actuel) (toInt $j.pv_max)}}
-      {{ $msg = print $msg "▫️" "__" $j.Personnage "__ : **" $j.pv_actuel "**\n"}}
+      {{ $msg = print $msg "▫️" "__" $j.Personnage "__ : **" $j.pv_actuel "**/" $j.pv_max "\n"}}
     {{end}}
   {{ end}}
 {{ end}}

@@ -1,6 +1,6 @@
 
-{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
-{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 
@@ -88,7 +88,6 @@
 	{{if $name}}
 		{{$c = joinStr " " (split $c $name) }}
 		{{$c = joinStr " " (split $c ">")}}
-		{{$c = joinStr " " (split $c "<")}}
 	{{end}}
 
 	{{if $manuel}}
@@ -243,7 +242,6 @@
 					{{if $name}}
 						{{$comm = joinStr " " (split $comm $name)}}
 						{{$comm = joinStr " " (split $comm ">")}}
-						{{$comm = joinStr " " (split $comm "<")}}
 					{{end}}
 					{{if ne $comm " "}}
 						{{$comm = joinStr " " " ▬" $comm ": "}}
@@ -259,8 +257,6 @@
 				{{if $name}}
 					{{$comm = joinStr "" (split $comm $name)}}
 					{{$comm = joinStr " " (split $comm ">")}}
-					{{$comm = joinStr " " (split $comm "<")}}
-
 				{{end}}
 				{{if ne $comm " "}}
 					{{$comm = joinStr " " " ▬" $comm ": "}}
@@ -282,18 +278,19 @@
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Ultra critique** " $comm "*+20 PV + Bonus.")
+		"description" (joinStr "" "**Ultra critique** " $comm "*+30 PV + Bonus*.")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{$rc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite critique** " $comm " *+20 PV.")
+		"description" (joinStr "" "**Réussite critique** " $comm " *+30 PV.*")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{$regen := sub 9 $d }}
 {{$regen = div (mult $regen 5) 2}}
+{{$regen = mult $regen 1.5}}
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)

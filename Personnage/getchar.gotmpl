@@ -1,4 +1,4 @@
-{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
@@ -14,7 +14,7 @@
 	{{- end}}
 {{else if eq (len $user) 0}}
   {{$user = .User.Username}}
-{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
 
 {{if (dbGet $id "stats")}}
 {{if .CmdArgs}}
@@ -33,7 +33,7 @@
   {{if eq (len $user) 0}}
     {{$user = .User.Username}}
   {{end}}
-{{end}}
+{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 {{$stats := sdict}}
 {{with (dbGet $id "stats")}}
@@ -54,7 +54,7 @@
 {{$iintel:=$stats.Get "i_intel"}}
   
 {{if .CmdArgs}}
-  {{if eq (len .CmdArgs) 2}}
+  {{if ge (len .CmdArgs) 2}}
     {{if eq (index .CmdArgs 1) "-stats"}}
   **Statistiques de {{$user}}**
   :white_small_square: Force : {{$force}}
@@ -74,7 +74,24 @@
     
     {{else if eq (index .CmdArgs 1) "-id" "-ID"}}
       {{$id}}
+    
+    {{else}}
+      **Statistiques de {{$user}}**
+  	:white_small_square: Force : {{$force}}
+  	:white_small_square: Endurance : {{$endurance}}
+  	:white_small_square: Agilité : {{$agi}}
+  	:white_small_square: Précision : {{$preci}}
+  	:white_small_square: Intelligence : {{$intel}}
+  	:white_small_square: Karma : {{$karma}}
+  
+  **Implants de {{$user}}** :
+  	:white_small_square: Force : {{$iforce}}
+  	:white_small_square: Endurance : {{$iendu}}
+  	:white_small_square: Agilité : {{$iagi}}
+  	:white_small_square: Précision : {{$ipreci}}
+  	:white_small_square: Intelligence : {{$iintel}}
     {{end}}
+    
   
   {{else if eq (len .CmdArgs) 1}}
   {{if eq (index .CmdArgs 0) "-stats"}}

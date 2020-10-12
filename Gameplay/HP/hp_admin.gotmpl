@@ -1,5 +1,5 @@
-{{$name := or (reFind `(\>\S*)` .Message.Content) (reFind `<(.*)<` .Message.Content)}}
-{{$name = joinStr "" (split $name ">")}}{{$name = joinStr "" (split $name "<")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
@@ -21,7 +21,6 @@
 {{with (dbGet 0 "HP")}}
   {{$hp = sdict .Value}}
 {{end}}
-{{with ($hp.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 {{$cmd := lower (reFind `(?i)(\$(adminhp|hpadmin)|\?(hp|pv))` .Message.Content)}}
 {{$msg := ""}}
@@ -37,6 +36,7 @@
         {{$user = $user.Username}}
       {{end}}
     {{end}}
+    {{with ($hp.Get (str $id))}}{{$user = .Personnage}}{{end}}
     {{$flag := lower (reFind `(?i)\-(add|rm|edit)` .Message.Content)}}
     {{if not $flag}}
       {{$msg = "Erreur : Vous devez indiquer si vous rajouter, editer ou supprimer un joueur"}}
