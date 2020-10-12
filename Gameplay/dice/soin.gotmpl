@@ -279,7 +279,7 @@
 
 {{$regen := sub 9 $d }}
 {{$regen = div (mult $regen 5) 2}}
-{{$regen = mult $regen 1.5}}
+{{$regen = roundFloor (mult 1.5 $regen)}}
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
