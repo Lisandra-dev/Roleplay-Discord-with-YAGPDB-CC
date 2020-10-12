@@ -1,0 +1,17 @@
+{{if .CmdArgs}}
+  {{$chan = index .CmdArgs 0|reFind `\d{17,}`|getChannel}}
+  {{$nchan = str $chan.ID}}
+  {{$chan = $chan.Name}}
+  {{$mdic := sdict}}
+  {{with (dbGet 0 "room_msg")}}
+    {{$mdic = sdict .Value}}
+  {{end}}
+  {{$embed := cembed
+    "title" (print "Pièce : " $chan)}}
+    "description" (joinStr " " "Personnes présentes dans la pièce\n" )
+    "timestamp" .Current.Time}}
+  {{$id := sendMessageRetID (toInt $nchan) $embed}}
+  {{$mdic.Set $nchan $id}}
+  {{dbSet "room_msg" $mdic}}
+{{ends}}
+    
