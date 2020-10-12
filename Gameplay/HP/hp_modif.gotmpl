@@ -22,7 +22,7 @@
     {{end}}
   {{end}}
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
   {{if $name}}
     {{$user = title $name}}
     {{$rr := sdict}}
@@ -85,7 +85,7 @@
     {{end}}
   {{else if eq $check false}}
     {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
-    {{$name = joinStr "" (split $name ">")}}
+    {{$name = reReplace `>` $name ""}}
     {{$user := .Member.Nick}}
     {{$id = .User.ID}}
     {{if $name}}

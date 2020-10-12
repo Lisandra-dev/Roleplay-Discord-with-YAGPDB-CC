@@ -1,5 +1,5 @@
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 
@@ -12,8 +12,6 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
-
-
 
 {{$stats := sdict}}
 {{with (dbGet $id "stats")}}
@@ -83,13 +81,12 @@
 
 {{if .CmdArgs}}
 	{{$c = joinStr " " .CmdArgs}}
-	{{if $name}}
-		{{$c = joinStr " " (split $c $name) }}
-		{{$c = joinStr " " (split $c ">")}}
-	{{end}}
-
 	{{if $manuel}}
-		{{$c = joinStr " " (split $c $manuel) }}
+		{{$c = reReplace $manuel $c ""}}
+	{{end}}
+	{{if $name}}
+		{{$c = reReplace $name $c ""}}
+		{{$c = reReplace `>` $c ""}}
 	{{end}}
 
 	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
@@ -184,33 +181,28 @@
 						{{$mimp = $d}}
 					{{end}}
 				{{end}}
-
+				{{if gt $d (toInt 10)}}
+					{{$d = toInt 10}}
+				{{else if lt $d (toInt 0)}}
+					{{$d = (toInt 0)}}
+				{{end}}
+				{{$res = print "Dé : " $d " " $v " | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb}}
+			{{else}}
+				{{if eq $arg 0}}
+					{{$i = add $i $idb}}
+					{{$d = sub $d $i}}
+					{{$mimp = $i}}
+				{{else}}
+					{{$d = add $i $d}}
+					{{$d = sub $d $idb}}
+					{{$mimp = $idb}}
+				{{end}}
 
 				{{if gt $d (toInt 10)}}
 					{{$d = toInt 10}}
 				{{else if lt $d (toInt 0)}}
 					{{$d = (toInt 0)}}
 				{{end}}
-
-
-				{{$res = print "Dé : " $d " " $v " | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb}}
-			{{else}}
-
-						{{if eq $arg 0}}
-							{{$i = add $i $idb}}
-							{{$d = sub $d $i}}
-							{{$mimp = $i}}
-						{{else}}
-							{{$d = add $i $d}}
-							{{$d = sub $d $idb}}
-							{{$mimp = $idb}}
-						{{end}}
-
-						{{if gt $d (toInt 10)}}
-							{{$d = toInt 10}}
-						{{else if lt $d (toInt 0)}}
-							{{$d = (toInt 0)}}
-						{{end}}
 
 				{{$res = "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $arg1 " : " (toString $x) " | " $imp " : " $idb}}
 			{{end}}
@@ -234,11 +226,11 @@
 				{{else}}
 					{{$comm =  joinStr " " (slice .CmdArgs 2) }}
 					{{if $manuel}}
-							{{$comm = joinStr " " (split $comm $manuel)}}
+						{{$comm = reReplace $manuel $comm ""}}
 					{{end}}
 					{{if $name}}
-						{{$comm = joinStr " " (split $comm $name)}}
-						{{$comm = joinStr " " (split $comm ">")}}
+						{{$comm = reReplace $name $comm ""}}
+						{{$comm = reReplace `>` $comm ""}}
 					{{end}}
 					{{if ne $comm " "}}
 						{{$comm = joinStr " " " ▬" $comm ": "}}
@@ -249,11 +241,11 @@
 			{{else}}
 				{{$comm =  joinStr " " (slice .CmdArgs 1)}}
 				{{if $manuel}}
-					{{$comm = joinStr " " (split $comm $manuel) }}
+					{{$comm = reReplace $manuel $comm ""}}
 				{{end}}
 				{{if $name}}
-					{{$comm = joinStr "" (split $comm $name)}}
-					{{$comm = joinStr " " (split $comm ">")}}
+					{{$comm = reReplace $name $comm ""}}
+					{{$comm = reReplace `>` $comm ""}}
 				{{end}}
 				{{if ne $comm " "}}
 					{{$comm = joinStr " " " ▬" $comm ": "}}

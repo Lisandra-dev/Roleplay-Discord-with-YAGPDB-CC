@@ -1,7 +1,5 @@
 {{/* Variable definition */}}
 {{$tEco := sdict}}{{$ci := ""}}{{$au := "Erreur"}}{{$fo := ""}}{{$invt := sdict }}{{$inv := ""}}{{$idt := 0}}{{$d := "**Usage** :\n- `$give <ci> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}{{$arr := "<:next:723131844643651655>" }}{{/* Symbol */}}{{$mon := ""}}
-
-
 {{/* Give color */}}
 {{$col := 16777215}}{{$p := 0}}{{$r := .Member.Roles}}
 {{range .Guild.Roles}}
@@ -10,11 +8,10 @@
 		{{$col = .Color}}
 	{{end}}
 {{end}}
-
 {{/* DB */}}
 {{$sE := sdict}}{{with (dbGet .Server.ID "economy")}}{{$sE = sdict .Value}}{{end}}
 {{if $sE.Get "symbol"}}{{$mon = $sE.Get "symbol"}}{{end}}
-{{$n := (reFind `(\>\S*)` .Message.Content)}}{{$n = joinStr "" (split $n ">")}}{{$u := .Member.Nick}}{{$id := .user.ID }}
+{{$n := (reFind `(\>\S*)` .Message.Content)}}{{$n = reReplace `>` $n ""}}{{$u := .Member.Nick}}{{$id := .user.ID }}
 {{if $n}}
 	{{$u = $n}}
 	{{$re := sdict}}
@@ -35,14 +32,14 @@
 {{if .CmdArgs}}
 	{{$idt := .User.ID }}
 	{{if (reFind `(\#\S*)` (index .CmdArgs 0))}}
-		{{$t = joinStr "" (split (index .CmdArgs 0) "#")}}
+		{{$t = reReplace `#` (index .CmdArgs 0) ""}}
 		{{$re := sdict}}
 		{{with (dbGet 0 "reroll_List")}}{{$re = sdict .Value}}{{end}}
 		{{$idt = (toInt ($re.Get (title $t)))}}{{$idC := (toRune (lower $t))}}
 		{{range $idC}}
 			{{- $idt = add $idt .}}
 		{{- end}}
-	{{else if or (not (reFind `(\#\S*)` (index .CmdArgs 0))) (not (reFind `(\$(.*)\$)` (index .CmdArgs 0)))}}
+	{{else if (not (reFind `(\#\S*)` (index .CmdArgs 0)))}}
 		{{with (userArg (index .CmdArgs 0))}}
 			{{$t = .}}{{$idt = $t.ID}}{{$ci = (getMember $t).Nick}}
 		{{else}}

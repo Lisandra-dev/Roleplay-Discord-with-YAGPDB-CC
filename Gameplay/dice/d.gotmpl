@@ -1,5 +1,5 @@
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
@@ -77,8 +77,8 @@
 {{ if .CmdArgs}}
 	{{$c = joinStr " " .CmdArgs}}
 	{{if $name}}
-		{{$c = joinStr " " (split $c $name) }}
-		{{$c = joinStr " " (split $c ">")}}
+		{{$c = reReplace $name $c ""}}
+		{{$c = reReplace `>` $c ""}}
 	{{end}}
 
 	{{if $manuel}}
@@ -158,12 +158,12 @@
 				{{$c =  joinStr " " (slice .CmdArgs 1)}}
 
 				{{if $manuel}}
-					{{$c = joinStr " " (split $c $manuel)}}
+					{{$c = reReplace $manuel $c ""}}
 				{{end}}
 
 				{{if $name}}
-					{{$c = joinStr " " (split $c $name)}}
-					{{$c = joinStr " " (split $c ">")}}
+					{{$c = reReplace $name $c ""}}
+					{{$c = reReplace `>` $c ""}}
 				{{end}}
 
 				{{$c = joinStr " " $c }}
@@ -253,12 +253,12 @@
 					{{else}}
 					{{$c =  joinStr " " (slice .CmdArgs 2)}}
 					{{if $manuel}}
-						{{$c = joinStr " " (split $c $manuel)}}
+						{{$c = reReplace $manuel $c ""}}
 					{{end}}
 
 					{{if $name}}
-						{{$c = joinStr " " (split $c $name)}}
-						{{$c = joinStr " " (split $c ">")}}
+						{{$c = reReplace $name $c ""}}
+						{{$c = reReplace `>` $c ""}}
 					{{end}}
 
 					{{$c = joinStr " " $c }}
@@ -269,8 +269,6 @@
 							"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb "]"))
 							"color" 0x63AFE1}}
 						{{sendMessage nil $embed}}
-
-
 				{{end}}
 			{{end}}
 		{{end}}

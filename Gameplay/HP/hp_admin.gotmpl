@@ -1,5 +1,5 @@
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
@@ -137,7 +137,7 @@
       {{- end}}
     {{else}}
       {{$name := reFind `(\>\S*)` .Message.Content}}
-      {{$name = joinStr "" (split $name ">")}}
+      {{$name = reReplace `>` $name ""}}
       {{$user := .Member.Nick}}
       {{$id := .User.ID }}
     {{if $name}}

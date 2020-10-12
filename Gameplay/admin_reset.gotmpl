@@ -1,6 +1,6 @@
 {{$cmd := reFind `\$(delwp|delhp)` .Message.Content}}
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{if eq (len $user) 0}}
   {{$user = .User.Username}}

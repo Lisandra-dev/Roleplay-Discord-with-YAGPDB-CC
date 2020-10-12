@@ -3,7 +3,7 @@
 
 
 {{/* Databases */}}
-{{$name := reFind `(\>\S*)` .Message.Content}}{{$name = joinStr "" (split $name ">")}}
+{{$name := reFind `(\>\S*)` .Message.Content}}{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}

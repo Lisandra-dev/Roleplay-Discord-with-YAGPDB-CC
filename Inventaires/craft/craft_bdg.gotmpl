@@ -1,6 +1,6 @@
 {{/* Databases */}}
 {{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = joinStr "" (split $name ">")}}
+{{$name = reReplace `>` $name ""}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if (userArg (index .CmdArgs 1))}}

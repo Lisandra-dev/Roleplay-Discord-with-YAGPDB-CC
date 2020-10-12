@@ -15,7 +15,7 @@
 
 {{if .CmdArgs}}
   {{if ge (len .CmdArgs) 2}}
-    {{$name := (reFind `(\>\S*)` .Message.Content)}}{{$name = joinStr "" (split $name ">")}}
+    {{$name := (reFind `(\>\S*)` .Message.Content)}}{{$name = reReplace `>` $name ""}}
     {{$user := .Member.Nick}}
     {{if $name}}
       {{$user = title $name}}
