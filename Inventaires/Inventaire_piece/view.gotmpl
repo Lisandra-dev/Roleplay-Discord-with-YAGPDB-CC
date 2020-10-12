@@ -52,7 +52,9 @@
     {{$desc = print "" $data ""}}
   {{end}}
 {{end}}
-{{$idm := sendMessageRetID nil (cembed "author" (sdict "name" (print "Pièce : " (getChannel (toInt $chan)).Name)) "thumbnail" (sdict "url" "https://i.imgur.com/RMtR5SH.png") "color" 0x464e8d "description" $desc "footer" (sdict "text" $footer))}}
+{{$nomchan := title (getChannel (toInt $chan)).Name}}
+{{$nomchan = reReplace `-` $nomchan " " }}
+{{$idm := sendMessageRetID nil (cembed "author" (sdict "name" (print "Pièce : " $nomchan))  "thumbnail" (sdict "url" "https://i.imgur.com/RMtR5SH.png") "color" 0x464e8d "description" $desc "footer" (sdict "text" $footer))}}
 {{addMessageReactions nil $idm "◀️" "▶️" "🗑️" "📱"}}
 {{deleteTrigger 1}}
 {{deleteMessage nil $idm 300}}

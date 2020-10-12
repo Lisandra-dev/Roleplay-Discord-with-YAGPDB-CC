@@ -39,7 +39,9 @@
       {{$cslice = $cslice.Append (printf ":white_small_square: ** %-10v **  : [%v]" $k $v)}}
     {{end}}
     {{$dm := ""}}
-    {{$author := print "Pièce : " (getChannel (toInt $chan)).Name}}
+    {{$nomchan := title (getChannel (toInt $chan)).Name}}
+    {{$nomchan = reReplace `-` $nomchan " " }}
+    {{$author := print "Pièce : " $nomchan }}
     {{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
     {{ if eq $action "▶️" }}
       {{ $page = add $page 1 }} {{/* Update page according to emoji */}}
@@ -85,7 +87,9 @@
       {{end}}
       {{$desc = print "" $data ""}}
     {{end}}
+    
     {{if eq $del false}}
+    
       {{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/RMtR5SH.png") "color" 0x464e8d "description" $desc "footer" (sdict "text" $footer))}}
       {{deleteMessage nil $.ReactionMessage.ID 300}}
     {{else}}
