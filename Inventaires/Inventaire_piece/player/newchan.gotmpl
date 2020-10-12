@@ -13,7 +13,9 @@
   {{$embed := cembed
     "title" (print $chan)
     "description" (joinStr " " "Personnes présentes : \n Cette salle est vide..." )
-    "timestamp" .Current.Time}}
+    "color" 0x8c385f
+    "timestamp" .Current.Time
+    "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")}}
   {{$id := sendMessageRetID (toInt $nchan) $embed}}
   {{$mdic.Set $nchan $id}}
   {{dbSet 0 "room_msg" $mdic}}
