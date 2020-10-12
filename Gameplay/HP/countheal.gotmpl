@@ -9,7 +9,9 @@
 	{{end}}
 
   {{/* Get player */}}
-	{{$name := (reFind `(\>\S*)` .Message.Content)}}{{$name = reReplace `>` $name ""}}
+{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
+{{$name = reReplace `>` $name ""}}
+{{$name = reReplace `\s` $name ""}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}

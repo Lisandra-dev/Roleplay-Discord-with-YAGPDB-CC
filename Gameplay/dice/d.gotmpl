@@ -1,5 +1,7 @@
-{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$emo := reFind `<:\w+:\d+>` .Message.Content}}
+{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
 {{$name = reReplace `>` $name ""}}
+{{$name = reReplace `\s` $name ""}}
 {{$user := .Member.Nick}}
 {{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
@@ -79,6 +81,7 @@
 	{{if $name}}
 		{{$c = reReplace $name $c ""}}
 		{{$c = reReplace `>` $c ""}}
+    {{$c = reReplace `<:\w+:\d+` $c $emo}}
 	{{end}}
 
 	{{if $manuel}}
@@ -164,6 +167,7 @@
 				{{if $name}}
 					{{$c = reReplace $name $c ""}}
 					{{$c = reReplace `>` $c ""}}
+          {{$c = reReplace `<:\w+:\d+` $c $emo}}
 				{{end}}
 
 				{{$c = joinStr " " $c }}
@@ -259,6 +263,7 @@
 					{{if $name}}
 						{{$c = reReplace $name $c ""}}
 						{{$c = reReplace `>` $c ""}}
+            {{$c = reReplace `<:\w+:\d+` $c $emo}}
 					{{end}}
 
 					{{$c = joinStr " " $c }}

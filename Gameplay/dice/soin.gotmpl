@@ -1,6 +1,7 @@
-
-{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$emo := reFind `<:\w+:\d+>` .Message.Content}}
+{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
 {{$name = reReplace `>` $name ""}}
+{{$name = reReplace `\s` $name ""}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 
@@ -88,6 +89,7 @@
 	{{if $name}}
 		{{$c = reReplace $name $c ""}}
 		{{$c = reReplace `>` $c ""}}
+    {{$c = reReplace `<:\w+:\d+` $c $emo}}
 	{{end}}
 
 	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
@@ -232,6 +234,7 @@
 					{{if $name}}
 						{{$comm = reReplace $name $comm ""}}
 						{{$comm = reReplace `>` $comm ""}}
+            {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
 					{{end}}
 					{{if ne $comm " "}}
 						{{$comm = joinStr " " " ▬" $comm ": "}}
@@ -247,6 +250,7 @@
 				{{if $name}}
 					{{$comm = reReplace $name $comm ""}}
 					{{$comm = reReplace `>` $comm ""}}
+          {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
 				{{end}}
 				{{if ne $comm " "}}
 					{{$comm = joinStr " " " ▬" $comm ": "}}
@@ -260,7 +264,7 @@
 	{{end}}
 {{else}}
 	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
-{{end}}
+  {{end}}
 {{$r := ""}}
 
 {{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
@@ -279,7 +283,7 @@
 
 {{$regen := sub 9 $d }}
 {{$regen = div (mult $regen 5) 2}}
-{{$regen = mult $regen 1.5}}
+{{$regen = roundFloor (mult 1.5 $regen) }}
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)

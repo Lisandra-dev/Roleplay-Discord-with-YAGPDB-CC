@@ -12,7 +12,10 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 	{{/* Get player */}}
 
-	{{$name := (reFind `(\>\S*)` .Message.Content)}}{{$name = reReplace `>` $name ""}}
+
+{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
+{{$name = reReplace `>` $name ""}}
+{{$name = reReplace `\s` $name ""}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}
