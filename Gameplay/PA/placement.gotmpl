@@ -18,22 +18,34 @@
 {{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
 {{$name = reReplace `>` $name ""}}
 {{$name = reReplace `\s` $name ""}}
-{{$arg = userArg (reFind `<@!?\d{17,}>` .Message.Content)}}
+{{$arg := (reFind `<@!?\d{17,}>` .Message.Content)}}
 {{$user := .Member.Nick}}
-{{$id:= .User.ID}}
-{{if $name}}
+{{$id := .User.ID}}
+{{if and $name (not (hasRoleID 709795313279565906))}}
 	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
 	{{- end}}
-{{else if $arg and (hasRoleID 709795313279565906)}}
-	{{$id = $arg.ID}}
-  {{$user = getMember ($id).Nick}}
+{{else if and $name (hasRoleID 709795313279565906)}}
+  {{$user = title $name}}
+  {{$rr := sdict}}
+  {{with (dbGet 0 "reroll_List")}}
+    {{$rr = sdict .Value}}
+  {{end}}
+  {{$id = toInt ($rr.Get $user)}}
+  {{$idperso := (toRune (lower $name))}}
+  {{range $idperso}}
+    {{- $id = add $id . }}
+  {{- end}}
+{{else if and $arg (hasRoleID 709795313279565906)}}
+  {{$arg = userArg $arg}}
+  {{$id = $arg.ID}}
+  {{$user = (getMember $id).Nick}}
   {{if eq (len $user) 0}}
     {{$user = $arg.Username}}
   {{end}}
-{{else if (len $user 0)}}
+{{else if eq 0 (len $user)}}
   {{$user = .User.Username}}
 {{end}}
 {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
@@ -56,19 +68,19 @@
 {{if .CmdArgs}}
   {{$posarg := index .CmdArgs 0}}
   {{$item := $user}}
-  {{$s := "à couvert"}}
+  {{$s := title "à couvert"}}
   {{if or $name $arg}}
     {{if and (ge (len .CmdArgs) 3) (not (reFind `-s` .Message.Content))}}
       {{$item = title (lower (index .CmdArgs 1))}}
       {{$s = 1}}
-    {{else if and (ge (len .CmdArgs) 3) (reFind `-s` (index .CmdArgs 1))}}
+    {{else if and (ge (len .CmdArgs) 3) (reFind `-s` .Message.Content)}}
       {{$s = title (lower (index .CmdArgs 2))}}
     {{end}}
   {{else}}
-    {{if and (ge (len .CmdArgs) 1) (not (reFind `-s` .Message.Content))}}
+    {{if and (ge (len .CmdArgs) 2) (not (reFind `-s` .Message.Content))}}
       {{$item = title (lower (index .CmdArgs 1))}}
       {{$s = 1}}
-    {{else if and (ge (len .CmdArgs 1)) (reFind `-s` (index .CmdArgs 1))}}
+    {{else if and (ge (len .CmdArgs) 2) (reFind `-s` .Message.Content)}}
       {{$s = title (lower (index .CmdArgs 2))}}
     {{end}}
   {{end}}
@@ -139,7 +151,8 @@
 {{else}}  
   {{$desc = "Erreur : vous devez rentrer une commande"}}
 {{end}}
-{{sendMessage nil $desc}}
+{{$t:=sendMessageRetID nil $desc}}
+{{deleteMessage nil $t 180}}
 {{$position.Set (str .Channel.ID) $pos}}
 {{dbSet 0 "position" $position}}
 {{$px := ""}}
@@ -152,12 +165,12 @@
     {{range $x, $y := $l}}
       {{if eq $o $i}}
         {{if eq $px $k}}
-          {{$msg = print $msg "\n:white_small_square: " $x}}
+          {{$msg = print $msg "\n<:tr:724626754282717194><:tr:724626754282717194>:white_small_square: " $x " : " $y}}
         {{else}}
-          {{$msg = print $msg "\n :blue_circle: ** Rang" $k "** :\n:white_small_square: " $x}}
+          {{$msg = print $msg "\n\n <:tr:724626754282717194>◽ ** Rang " $k "** :\n<:tr:724626754282717194><:tr:724626754282717194>:white_small_square: " $x " : " $y}}
         {{end}}
       {{else}}
-        {{$msg = print $msg "\n" "<#" $i ">\n :blue_circle: ** Rang " $k "** :\n :white_small_square: " $x}}
+        {{$msg = print $msg "\n" "💠<#" $i ">\n <:tr:724626754282717194>◽ ** Rang " $k "** :\n <:tr:724626754282717194><:tr:724626754282717194>:white_small_square: " $x " : " $y}}
       {{end}}
     {{$o = $i }}
     {{$px = $k}}
