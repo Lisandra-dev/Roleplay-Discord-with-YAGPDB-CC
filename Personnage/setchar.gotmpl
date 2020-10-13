@@ -4,7 +4,7 @@
 	{{$arg = userArg .}}
 	{{$user = $arg.ID}}
 {{end}}
-{{$char := getMember ($user).Nick}}
+{{$char := (getMember $user).Nick}}
 {{if eq (len $char) 0}}
 	{{$char = $arg.Username}}
 {{end}}
