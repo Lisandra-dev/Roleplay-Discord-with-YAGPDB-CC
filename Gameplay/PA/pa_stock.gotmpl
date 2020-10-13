@@ -1,56 +1,81 @@
-{{$desc := ""}}
-{{$col := 16777215}}
-{{$p := 0}}
-{{$r := .Member.Roles}}
-{{range .Guild.Roles}}
-	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
-	{{$p = .Position}}
-	{{$col = .Color}}
-	{{end}}
+{{$cmd := reFind `\$(pa|pdmin)` .Message.Content}}
+
+{{if eq $cmd "$pa"}}
+  {{$desc := ""}}
+  {{$col := 16777215}}
+  {{$p := 0}}
+  {{$r := .Member.Roles}}
+  {{range .Guild.Roles}}
+  	{{if and (in $r .ID) (.Color) (lt $p .Position)}}
+  	{{$p = .Position}}
+  	{{$col = .Color}}
+  	{{end}}
+  {{end}}
+  
+  {{/* Groupe dictionnaire */}}
+  
+  {{$groupe := sdict}}
+  {{with (dbGet .Server.ID "groupe")}}
+  	{{$groupe = sdict .Value}}
+  {{end}}
+  
+  {{/* Get joueur */}}
+  
+  {{$name := reFind `(\>\S*)` .Message.Content}}
+  {{$name = reReplace `>` $name ""}}
+  {{$user := .Member.Nick}}
+  {{$id:= .User.ID}}
+  {{if $name}}
+  	{{$user = title $name}}
+  	{{$idperso := (toRune (lower $name))}}
+  	{{range $idperso}}
+  		{{- $id = add $id . }}
+  	{{- end}}
+  {{else if eq (len $user) 0}}
+  	{{$user = .User.Username}}
+  {{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+  
+  {{$idict := str $id}}
+  
+  {{$bool := false}}
+  {{range $i, $j := $groupe}}
+  	{{- if eq $idict $i}}
+  		{{- $bool = true}}
+  	{{- end -}}
+  {{end}}
+  
+  {{if eq $bool false}}
+  	{{$desc = joinStr "4 PA RESTANTS"}}
+  {{else}}
+  	{{$pa := $groupe.Get (str $id)}}
+  	{{$desc = joinStr " " $pa " PA RESTANTS."}}
+  {{end}}
+  
+  {{$embed := cembed
+  	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
+  	"description" $desc
+  	"color" $col}}
+  {{sendMessage nil $embed}}
+  {{deleteTrigger 1}}
+  
+{{else if eq $cmd "$pdmin"}}
+  {{$grp := sdict}}
+  {{with (dbGet .Server.ID "groupe")}}
+    {{$grp = sdict .Value}}
+  {{end}}
+  
+  {{$player := sdict}}
+  {{with (dbGet 0 "HP")}}
+    {{$player = sdict .Value}}
+  {{end}}
+  
+  {{$msg := ""}}
+  
+  {{range $i, $j := $grp}}
+    {{with ($player.Get (str $i))}}
+      {{$msg = print $msg ":white_small_square:" .Personnage " : " $j " PA" "\n"}}
+    {{end}}
+  {{end}}
+  
+  {{print $msg}}
 {{end}}
-
-{{/* Groupe dictionnaire */}}
-
-{{$groupe := sdict}}
-{{with (dbGet .Server.ID "groupe")}}
-	{{$groupe = sdict .Value}}
-{{end}}
-
-{{/* Get joueur */}}
-
-{{$name := reFind `(\>\S*)` .Message.Content}}
-{{$name = reReplace `>` $name ""}}
-{{$user := .Member.Nick}}
-{{$id:= .User.ID}}
-{{if $name}}
-	{{$user = title $name}}
-	{{$idperso := (toRune (lower $name))}}
-	{{range $idperso}}
-		{{- $id = add $id . }}
-	{{- end}}
-{{else if eq (len $user) 0}}
-	{{$user = .User.Username}}
-{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
-
-{{$idict := str $id}}
-
-{{$bool := false}}
-{{range $i, $j := $groupe}}
-	{{- if eq $idict $i}}
-		{{- $bool = true}}
-	{{- end -}}
-{{end}}
-
-{{if eq $bool false}}
-	{{$desc = joinStr "4 PA RESTANTS"}}
-{{else}}
-	{{$pa := $groupe.Get (str $id)}}
-	{{$desc = joinStr " " $pa " PA RESTANTS."}}
-{{end}}
-
-{{$embed := cembed
-	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
-	"description" $desc
-	"color" $col}}
-{{sendMessage nil $embed}}
-{{deleteTrigger 1}}
