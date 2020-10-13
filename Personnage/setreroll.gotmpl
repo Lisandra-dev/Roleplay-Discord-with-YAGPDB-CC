@@ -1,6 +1,7 @@
 {{if .CmdArgs}}
 	{{if ge (len .CmdArgs) 1}}
 		{{$name := toRune (lower (index .CmdArgs 0))}}
+    {{$char := title (lower (index .CmdArgs 0))}}
 		{{if ge (len .CmdArgs) 2}}
 			{{$cmd := index .CmdArgs 1}}
 			{{$user := .User.ID}}
@@ -20,17 +21,14 @@
 				{{$stats = sdict .Value}}
 			{{end}}
       
-      {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
-      {{$hpS.Set (str $id) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $user "Ennemi" "n")}}
-      
-      
 			{{$reroll := sdict}}
 			{{with (dbGet 0 "reroll_List")}}
 				{{$reroll = sdict .Value}}
 			{{end}}
 			{{$reroll.Set (title (lower (index .CmdArgs 0))) $id }}
 			{{dbSet 0 "reroll_List" $reroll}}
-			{{if ge (len .CmdArgs) 12}}
+			
+      {{if ge (len .CmdArgs) 12}}
 				{{$stats.Set "force" (toInt (index .CmdArgs 1)) }}
 				{{$stats.Set "i_force" (toInt (index .CmdArgs 2)) }}
 				{{$stats.Set "endurance" (toInt (index .CmdArgs 3))}}
@@ -42,6 +40,14 @@
 				{{$stats.Set "intelligence" (toInt (index .CmdArgs 9))}}
 				{{$stats.Set "i_intel" (toInt (index .CmdArgs 10))}}
 				{{$stats.Set "karma" (toInt (index .CmdArgs 11))}}
+        {{if and (ge (len .CmdArgs) 14) (reFind `-rn` (index .CmdArgs 12) )}}
+          {{$char = (index .CmdArgs 13)}}
+        {{end}}
+        {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
+        {{if not ($hpS.Get (str $user))}}
+          {{$hpS.Set (str $user) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $char "Ennemi" "n")}}
+          {{dbSet 0 "HP" $hpS}}
+        {{end}}
 				{{dbSet $user "stats" $stats}}
 		
 				{{print "** Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  "\n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma") "\n**Implant** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
@@ -53,6 +59,14 @@
 				{{$stats.Set "preci" (toInt (index .CmdArgs 5))}}
 				{{$stats.Set "intelligence" (toInt (index .CmdArgs 6))}}
 				{{$stats.Set "karma" (toInt (index .CmdArgs 7))}}
+        {{if and (ge (len .CmdArgs 10) (eq (index .CmdArgs 8) "-rn"))}}
+          {{$char = index .CmdArgs 9}}
+        {{end}}
+        {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
+        {{if not ($hpS.Get (str $user))}}
+          {{$hpS.Set (str $user) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $char "Ennemi" "n")}}
+          {{dbSet 0 "HP" $hpS}}
+        {{end}}
 				{{dbSet $user "stats" $stats}}
 				{{print "**Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  " \n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")}}
 
@@ -64,6 +78,16 @@
 				{{$stats.Set "i_intel" (toInt (index .CmdArgs 6))}}
 				{{dbSet $user "stats" $stats}}
 				{{print "**Implant de " (index .CmdArgs 0) "** : \n :white_small_square: Force : " ($stats.Get "i_force") " \n  :white_small_square: Endurance : " ($stats.Get "i_endu") " \n :white_small_square: Agilité : " ($stats.Get "i_agi") " \n :white_small_square: Précision : " ($stats.Get "i_preci") " \n :white_small_square: Intelligence : " ($stats.Get "i_intel")}}
+        {{if and (ge (len .CmdArgs 9) (eq (index .CmdArgs 7) "-rn"))}}
+          {{$char = index .CmdArgs 8}}
+        {{end}}
+        {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
+        {{if not ($hpS.Get (str $user))}}
+          {{$hpS.Set (str $user) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $char "Ennemi" "n")}}
+          {{dbSet 0 "HP" $hpS}}
+        {{end}}
+				{{dbSet $user "stats" $stats}}
+				{{print "**Statistiques de " (index .CmdArgs 0) "** \n :white_small_square: Force : " ($stats.Get "force")  " \n :white_small_square: Endurance : " ($stats.Get "endurance") " \n :white_small_square: Agilité : " ($stats.Get "agi") " \n :white_small_square: Précision : " ($stats.Get "preci") " \n :white_small_square: Intelligence : " ($stats.Get "intelligence") " \n :white_small_square: Karma : " ($stats.Get "karma")}}
 			{{else}}
 				{{print "**Usage** : `$setrr nom (@mention) -(stats|implant) Force implant Endurance implant Agilité implant Précision implant Intelligence implant Karma`\n> La mention n'est pas obligatoire*"}}
 			{{end}}

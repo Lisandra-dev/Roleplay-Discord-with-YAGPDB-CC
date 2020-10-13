@@ -9,7 +9,10 @@
 	{{$char = $arg.Username}}
 {{end}}
 {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
-{{$hpS.Set (str $user) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $char "Ennemi" "n")}}
+{{if not ($hpS.Get (str $user))}}
+  {{$hpS.Set (str $user) (sdict "pv_max" 100 "pv_actuel" 100 "regen" 0 "mush" 0 "Personnage" $char "Ennemi" "n")}}
+  {{dbSet 0 "HP" $hpS}}
+{{end}}
       
 
 {{/* Stats dictionnaire */}}
