@@ -18,17 +18,24 @@
 {{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
 {{$name = reReplace `>` $name ""}}
 {{$name = reReplace `\s` $name ""}}
-	{{$user := .Member.Nick}}
-	{{$id:= .User.ID}}
-	{{if $name}}
-		{{$user = title $name}}
-		{{$idperso := (toRune (lower $name))}}
-		{{range $idperso}}
-			{{- $id = add $id . }}
-		{{- end}}
-	{{else if eq (len $user) 0}}
-		{{$user = .User.Username}}
-	{{end}}
+{{$arg = userArg (reFind `<@!?\d{17,}>` .Message.Content)}}
+{{$user := .Member.Nick}}
+{{$id:= .User.ID}}
+{{if $name}}
+	{{$user = title $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if $arg and (hasRoleID 709795313279565906)}}
+	{{$id = $arg.ID}}
+  {{$user = getMember ($id).Nick}}
+  {{if eq (len $user) 0}}
+    {{$user = $arg.Username}}
+  {{end}}
+{{else if (len $user 0)}}
+  {{$user = .User.Username}}
+{{end}}
 {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 {{$idict := str $id}}
 
@@ -50,7 +57,7 @@
   {{$posarg := index .CmdArgs 0}}
   {{$item := $user}}
   {{$s := "à couvert"}}
-  {{if $name}}
+  {{if or $name $arg}}
     {{if and (ge (len .CmdArgs) 3) (not (reFind `-s` .Message.Content))}}
       {{$item = title (lower (index .CmdArgs 1))}}
       {{$s = 1}}
@@ -135,31 +142,33 @@
 {{sendMessage nil $desc}}
 {{$position.Set (str .Channel.ID) $pos}}
 {{dbSet 0 "position" $position}}
-{{$p1 := ""}}
-{{$p2 := ""}}
-{{$p3 := ""}}
-{{$chan := ""}}
+{{$px := ""}}
+{{$r := ""}}
 {{$o := ""}}
+{{$msg := ""}}
 {{$k := sdict}}
 {{range $i, $j := $position}}
   {{range $k, $l := $j}}
-   {{range $x, $y := $l}}
-      {{$chan = print $chan "<#" $i ">"}}
-      {{if eq $k "1"}}
-        {{$p1 = print $p1 "\n ▫️ " $x}}
-      {{else if eq $k "2"}}
-        {{$p2 = print $p2 "\n ▫️ " $x}}
-      {{else if eq $k "3" }}
-        {{$p3 = print $p3 "\n ▫️ " $x}}
-      {{end}}
+    {{range $x, $y := $l}}
       {{if eq $o $i}}
-        {{$msg = print $chan "\n" $p1 "\n" $p2 "\n" $p3}}
+        {{if eq $px $k}}
+          {{$msg = print $msg "\n:white_small_square: " $x}}
+        {{else}}
+          {{$msg = print $msg "\n :blue_circle: ** Rang" $k "** :\n:white_small_square: " $x}}
+        {{end}}
+      {{else}}
+        {{$msg = print $msg "\n" "<#" $i ">\n :blue_circle: ** Rang " $k "** :\n :white_small_square: " $x}}
+      {{end}}
+    {{$o = $i }}
+    {{$px = $k}}
     {{end}}
-    {{$o = $i}}
   {{end}}
 {{end}}
-{{$chan}} 
-{{$p1}}
-{{$p2}}
-{{$p3}}
 {{deleteTrigger 1}}
+{{$embed := cembed
+"Title" "Placement & Combat"
+"Description" (print $msg)
+"color" 0xaa6a70
+"thumbnail" (sdict "url" "https://i.imgur.com/zOX8QWV.png")
+"timestamp" .Current.Time}}
+{{editMessage 736937453788725278 765510996290174987 (complexMessageEdit "embed" $embed "content" "")}}
