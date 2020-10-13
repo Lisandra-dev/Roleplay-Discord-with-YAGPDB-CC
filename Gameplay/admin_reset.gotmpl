@@ -9,24 +9,25 @@
 {{if .CmdArgs}}
 	{{if (userArg (index .CmdArgs 0))}}
 	  {{$arg := (userArg (index .CmdArgs 0))}}
-    	{{$id = $arg.ID}}
+    {{$id = $arg.ID}}
 	  {{$user = (getMember $id).Nick}}
     {{if eq (len $user) 0}}
-      {{$user = $arg.Username}}
+    {{$user = $arg.Username}}
     {{end}}
 	{{else if $name}}
 		{{$user = title $name}}
-    		{{$rr := sdict}}
-   		 {{with (dbGet 0 "reroll_List")}}
-     			{{$rr = sdict .Value}}
-    		{{end}}
-    		{{$id = toInt ($rr.Get $user)}}
+    {{$rr := sdict}}
+   	{{with (dbGet 0 "reroll_List")}}
+     	{{$rr = sdict .Value}}
+    {{end}}
+    {{$id = toInt ($rr.Get $user)}}
 		{{$idperso := (toRune (lower $name))}}
-    		{{range $idperso}}
-			{{- $id = add $id . }}
-   		 {{- end}}
+    	{{range $idperso}}
+				{{- $id = add $id . }}
+   		{{- end}}
+		{{end}}
 	{{end}}
-{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+	{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 {{$idict := str $id}}
 
