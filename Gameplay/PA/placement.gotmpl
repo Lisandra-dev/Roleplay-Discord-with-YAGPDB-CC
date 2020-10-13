@@ -4,9 +4,14 @@
   {{$groupe = sdict .Value}}
 {{end}}
 
-{{$pos := sdict}}
+{{$position := sdict}}
 {{with (dbGet 0 "position")}}
-  {{$pos = sdict .Value}}
+  {{$position = sdict .Value}}
+{{end}}
+
+{{$pos := sdict}}
+{{with ($position.Get (str .Channel.ID))}}
+  {{$pos = sdict .}}
 {{end}}
 
 {{/* Get joueur */}}
@@ -47,17 +52,17 @@
   {{$s := "à couvert"}}
   {{if $name}}
     {{if and (ge (len .CmdArgs) 3) (not (reFind `-s` .Message.Content))}}
-      {{$item = index .CmdArgs 1}}
+      {{$item = title (lower (index .CmdArgs 1))}}
       {{$s = 1}}
     {{else if and (ge (len .CmdArgs) 3) (reFind `-s` (index .CmdArgs 1))}}
-      {{$s = index .CmdArgs 2}}
+      {{$s = title (lower (index .CmdArgs 2))}}
     {{end}}
   {{else}}
     {{if and (ge (len .CmdArgs) 1) (not (reFind `-s` .Message.Content))}}
-      {{$item = index .CmdArgs 1}}
+      {{$item = title (lower (index .CmdArgs 1))}}
       {{$s = 1}}
     {{else if and (ge (len .CmdArgs 1)) (reFind `-s` (index .CmdArgs 1))}}
-      {{$s = index .CmdArgs 2}}
+      {{$s = title (lower (index .CmdArgs 2))}}
     {{end}}
   {{end}}
   {{if eq $posarg "1" "2" "3"}}
@@ -74,7 +79,6 @@
         {{$desc = print $user " s'est déplacé au rang " $posarg ", et est en position " $s "."}}
       {{end}}
       {{$pos.Set $posarg $p}}
-      {{$p.Get $item}}
       {{range $i, $j := $pos}}
         {{$j = sdict $j}}
         {{if and ($j.Get $item) (ne $i $posarg)}}
@@ -91,27 +95,33 @@
       {{$desc = "PA insuffisants pour réaliser l'action."}}
     {{end}}
   {{else if eq $posarg "-del"}}
+    {{$check := "false"}}
+    {{$posi := ""}}
     {{if ge (len .CmdArgs) 2}}
       {{$item = index .CmdArgs 1}}
       {{range $i, $j := $pos}}
         {{$j = sdict $j}}
         {{if (ge (toInt ($j.Get $item)) 1)}}
-        {{$i}}
-        {{$j.Get $user}} {{$j.Get $item}}
           {{if and ($j.Get $user) ($j.Get $item)}}
             {{$j.Set $item (sub ($j.Get $item) 1) }}
-            {{$desc = print $user " a retiré " $item "de la position" $i "."}}
+            {{$check = "i"}}
+            {{$posi = $i}}
             {{if le ($j.Get $item) 0}}
               {{$j.Del $item}} 
             {{end}}
-            {{$pos.Set $item $j}}
+            {{$pos.Set $i $j}}
           {{else}}
-            {{$desc = "L'objet n'existe pas."}}
+            {{$check = "true"}}
           {{end}}
           {{$pos.Set $i $j}}
-        {{else}} 
-          {{$desc = "Vous ne pouvez pas récupérer un objet qui n'est pas sur le même rang que vous."}}
         {{end}}
+      {{end}}
+      {{if eq $check "true"}}
+        {{$desc = "Vous ne pouvez pas récupérer un objet qui n'est pas sur le même rang que vous."}}
+      {{else if eq $check "false"}}
+        {{$desc = "L'objet n'existe pas."}}
+      {{else if eq $check "i"}}
+        {{$desc = print $user " a retiré " $item " de la position " $posi "."}}
       {{end}}
     {{else}}
       {{$desc = "Erreur, vous avez oublié le nom de l'objet"}}
@@ -123,4 +133,33 @@
   {{$desc = "Erreur : vous devez rentrer une commande"}}
 {{end}}
 {{sendMessage nil $desc}}
-{{dbSet 0 "position" $pos}}
+{{$position.Set (str .Channel.ID) $pos}}
+{{dbSet 0 "position" $position}}
+{{$p1 := ""}}
+{{$p2 := ""}}
+{{$p3 := ""}}
+{{$chan := ""}}
+{{$o := ""}}
+{{$k := sdict}}
+{{range $i, $j := $position}}
+  {{range $k, $l := $j}}
+   {{range $x, $y := $l}}
+      {{$chan = print $chan "<#" $i ">"}}
+      {{if eq $k "1"}}
+        {{$p1 = print $p1 "\n ▫️ " $x}}
+      {{else if eq $k "2"}}
+        {{$p2 = print $p2 "\n ▫️ " $x}}
+      {{else if eq $k "3" }}
+        {{$p3 = print $p3 "\n ▫️ " $x}}
+      {{end}}
+      {{if eq $o $i}}
+        {{$msg = print $chan "\n" $p1 "\n" $p2 "\n" $p3}}
+    {{end}}
+    {{$o = $i}}
+  {{end}}
+{{end}}
+{{$chan}} 
+{{$p1}}
+{{$p2}}
+{{$p3}}
+{{deleteTrigger 1}}
