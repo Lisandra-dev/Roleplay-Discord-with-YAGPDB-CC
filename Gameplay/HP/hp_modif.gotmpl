@@ -12,23 +12,29 @@
 {{end}}
 {{$h := "<:pv:712052732873408703>"}}
 {{$user := ""}}
+{{$rr := sdict}}
+{{with (dbGet 0 "reroll_List")}}
+  {{$rr = sdict .Value}}
+{{end}}
 
 {{if .CmdArgs}}
   {{if gt (len .CmdArgs) 2}}
     {{$la = joinStr " " (slice .CmdArgs 2)}}
     {{with (reFind `(\#\S*)` $la)}}
-      {{$la = joinStr "" (split . "#")}}
+      {{$la = reReplace `#` $la ""}}
       {{$la = title $la}}
+      {{$idl = toInt ($rr.Get $la)}}
+      {{$idlp := toRune (lower $la)}}
+      {{range $idlp}}
+        {{- $idl = add $idl .}}
+      {{- end}}
+      {{with ($hp.Get (str $idl))}}{{$la = .Personnage}}{{end}}
     {{end}}
   {{end}}
 {{$name := reFind `(\>\S*)` .Message.Content}}
 {{$name = reReplace `>` $name ""}}
   {{if $name}}
     {{$user = title $name}}
-    {{$rr := sdict}}
-	  {{with (dbGet 0 "reroll_List")}}
-		  {{$rr = sdict .Value}}
-	  {{end}}
     {{$id = toInt ($rr.Get $user)}}
     {{$idperso := (toRune (lower $name))}}
 	  {{range $idperso}}
