@@ -46,46 +46,81 @@
   {{$item := $user}}
   {{$s := "à couvert"}}
   {{if $name}}
-    {{if and (ge (len .CmdArgs) 2) (not (reFind `-s` .Message.Content))}}
+    {{if and (ge (len .CmdArgs) 3) (not (reFind `-s` .Message.Content))}}
       {{$item = index .CmdArgs 1}}
-      {{$s = 0}}
+      {{$s = 1}}
     {{else if and (ge (len .CmdArgs) 3) (reFind `-s` (index .CmdArgs 1))}}
       {{$s = index .CmdArgs 2}}
     {{end}}
   {{else}}
     {{if and (ge (len .CmdArgs) 1) (not (reFind `-s` .Message.Content))}}
       {{$item = index .CmdArgs 1}}
-      {{$s = 0}}
+      {{$s = 1}}
     {{else if and (ge (len .CmdArgs 1)) (reFind `-s` (index .CmdArgs 1))}}
       {{$s = index .CmdArgs 2}}
     {{end}}
   {{end}}
-
-  {{end}}
-  {{if eq $p "1" "2" "3"}}
+  {{if eq $posarg "1" "2" "3"}}
+    {{$p := sdict}}
+    {{with ($pos.Get $posarg)}}
+      {{$p = sdict .}}
+    {{end}}
     {{if gt $pa 0}}
-      {{$p := sdict}}
-      {{with ($pos.Get $posarg)}}
-        {{$p = sdict .}}
+      {{if eq (toInt $s) 1}}
+        {{$p.Set $item (add ($p.Get $item) 1)}}
+        {{$desc = print $user " a perdu " $item " au rang " $posarg "."}}
+      {{else}}
+        {{$p.Set $item $s}}
+        {{$desc = print $user " s'est déplacé au rang " $posarg ", et est en position " $s "."}}
       {{end}}
-      {{$p.Set $item $id}}
-      {{if eq $id 0}}
-        {{$p.Set $item (add $id 1)}}
-      {{end}}
-      	{{$desc = print $user " s'est déplacé en position " $posarg "."}}
+      {{$pos.Set $posarg $p}}
+      {{$p.Get $item}}
       {{range $i, $j := $pos}}
         {{$j = sdict $j}}
-        {{if and ($j.Get $item) (ne $j $posarg)}}
-          {{if eq $id 0}}
+        {{if and ($j.Get $item) (ne $i $posarg)}}
+          {{if eq (toInt $s) 1}}
             {{$j.Set $item (sub ($j.Get $item) 1)}}
           {{else}}
             {{$j.Del $item}}
           {{end}}
+          {{$pos.Set $i $j }}
         {{end}}
       {{end}}
+      {{$pos.Set $posarg $p}}
     {{else}}
       {{$desc = "PA insuffisants pour réaliser l'action."}}
     {{end}}
-  {{else if eq $p "-del"}}
-    {{}}
-
+  {{else if eq $posarg "-del"}}
+    {{if ge (len .CmdArgs) 2}}
+      {{$item = index .CmdArgs 1}}
+      {{range $i, $j := $pos}}
+        {{$j = sdict $j}}
+        {{if (ge (toInt ($j.Get $item)) 1)}}
+        {{$i}}
+        {{$j.Get $user}} {{$j.Get $item}}
+          {{if and ($j.Get $user) ($j.Get $item)}}
+            {{$j.Set $item (sub ($j.Get $item) 1) }}
+            {{$desc = print $user " a retiré " $item "de la position" $i "."}}
+            {{if le ($j.Get $item) 0}}
+              {{$j.Del $item}} 
+            {{end}}
+            {{$pos.Set $item $j}}
+          {{else}}
+            {{$desc = "L'objet n'existe pas."}}
+          {{end}}
+          {{$pos.Set $i $j}}
+        {{else}} 
+          {{$desc = "Vous ne pouvez pas récupérer un objet qui n'est pas sur le même rang que vous."}}
+        {{end}}
+      {{end}}
+    {{else}}
+      {{$desc = "Erreur, vous avez oublié le nom de l'objet"}}
+    {{end}}
+  {{else}}
+    {{$desc = "Erreur : vous devez rentrer une commande."}}
+  {{end}}
+{{else}}  
+  {{$desc = "Erreur : vous devez rentrer une commande"}}
+{{end}}
+{{sendMessage nil $desc}}
+{{dbSet 0 "position" $pos}}
