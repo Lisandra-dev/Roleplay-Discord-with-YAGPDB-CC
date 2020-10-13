@@ -2,7 +2,8 @@
 
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 {{$cat := .Channel.ParentID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}	{{/* Groupe dictionnaire */}}
+{{$bot := .Channel.ID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) )}}		{{/* Groupe dictionnaire */}}
 	{{$groupe := sdict}}
 	{{with (dbGet .Server.ID "groupe")}}
 		{{$groupe = sdict .Value}}

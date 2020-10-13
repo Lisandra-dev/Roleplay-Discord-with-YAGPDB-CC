@@ -6,7 +6,8 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 {{$img := "https://i.imgur.com/YeIsRmw.png"}}
 {{$cat := .Channel.ParentID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}
+{{$bot := .Channel.ID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921))}}
 	{{/* Groupe dictionnaire */}}
 	{{$groupe := sdict}}
 	{{with (dbGet .Server.ID "groupe")}}

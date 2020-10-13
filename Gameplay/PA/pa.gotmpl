@@ -1,5 +1,6 @@
 {{$cat := .Channel.ParentID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}
+{{$bot := .Channel.ID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) )}}	
 	{{$desc := ""}}
 	{{$col := 16777215}}
 	{{$p := 0}}

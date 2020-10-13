@@ -3,7 +3,8 @@ It will also count the number of balls used, and will return this message to tel
 
 If you change the value of the if, you must change the value in the "$x := sub".  */}}
 {{$cat := .Channel.ParentID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) )}}	
+{{$bot := .Channel.ID}}
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) )}}	
 	{{$img := "https://i.imgur.com/YeIsRmw.png"}}
 	{{/* Groupe dictionnaire */}}
 	{{$groupe := sdict}}
