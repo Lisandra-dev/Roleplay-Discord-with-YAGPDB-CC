@@ -45,16 +45,22 @@
   {{$posarg := index .CmdArgs 0}}
   {{$item := $user}}
   {{$s := "à couvert"}}
-  {{if and (ge (len .CmdArgs) 1) (not $name) (not (reFind `-s` (index .CmdArgs)))}}
-    {{$item = index .CmdArgs 1}}
-    {{$s = 0}}
   {{if $name}}
-    {{if and (ge (len .CmdArgs 2)) (not (reFind `-s` .Message.Content))}}
+    {{if and (ge (len .CmdArgs) 2) (not (reFind `-s` .Message.Content))}}
       {{$item = index .CmdArgs 1}}
       {{$s = 0}}
-    {{else if and (ge (len .CmdArgs 3)) (reFind `-s` (index .CmdArgs 1))}}
+    {{else if and (ge (len .CmdArgs) 3) (reFind `-s` (index .CmdArgs 1))}}
       {{$s = index .CmdArgs 2}}
     {{end}}
+  {{else}}
+    {{if and (ge (len .CmdArgs) 1) (not (reFind `-s` .Message.Content))}}
+      {{$item = index .CmdArgs 1}}
+      {{$s = 0}}
+    {{else if and (ge (len .CmdArgs 1)) (reFind `-s` (index .CmdArgs 1))}}
+      {{$s = index .CmdArgs 2}}
+    {{end}}
+  {{end}}
+
   {{end}}
   {{if eq $p "1" "2" "3"}}
     {{if gt $pa 0}}
