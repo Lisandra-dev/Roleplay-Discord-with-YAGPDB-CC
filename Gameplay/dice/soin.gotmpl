@@ -219,7 +219,7 @@
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
 			{{$comm = ""}}
 		{{else}}
-			{{$comm = (joinStr " " " ▬" $c ": ")}}
+			{{$comm = (joinStr " " " ▬" $c )}}
 		{{end}}
 	{{else}}
 		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
@@ -237,7 +237,7 @@
             {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
 					{{end}}
 					{{if ne $comm " "}}
-						{{$comm = joinStr " " " ▬" $comm ": "}}
+						{{$comm = joinStr " " " ▬" $comm }}
 					{{else}}
 						{{$comm = joinStr " " $comm}}
 					{{end}}
@@ -253,13 +253,13 @@
           {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
 				{{end}}
 				{{if ne $comm " "}}
-					{{$comm = joinStr " " " ▬" $comm ": "}}
+					{{$comm = joinStr " " " ▬" $comm }}
 				{{else}}
 					{{$comm = joinStr " " $comm}}
 				{{end}}
 			{{end}}
 		{{else}}
-			{{$comm = (joinStr " " " ▬" $c ": ") }}
+			{{$comm = (joinStr " " " ▬" $c ) }}
 		{{end}}
 	{{end}}
 {{else}}
