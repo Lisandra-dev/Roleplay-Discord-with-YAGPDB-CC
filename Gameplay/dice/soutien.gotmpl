@@ -313,27 +313,16 @@
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257}}
 
-{{if eq $d (toInt 0)}}
-	{{sendMessage nil $urc}}
-{{else if eq $d (toInt 1)}}
+{{if and (eq $v 1) (le $mimp 0)}}
 	{{sendMessage nil $rc}}
+{{else if and (eq $v 1) (ge $mimp 1)}}
+	{{sendMessage nil $urc}}
 {{else if le $d $seuil}}
-	{{if ge $mimp (toInt 1)}}
-		{{if eq $d $seuil}}
-			{{sendMessage nil $echec}}
-		{{else}}
-			{{sendMessage nil $r}}
-		{{end}}
-	{{else}}
-		{{sendMessage nil $r}}
-	{{end}}
-{{else if and (gt $d $seuil) (lt $d (toInt 9)) }}
+	{{sendMessage nil $r}}
+{{else if and (gt $d $seuil) (le $d (toInt 10)) }}
 	{{sendMessage nil $echec}}
-{{else if eq $d (toInt 10)}}
+{{else if eq $v (toInt 10)}}
 	{{sendMessage nil $ec}}
-{{else if eq $d (toInt 9)}}
-	{{sendMessage nil $echec}}
-{{else}}
 {{end}}
 
 {{deleteTrigger 1}}
