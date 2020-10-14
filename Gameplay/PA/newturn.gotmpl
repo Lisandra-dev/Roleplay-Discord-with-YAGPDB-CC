@@ -9,50 +9,83 @@
 {{end}}
 {{$pv_dic := sdict}}
 
+{{$turn := sdict}}
+{{with (dbGet 0 "turn")}}
+  {{$turn = sdict .Value}}
+{{end}}
+
+{{$room := sdict}}
+{{with (dbGet 0 "room")}}
+  {{$room = sdict .Value}}
+{{end}}
+
+{{$chan := .Channel.ID}}
+
 
 {{/* Tour count :Incr each call unless CmdArgs = reset */}}
 {{if .CmdArgs}}
-	{{dbSet 0 "turn" 1}}
-	{{dbDel .Server.ID "groupe"}}
+  {{if not (reFind `\d{17,}` .Message.Content)}}
+    {{$turn.Set (str $chan) 1}}
+    {{dbSet 0 "turn" $turn}}
+  	{{dbDel .Server.ID "groupe"}}
+  {{else if not (reFind `-del` (index .CmdArgs 0))}}
+    {{$chan = index .CmdArgs 0|reFind `\d{17,}`|getChannel}}
+    {{$turn.Set (str $chan) (add ($turn.Get (str $chan) 1))}}
+  {{else}}
+    {{$chan = index .CmdArgs 1|reFind `\d{17,}`|getChannel}}
+    {{$turn.Set (str $chan) 1}}
+  {{end}}
 {{else}}
-	{{$x := dbIncr 0 "turn" 1}}
-	{{$turn := (dbGet 0 "turn").Value}}
-	{{if not $turn}}
-		{{$turn := 1}}
-		{{dbSet 0 "turn" 1}}
-	{{end}}
-	{{range $i, $j := $groupe}}
-		{{if le $j 0}}
-			{{$j = 4}}
-		{{else if le $j 2}}
-			{{$j = 4}}
-		{{else if ge $j 2}}
-			{{$j = 6}}
-		{{end}}
-		{{$groupe.Set $i $j}}
-	{{end}}
-	
-	{{$pv := 0}}
-	{{range $i, $j := $hp}}
-		{{$pv_dic = sdict $j}}
-		{{$pv = (mult 5 (toInt $pv_dic.regen))}}
-		{{$pv = add (toInt $j.pv_actuel) $pv}}
-		{{$pv = add $pv (mult 1 (toInt $pv_dic.Mush))}}
-		{{if ge $pv (toInt $j.pv_max)}}
-			{{$pv = $j.pv_max}}
-		{{end}}
-		{{$pv_dic.Set "pv_actuel" $pv}}
-		{{$hp.Set $i $pv_dic}}
-	{{end}}
-	{{dbSet .Server.ID "groupe" $groupe}}
-	{{dbSet 0 "HP" $hp}}
+  {{if not ($turn.Get (str $chan))}}
+    {{$turn.Set (str $chan) 1}}
+  {{else}}
+    {{$turn.Set (str $chan) (add ($turn.Get (str $chan)) 1)}}
+    {{$chanR := sdict}}
+    {{with ($room.Get (str $chan))}}
+      {{$chanR = sdict .}}
+    {{end}}
+    {{dbSet 0 "turn" $turn}}
+    {{range $k, $v := $chanR}}
+    	{{range $i, $j := $groupe}}
+        {{if ($groupe.Get $k)}}
+      		{{if le $j 0}}
+      			{{$j = 4}}
+      		{{else if le $j 2}}
+      			{{$j = 4}}
+      		{{else if ge $j 2}}
+      			{{$j = 6}}
+      		{{end}}
+    		  {{$groupe.Set $i $j}}
+        {{end}}
+      {{end}}
+  	{{end}}
+  	
+  	{{$pv := 0}}
+    {{range $k, $v := $chanR}}
+    	{{range $i, $j := $hp}}
+        {{if ($hp.Get $k)}}
+      		{{$pv_dic = sdict $j}}
+      		{{$pv = (mult 5 (toInt $pv_dic.regen))}}
+      		{{$pv = add (toInt $j.pv_actuel) $pv}}
+      		{{$pv = add $pv (mult 1 (toInt $pv_dic.Mush))}}
+      		{{if ge $pv (toInt $j.pv_max)}}
+      			{{$pv = $j.pv_max}}
+      		{{end}}
+      		{{$pv_dic.Set "pv_actuel" $pv}}
+      		{{$hp.Set $i $pv_dic}}
+      	{{end}}
+      {{end}}
+    {{end}}
+  {{end}}
+  {{dbSet .Server.ID "groupe" $groupe}}
+  {{dbSet 0 "HP" $hp}}
 {{end}}
 
-{{$turn := (dbGet 0 "turn").Value}}
+{{$t := $turn.Get (str $chan)}}
 {{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
 {{$embed := cembed
 	"author" (sdict "name" "Vaisseau Nucleus" "icon_url" $icon)
-	"title" (joinStr " " "TOUR :" (str (toInt $turn)))
+	"title" (joinStr " " "TOUR :" (str (toInt $t)))
 	"color" 0x6B54BE
 	"timestamp" currentTime}}
 {{sendMessage nil $embed}}

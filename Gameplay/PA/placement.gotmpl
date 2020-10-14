@@ -84,6 +84,10 @@
       {{$s = title (lower (index .CmdArgs 2))}}
     {{end}}
   {{end}}
+  {{if (reFind `\<\:\w+\:\d+>` $item)}}
+    {{$item = $user}}
+    {{$s = title "à couvert"}}
+  {{end}}
   {{if eq $posarg "1" "2" "3"}}
     {{$p := sdict}}
     {{with ($pos.Get $posarg)}}
@@ -113,6 +117,7 @@
     {{else}}
       {{$desc = "PA insuffisants pour réaliser l'action."}}
     {{end}}
+    {{$position.Set (str .Channel.ID) $pos}}
   {{else if eq $posarg "-del"}}
     {{$check := "false"}}
     {{$posi := ""}}
@@ -145,6 +150,39 @@
     {{else}}
       {{$desc = "Erreur, vous avez oublié le nom de l'objet"}}
     {{end}}
+    {{$position.Set (str .Channel.ID) $pos}}
+  {{else if and (eq $posarg "-admindel") (hasRoleID 709795313279565906)}}
+  {{$chan := ""}}
+  {{$del := "v"}}
+    {{if ge (len .CmdArgs) 2}}
+      {{$item = (index .CmdArgs 1)}}
+      {{range $i, $j := $position}}
+        {{$j = sdict $j}}
+        {{range $k, $v := $j}}
+          {{$v = sdict $v}}
+          {{if ge (toInt ($v.Get $item)) 1}}
+            {{$v.Set $item (sub ($v.Get $item) 1)}}
+            {{if le ($v.Get $item) 0}}
+              {{$v.Del $item}}
+            {{end}}
+            {{$del = "t"}}
+            {{print "Objet supprimé"}}
+            {{$j.Set $k $v}}
+            {{$position.Set $i $j}}
+          {{else}}
+            {{$del = "n"}}
+          {{end}}
+        {{end}}
+      {{end}}
+      {{if eq $del "n"}}
+        {{print "L'objet n'existe pas"}}
+      {{else if eq $del "t"}}
+        {{print "Objet supprimé"}}
+      {{end}}
+      {{dbSet 0 "position" $position}}
+    {{else}}
+      {{$desc = "Nom de l'objet"}}
+    {{end}}
   {{else}}
     {{$desc = "Erreur : vous devez rentrer une commande."}}
   {{end}}
@@ -153,7 +191,6 @@
 {{end}}
 {{$t:=sendMessageRetID nil $desc}}
 {{deleteMessage nil $t 180}}
-{{$position.Set (str .Channel.ID) $pos}}
 {{dbSet 0 "position" $position}}
 {{$px := ""}}
 {{$r := ""}}
