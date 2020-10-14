@@ -21,7 +21,7 @@
 	{{$stats = sdict .Value}}
 {{end}}
 
-{{$d:= (randInt 1 10)}}
+{{$d:= (randInt 1 11)}}
 
 {{$arg1:=""}}
 {{$arg2:= ""}}
@@ -140,7 +140,7 @@
 				{{else}}
 					{{$msg = "**Réussite** "}}
 				{{end}}
-		{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
+		{{else if and (gt $d $seuil) (lt $d (toInt 9))}}
 			{{$msg = "**Echec** "}}
 		{{else if eq $d (toInt 10)}}
 			{{$msg = "**Echec critique** "}}
@@ -176,7 +176,7 @@
 					{{$embed := cembed
 					"author" (sdict "name" $user "icon_url" $img)
 					"description" (joinStr "" $msg " ▬ " $c )
-					"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1  $x " | " $imp " : " $idb "]"))
+					"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $imp " : " $idb "]"))
 					"color" 0x63AFE1}}
 					{{sendMessage nil $embed}}
 
@@ -236,7 +236,7 @@
 							{{else}}
 								{{$msg = "**Réussite** "}}
 							{{end}}
-					{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
+					{{else if and (gt $d $seuil) (lt $d (toInt 9))}}
 						{{$msg = "**Echec** "}}
 					{{else if eq $d (toInt 10)}}
 						{{$msg = "**Echec critique** "}}
@@ -301,7 +301,7 @@
 				{{else}}
 					{{$msg = "**Réussite** "}}
 				{{end}}
-		{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
+		{{else if and (gt $d $seuil) (lt $d (toInt 9))}}
 			{{$msg = "**Echec** "}}
 		{{else if eq $d (toInt 10)}}
 			{{$msg = "**Echec critique** "}}
@@ -340,7 +340,7 @@
 		{{else}}
 			{{$msg = "**Réussite** "}}
 		{{end}}
-{{else if or (gt $d $seuil) (lt $d (toInt 9))}}
+{{else if and (gt $d $seuil) (lt $d (toInt 9))}}
 	{{$msg = "**Echec** "}}
 {{else if eq $d (toInt 10)}}
 	{{$msg = "**Echec critique** "}}

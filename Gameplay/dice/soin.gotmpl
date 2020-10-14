@@ -20,7 +20,7 @@
 	{{$stats = sdict .Value}}
 {{end}}
 
-{{$d:= (randInt 1 10)}}
+{{$d:= (randInt 1 11)}}
 
 {{$real:= $d}}
 {{$arg1:=""}}
@@ -317,7 +317,7 @@
 	{{else}}
 		{{sendMessage nil $r}}
 	{{end}}
-{{else if or (gt $d $seuil) (lt $d (toInt 9)) }}
+{{else if and (gt $d $seuil) (lt $d (toInt 9)) }}
 	{{sendMessage nil $echec}}
 {{else if eq $d (toInt 10)}}
 	{{sendMessage nil $ec}}
