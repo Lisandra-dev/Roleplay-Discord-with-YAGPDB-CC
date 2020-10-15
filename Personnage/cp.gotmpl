@@ -35,8 +35,8 @@
         {{end}}
       {{end}}
     {{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
-    {{$target := (reFind `(\#\S*)` .Message.Content)}}
-    {{$target = joinStr "" (split $target "#")}}
+    {{$target := (reFind `(\>\>\S*)` .Message.Content)}}
+    {{$target = reReplace ">" $target ""}}
     {{if $target}}
       {{$tu = title $target}}
       {{$idt = (toInt ($rr.Get $tu))}}
