@@ -127,7 +127,7 @@
 			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " (toString $x) " : " $arg1 " | " $imp " : " $idb}}
   	{{else}}
 			{{$d = sub $d $idb}}
-			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " |" $imp " : " $idb }}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb }}
 		{{end}}
 	{{else}}
 		{{if ne (toInt (index .CmdArgs 0)) (toInt 0) }}
@@ -292,7 +292,7 @@
 
 {{$ec := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $comm "**Echec critique...** " $comm)	
+	"description" (joinStr "" "**Echec critique...** " $comm)	
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x63AFE1}}
 

@@ -126,7 +126,7 @@
 			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " (toString $x) " : " $arg1 " | " $imp " : " $idb}}
   	{{else}}
 			{{$d = sub $d $idb}}
-			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " |" $imp " : " $idb }}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb }}
 		{{end}}
 	{{else}}
 		{{if ne (toInt (index .CmdArgs 0)) (toInt 0) }}

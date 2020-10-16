@@ -126,7 +126,7 @@
 			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " (toString $x) " : " $arg1 " | " $imp " : " $idb}}
   	{{else}}
 			{{$d = sub $d $idb}}
-			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " |" $imp " : " $idb }}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb }}
 		{{end}}
 	{{else}}
 		{{if ne (toInt (index .CmdArgs 0)) (toInt 0) }}
@@ -264,10 +264,7 @@
 {{else}}
 	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 {{end}}
-
-
 {{$img := "https://i.imgur.com/fuHvIUn.png"}}
-
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
 	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a une pénalité de +4 à son dé.")
