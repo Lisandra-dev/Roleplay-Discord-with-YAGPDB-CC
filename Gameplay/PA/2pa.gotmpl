@@ -66,7 +66,12 @@
 			"author" (sdict "name" $vn "icon_url" $icon)
 			"description" "80% des PA du groupe ont été dépensé !"
 			"color" 0x7cb5c8}}
-		{{sendMessage nil $pause}}
+		{{$idM := sendMessageRetID 735938256038002818 $pause}}
+		{{if (dbGet "pa_tot_msg")}}
+			{{$idold := dbGet "pa_tot_msg"}}
+			{{deleteMessage 735938256038002818 $idold}}
+			{{dbSet "pa_tot_msg" $idM}}
+		{{end}}
 	{{end}}
 
 	{{if eq $bool false}}
