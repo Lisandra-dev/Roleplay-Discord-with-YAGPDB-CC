@@ -1,0 +1,117 @@
+{{/* player */}}
+{{$acto := sdict}}
+{{with (dbGet 0 "actopi")}}
+  {{$acto = sdict .Value}}
+{{end}}
+{{$cat := .Channel.ParentID}}
+{{$bot := .Channel.ID}}
+{{if (reFind `\<\#\d{17,}\>` .Message.Content )}}
+  {{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921))}} 
+    {{$user := .Member.Nick}}
+    {{$id := .User.ID }}
+    {{$name := reFind `([^(#\d+)]>\S*)` .Message.Content}}
+    {{$name = reReplace `\s` $name ""}}
+    {{$name = reReplace `>` $name ""}}
+    {{if $name}}
+      {{$user = title $name}}
+      {{$idperso := (toRune (lower $name))}}
+      {{range $idperso}}
+        {{- $id = add $id . }}
+      {{- end}}
+    {{else if eq (len $user) 0}}
+      {{$user = .User.Username}}
+    {{end}}
+    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+    {{/* find pièce*/}}
+    {{$ochan := str .Channel.ID}}
+    {{$chan := ""}}
+    {{$chan = reFind `\<\#\d{17,}\>` .Message.Content}}
+    {{$chan = reReplace "#" $chan ""}}
+    {{$chan = reReplace ">" $chan ""}}
+    {{$chan = reReplace "<" $chan ""}}
+    {{$nchan := str $chan}}
+    {{$na := getChannel $chan}}
+    {{$na = $na.Name}}
+    {{$na = reReplace `-` $na " "}}
+    {{/* dict room */}}
+    {{$room := sdict}}
+    {{with (dbGet 0 "room")}}
+      {{$room = sdict .Value}}
+    {{end}}
+    {{$nri := sdict}}
+    {{with ($room.Get $nchan)}}
+      {{$nri = sdict .}}
+    {{end}}
+    {{$nri.Set (str $id) $user}}
+    {{$ori := sdict}}
+    {{with ($room.Get $ochan)}}
+      {{$ori = sdict .}}
+    {{end}}
+    {{if ($ori.Get (str $id))}}
+      {{$ori.Del (str $id)}}
+    {{end}}
+    {{$room.Set $ochan $ori}}
+    {{$room.Set $nchan $nri}}
+    {{dbSet 0 "room" $room}}
+    
+    {{/* Update message */}}
+    {{$mdic := sdict}}
+    {{with (dbGet 0 "room_msg")}}
+      {{$mdic = sdict .Value}}
+    {{end}}
+    {{$ido := $mdic.Get $ochan}}
+    {{$idn := $mdic.Get $nchan}}
+  
+    {{if and ($mdic.Get $ochan) ($mdic.Get $nchan)}}
+      {{$o := ""}}
+      {{$n := ""}}
+      {{range $i, $j := $ori}}
+      {{$o = print $o "▫️ **" $j "**\n"}}
+      {{end}}
+      {{if eq (len $o) 0}}
+        {{$o = "Cette pièce est vide..."}}
+      {{end}}
+      {{range $i, $j := $nri}}
+        {{$n = print $n "▫️ **" $j "**\n"}}
+      {{end}}
+      {{$oname := title .Channel.Name}}
+      {{$oname = reReplace `-` $oname " " }}
+      {{$oname = title $oname}}
+      {{$idan := $acto.Get (print $na)}}
+      {{$idao := $acto.Get (print $oname)}}
+      {{$na = title $na}}
+      
+      {{$omsg := cembed 
+        "title" (print $oname)
+        "Description" (joinStr " " $o )
+        "color" 0x8c385f
+        "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")
+        "timestamp" currentTime}}
+      {{editMessage (toInt $ochan) $ido (complexMessageEdit "embed" $omsg "content" "")}}
+      {{$nmsg := cembed 
+        "title" (print (title $na))
+        "Description" (joinStr " " $n )
+        "color" 0x8c385f
+        "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")
+        "timestamp" currentTime}}
+      {{editMessage (toInt $nchan) $idn (complexMessageEdit "embed" $nmsg "content" "")}}
+      {{if and (not ($acto.Get (print $oname))) (not ($acto.Get (print $na)))}}
+        {{$idano := sendMessageRetID 766772063603785728 $omsg}}
+        {{$idann := sendMessageRetID 766772063603785728 $nmsg}}
+        {{$acto.Set (print $oname) $idano}}
+        {{$acto.Set (print (title $na)) $idann}}
+      {{else if eq $na $oname}}
+        {{if not ($acto.Get (print $oname)) }}
+          {{$idann := sendMessageRetID 766772063603785728 $nmsg}}
+          {{$acto.Set (print (title $na)) $idann}}
+        {{else}}
+          {{editMessage 766772063603785728 ($acto.Get (print $oname)) (complexMessageEdit "embed" $nmsg "content" "")}}
+        {{end}}
+      {{else}}
+        {{editMessage 766772063603785728 $idan (complexMessageEdit "embed" $nmsg "content" "")}}
+        {{editMessage 766772063603785728 $idao (complexMessageEdit "embed" $omsg "content" "")}}
+      {{end}}
+    {{end}}
+  {{end}}
+{{end}}
+{{dbSet 0 "actopi" $acto}}

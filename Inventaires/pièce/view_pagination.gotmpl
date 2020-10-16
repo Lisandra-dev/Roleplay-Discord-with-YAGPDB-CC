@@ -1,0 +1,100 @@
+{{ with and (eq .ReactionMessage.Author.ID 204255221017214977) .ReactionMessage.Embeds }} {{/* Checks for validity */}}
+  {{ $embed := structToSdict (index . 0) }}
+  {{ range $k, $v := $embed }}
+    {{- if eq (kindOf $v true) "struct" }}
+    {{- $embed.Set $k (structToSdict $v) }}
+    {{- end -}}
+  {{ end }}
+  {{$del := false}}
+  {{$check := ""}}
+  {{ $action := $.Reaction.Emoji.Name }} {{/* The action being ran */}}
+  {{ $validEmojis := cslice "▶️" "◀️" "🗑️" "📱" }} {{/* Valid emojis */}}
+  {{ $isValid := false }}
+  {{ $page := 0 }} 
+  {{if $embed.Author}}
+    {{$check = reFind `(?i)pièce` $embed.Author.Name}}
+  {{end}}
+  {{if and (eq $check "Pièce") $embed.Footer}}
+    {{ $page = toInt (reFind `\d+` $embed.Footer.Text) }}
+    {{ $isValid = true }}
+  {{else if and (eq $check "Pièce")}}
+    {{$isValid = true}}
+    {{$page = 1}}
+  {{end}}
+  {{ if and (in $validEmojis $action) $isValid $page }}
+    {{$chan := reFind `(\#\S*)` $embed.Footer.Text}}
+    {{$chan = (joinStr "" (split $chan "#"))}}
+    {{$depot := sdict}}
+    {{with (dbGet 0 "depot_sol")}}
+      {{$depot = sdict .Value}}
+    {{end}}
+    {{$sol := sdict}}
+    {{with ($depot.Get $chan)}}
+      {{$sol = sdict .}}
+    {{end}}
+    {{$desc := "Il n'y a rien ici."}}
+    {{$footer := print "Page : 1/1 | #" $chan}}
+    {{$cslice := cslice}}
+    {{range $k, $v := $sol}}
+      {{$cslice = $cslice.Append (printf ":white_small_square: ** %-10v **  : [%v]" $k $v)}}
+    {{end}}
+    {{$dm := ""}}
+    {{$nomchan := title (getChannel (toInt $chan)).Name}}
+    {{$nomchan = reReplace `-` $nomchan " " }}
+    {{$nomchan = title $nomchan}}
+    {{$author := print "Pièce : " $nomchan }}
+    {{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
+    {{ if eq $action "▶️" }}
+      {{ $page = add $page 1 }} {{/* Update page according to emoji */}}
+    {{ else if eq $action "◀️"}}
+      {{ $page = sub $page 1 }}
+      {{if le $page 1}}
+        {{$page =1}}
+      {{end}}
+    {{else if eq $action "📱"}}
+      {{range $i, $j := $sol}}
+        {{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+      {{end}}
+      {{sendDM (print $dm)}}
+    {{else}}
+      {{$del = true}}
+      {{$page = 1}}
+      {{deleteMessage nil $.ReactionMessage.ID 1}}
+    {{ end }}
+    {{$start := ""}}
+    {{$stop := ""}}
+    {{$end := ""}}
+    {{if $cslice}}
+      {{$start = (mult 10 (sub $page 1))}}
+      {{$stop = (mult $page 10)}}
+      {{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+      {{$data := ""}}
+      {{if ge $stop (len $cslice)}}
+        {{$stop = (len $cslice)}}
+      {{end}}
+      {{if ne $page 0}}
+        {{if and (le $start $stop) (ge (len $cslice) $start) (le $stop (len $cslice))}}
+          {{range (seq $start $stop)}}
+            {{$data = (print $data "\n" (index $cslice .))}}
+          {{end}}
+          {{$footer = print "Page : " $page " / " $end " | #" $chan }}
+        {{else}}
+          {{$data = "Il n'y a rien ici..."}}
+          {{$footer = print "Page: " $page " / " $end " | #" $chan }}
+        {{end}}
+      {{else}}
+        {{$data = "Il n'y a rien ici..."}}
+        {{$footer = print "Page: " $page " / " $end " | #" $chan }}
+      {{end}}
+      {{$desc = print "" $data ""}}
+    {{end}}
+    
+    {{if eq $del false}}
+    
+      {{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/RMtR5SH.png") "color" 0x464e8d "description" $desc "footer" (sdict "text" $footer))}}
+      {{deleteMessage nil $.ReactionMessage.ID 300}}
+    {{else}}
+      {{deleteMessage nil $.ReactionMessage.ID 1}}
+    {{end}}
+  {{end}}
+{{end}}

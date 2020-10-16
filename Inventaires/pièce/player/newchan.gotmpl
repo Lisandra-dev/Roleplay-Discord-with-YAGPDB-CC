@@ -1,0 +1,134 @@
+{{$chan := getChannel .Channel.ID}}
+{{$user := .Member.Nick}}
+{{$nchan := str $chan.ID}}
+{{$room := sdict}}
+{{$id := .User.ID}}
+{{with (dbGet 0 "room")}}
+  {{$room = sdict .Value}}
+{{end}}
+{{$acto := sdict}}
+{{with (dbGet 0 "actopi")}}
+  {{$acto = sdict .Value}}
+{{end}}
+{{if .CmdArgs}}
+  {{if eq (index .CmdArgs 0) "-new"}}
+    {{if (reFind `\d{17,}` (index .CmdArgs 1))}}
+      {{$chan = index .CmdArgs 1|reFind `\d{17,}`|getChannel}}
+      {{$nchan = str $chan.ID}}
+    {{end}}
+    {{$chan = title $chan.Name}}
+    {{$chan = reReplace `-` $chan " "}}
+    {{$mdic := sdict}}
+    {{with (dbGet 0 "room_msg")}}
+      {{$mdic = sdict .Value}}
+    {{end}}
+    {{$embed := cembed
+      "title" (print $chan)
+      "description" "Cette salle est vide..."
+      "color" 0x8c385f
+      "timestamp" .Current.Time
+      "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")}}
+    {{$id := sendMessageRetID (toInt $nchan) $embed}}
+    {{$ida := sendMessageRetID 766772063603785728 $embed}}
+    {{$mdic.Set $nchan $id}}
+    {{$acto.Set (print $chan) $ida}}
+    {{dbSet 0 "room_msg" $mdic}}
+  {{else if eq (index .CmdArgs 0) "-del" "-rm"}}
+    {{$name := reFind `(\>\S*)` .Message.Content}}
+    {{$name = reReplace `>` $name ""}}
+    {{$user = .Member.Nick}}
+    {{if $name}}
+      {{$rr := sdict}}
+      {{with (dbGet 0 "reroll_List")}}
+        {{$rr = sdict .Value}}
+      {{end}}
+      {{$user = title $name}}
+      {{$id = (toInt ($rr.Get $user))}}
+      {{$idperso := (toRune (lower $name))}}
+      {{range $idperso}}
+        {{- $id = add $id . }}
+      {{- end}}
+    {{else}}
+      {{with (userArg (index .CmdArgs 1))}}
+        {{$id = .}}
+        {{$id = $id.ID}}
+        {{$user = (getMember $id).Nick}}
+        {{if eq (len $user) 0}}
+          {{$user = .}}
+          {{$user = $user.Username}}
+        {{end}}
+      {{end}}
+    {{end}}
+    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+    {{if ge (len .CmdArgs) 3}}
+      {{if (reFind `\d{17,}` (index .CmdArgs 2))}}
+        {{$chan = index .CmdArgs 2|reFind `\d{17,}`|getChannel}}
+        {{$nchan = str $chan.ID}}
+      {{end}}
+    {{end}}
+    {{$mr := sdict}}
+    {{with ($room.Get $nchan)}}
+      {{$mr = sdict .}}
+    {{end}}
+    {{$mr.Del (str $id)}}
+    {{$room.Set $nchan $mr}}
+    {{dbSet 0 "room" $room}}
+    {{print $user " a bien été supprimé du channel spécifié."}}
+  {{else if eq (index .CmdArgs 0) "-find" "-f"}}
+    {{$name := reFind `(\>\S*)` .Message.Content}}
+    {{$name = reReplace `>` $name ""}}
+    {{$user = .Member.Nick}}
+    {{if $name}}
+      {{$rr := sdict}}
+      {{with (dbGet 0 "reroll_List")}}
+        {{$rr = sdict .Value}}
+      {{end}}
+      {{$user = title $name}}
+      {{$id = (toInt ($rr.Get $user))}}
+      {{$idperso := (toRune (lower $name))}}
+      {{range $idperso}}
+        {{- $id = add $id . }}
+      {{- end}}
+    {{else}}
+      {{with (userArg (index .CmdArgs 1))}}
+        {{$id = .}}
+        {{$id = $id.ID}}
+        {{$user = (getMember $id).Nick}}
+        {{if eq (len $user) 0}}
+          {{$user = .}}
+          {{$user = $user.Username}}
+        {{end}}
+      {{end}}
+    {{end}}
+    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+    {{$mr:= sdict}}
+    {{$info := ""}}
+    {{range $i, $j := $room}}
+      {{$j = sdict $j}}
+      {{if $j.Get (str $id)}}
+        {{$info = print $info $user " se trouve actuellement dans <#" $i ">."}}
+      {{end}}
+    {{end}}
+    {{sendMessage nil $info}}
+  {{end}}
+{{else}}
+  {{$chan = title $chan.Name}}
+  {{$chan = title (reReplace `-` $chan " ")}}
+  {{$mdic := sdict}}
+  {{with (dbGet 0 "room_msg")}}
+    {{$mdic = sdict .Value}}
+  {{end}}
+  {{$embed := cembed
+    "title" (print $chan)
+    "description" "Cette salle est vide..."
+    "color" 0x8c385f
+    "timestamp" .Current.Time
+    "thumbnail" (sdict "url" "https://i.imgur.com/bz8YW3y.png")}}
+  {{$id := sendMessageRetID (toInt $nchan) $embed}}
+  {{$ida := sendMessageRetID 766772063603785728 $embed}}
+  {{$mdic.Set $nchan $id}}
+  {{$acto.Set (print $chan) $ida}}
+  {{dbSet 0 "room_msg" $mdic}}
+{{end}}
+{{deleteTrigger 1}}
+{{dbSet 0 "actopi" $acto}}
