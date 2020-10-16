@@ -1,6 +1,6 @@
 {{$cat := .Channel.ParentID}}
 {{$bot := .Channel.ID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) )}}	
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) (eq $bot 726479311879798902))}}	
 	{{$desc := ""}}
 	{{$col := 16777215}}
 	{{$p := 0}}
@@ -49,10 +49,24 @@
 
 	{{/* PA ID search */}}
 	{{$bool := false}}
+	{{$next := len $groupe}}
+	{{$p := 0}}
+	{{$next = toInt (mult 0.2 4 $next)}}
 	{{range $i, $j := $groupe}}
+		{{$p = add $p $j}}
 		{{- if eq $idict $i}}
 			{{- $bool = true}}
 		{{- end -}}
+	{{end}}
+
+	{{if le $p $next}}
+		{{$vn := "Vaisseau Nucleus"}}
+		{{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
+		{{$pause := cembed
+			"author" (sdict "name" $vn "icon_url" $icon)
+			"description" "80% des PA du groupe ont été dépensé !"
+			"color" 0x7cb5c8}}
+		{{sendMessage nil $pause}}
 	{{end}}
 
 	{{if eq $bool false}}
