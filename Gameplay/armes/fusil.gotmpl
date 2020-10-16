@@ -13,9 +13,9 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{end}}
 
 	{{/* Get player */}}
-{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
-{{$name = reReplace `>` $name ""}}
-{{$name = reReplace `\s` $name ""}}
+	{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
+	{{$name = reReplace `>` $name ""}}
+	{{$name = reReplace `\s` $name ""}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}
@@ -29,14 +29,6 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{end}}
 	{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
-	{{/* get PA */}}
-	{{$pa := $groupe.Get (str $id)}}
-	{{if eq (kindOf $pa) "invalid"}}
-		{{$groupe.Set (str $id) 4}}
-		{{$pa = 4}}
-	{{end}}
-	{{dbSet .Server.ID "groupe" $groupe}}
-
 	{{/* Dict for weapon */}}
 	{{$arme := sdict}}
 	{{with (dbGet $id "arme")}}
@@ -45,25 +37,23 @@ If you change the value of the if, you must change the value in the "$x := sub".
 
 	{{$desc := ""}}
 
-	{{if gt $pa 0}}
-		{{if not ($arme.Get "fusil")}}
-			{{$arme.Set "fusil" 1}}
-			{{ $desc = (joinStr "" "Il reste 11/12 balles de fusil.")}}
-		{{else}}
-			{{$arme.Set "fusil" (add ($arme.Get "fusil") 1)}}
-			{{$y := $arme.Get "fusil"}}
-			{{$x := toFloat (sub 12 $y)}}
-			{{if lt (toFloat $y) (toFloat 12)}}
-				{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 balles de fusil.")}}
-			{{else if eq (toFloat $y) (toFloat 12)}}
-				{{$desc = "Dernière balle utilisée."}}
-			{{else}}
-				{{ $desc = "Action impossible : fusil vide. "}}
-			{{end}}
-		{{end}}
+	
+	{{if not ($arme.Get "fusil")}}
+		{{$arme.Set "fusil" 1}}
+		{{ $desc = (joinStr "" "Il reste 11/12 balles de fusil.")}}
 	{{else}}
-		{{$desc = "PA INSUFFISANTS POUR RÉALISER L'ACTION."}}
+		{{$arme.Set "fusil" (add ($arme.Get "fusil") 1)}}
+		{{$y := $arme.Get "fusil"}}
+		{{$x := toFloat (sub 12 $y)}}
+		{{if lt (toFloat $y) (toFloat 12)}}
+			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 balles de fusil.")}}
+		{{else if eq (toFloat $y) (toFloat 12)}}
+			{{$desc = "Dernière balle utilisée."}}
+		{{else}}
+			{{ $desc = "Action impossible : fusil vide. "}}
+		{{end}}
 	{{end}}
+	
 
 	{{$embed := cembed
 	"author" (sdict "name" $user "icon_url" $img)

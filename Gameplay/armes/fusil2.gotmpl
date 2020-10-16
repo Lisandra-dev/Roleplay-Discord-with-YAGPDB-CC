@@ -31,14 +31,6 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{$img := "https://i.imgur.com/YeIsRmw.png"}}
 	{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
-	{{/* get PA */}}
-	{{$pa := $groupe.Get (str $id)}}
-	{{if eq (kindOf $pa) "invalid"}}
-		{{$groupe.Set (str $id) 4}}
-		{{$pa = 4}}
-	{{end}}
-	{{dbSet .Server.ID "groupe" $groupe}}
-
 	{{/* Dict for weapon */}}
 	{{$arme := sdict}}
 	{{with (dbGet $id "arme")}}
@@ -48,25 +40,23 @@ If you change the value of the if, you must change the value in the "$x := sub".
 	{{$desc := ""}}
 
 	{{/* Function */}}
-	{{if gt $pa 0}}
-		{{if not ($arme.Get "fusil2")}}
-			{{$arme.Set "fusil2" 1}}
-			{{ $desc = (joinStr "" "Il reste 11/12 balles dans le fusil secondaire. ")}}
-		{{else}}
-			{{$arme.Set "fusil2" (add ($arme.Get "fusil2") 1)}}
-			{{$y := $arme.Get "fusil2"}}
-			{{$x := sub 12 $y}}
-			{{if lt (toFloat $y) (toFloat 12)}}
-				{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 balles dans le fusil secondaire. ")}}
-			{{else if eq (toFloat $y) (toFloat 12)}}
-				{{$desc = "Dernière balle utilisée."}}
-			{{else}}
-				{{ $desc = "Action impossible : fusil secondaire vide."}}
-			{{end}}
-		{{end}}
+
+	{{if not ($arme.Get "fusil2")}}
+		{{$arme.Set "fusil2" 1}}
+		{{ $desc = (joinStr "" "Il reste 11/12 balles dans le fusil secondaire. ")}}
 	{{else}}
-		{{$desc = "PA insuffisants pour réaliser l'action."}}
+		{{$arme.Set "fusil2" (add ($arme.Get "fusil2") 1)}}
+		{{$y := $arme.Get "fusil2"}}
+		{{$x := sub 12 $y}}
+		{{if lt (toFloat $y) (toFloat 12)}}
+			{{ $desc = (joinStr "" "Il reste " (toString (toInt $x)) "/12 balles dans le fusil secondaire. ")}}
+		{{else if eq (toFloat $y) (toFloat 12)}}
+			{{$desc = "Dernière balle utilisée."}}
+		{{else}}
+			{{ $desc = "Action impossible : fusil secondaire vide."}}
+		{{end}}
 	{{end}}
+
 
 	{{$embed := cembed
 	"author" (sdict "name" $user "icon_url" $img)
