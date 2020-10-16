@@ -1,10 +1,11 @@
+{{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$emo := reFind `<:\w+:\d+>` .Message.Content}}
 {{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
 {{$name = reReplace `>` $name ""}}
 {{$name = reReplace `\s` $name ""}}
 {{$user := .Member.Nick}}
-{{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$id := .User.ID }}
+
 {{if $name}}
 	{{$user = title $name}}
 	{{$idperso := (toRune (lower $name))}}
@@ -13,8 +14,7 @@
 	{{- end}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}
-{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 {{$stats := sdict}}
 {{with (dbGet $id "stats")}}
@@ -23,18 +23,23 @@
 
 {{$d:= (randInt 1 11)}}
 
+{{$real:= $d}}
 {{$arg1:=""}}
 {{$arg2:= ""}}
-{{$v:=$d}}
-{{$arg := 0}}
-{{$argm := 0}}
-{{$c:=""}}
-
-
-{{$msg := ""}}
+{{$res := ""}}
+{{$m := $d}}
+{{$i := $d}}
+{{$x := $i}}
+{{$y := $m}}
+{{$v := (joinStr "" "(" (toString $real) ")")}}
+{{$comm:=""}}
 
 {{$seuil := (toInt 8)}}
 {{$idb := (toInt 0)}}
+
+{{$arg := 0}}
+{{$argm := 0}}
+{{$c := ""}}
 
 {{$manuel := reFind `s[1-9]` .Message.Content}}
 {{$match := reFind `\b(?i)(force|agi(lit(é|e))?|endu(rance)?|pr(é|e)(cision)?|intel(ligence)?|karma)` .Message.Content}}
@@ -73,228 +78,233 @@
 {{else}}
 	{{$imp = "Implants"}}
 {{end}}
+
 {{$mimp := $idb}}
 
 
-{{ if .CmdArgs}}
+{{if .CmdArgs}}
 	{{$c = joinStr " " .CmdArgs}}
+	{{if $manuel}}
+		{{$c = reReplace $manuel $c ""}}
+	{{end}}
 	{{if $name}}
 		{{$c = reReplace $name $c ""}}
 		{{$c = reReplace `>` $c ""}}
     {{$c = reReplace `<:\w+:\d+` $c $emo}}
 	{{end}}
 
-	{{if $manuel}}
-		{{$c = joinStr " " (split $c $manuel) }}
-	{{end}}
-
-	{{if ne (toFloat (index .CmdArgs 0)) (toFloat 0)}}
-		{{$i:=(toInt (index .CmdArgs 0)) }}
-		{{$x := $i}}
-		{{if gt (toInt (index .CmdArgs 0)) (toInt 0)}}
-			{{$arg = 1}}
-			{{if eq (toInt (index .CmdArgs 0)) (toInt 1)}}
-				{{$arg1 = "Pénalité"}}
-			{{else}}
-				{{$arg1 = "Pénalités"}}
-			{{end}}
-		{{else}}
-			{{$i = mult $i (toInt -1)}}
-			{{$x = mult $x (toInt -1)}}
-			{{$arg = 0}}
-			{{$arg1 = "Bonus"}}
-
-		{{end}}
-
-		{{if eq $arg 0}}
-			{{$i = add $i $idb}}
-			{{$d = sub $d $i}}
-			{{$mimp = $i}}
-		{{else}}
-			{{$d = add $i $d}}
-			{{if ge (toFloat (len .CmdArgs)) (toFloat 2 )}}
-				{{if eq (toInt (index .CmdArgs 1)) 0}}
-					{{$d = sub $d $idb}}
-					{{$mimp = $idb}}
-				{{end}}
-			{{end}}
-		{{end}}
-
-		{{if gt $d (toInt 10)}}
-			{{$d = toInt 10}}
-		{{else if lt $d (toInt 0)}}
-			{{$d = (toInt 0)}}
-		{{end}}
-
-	{{if eq $v (toInt 1)}}
-		{{$msg = "**Réussite critique** "}}
-		{{if ge $mimp (toInt 1)}}			
-			{{$msg ="**Ultra critique** "}}
-		{{end}}
-	{{else if le $d $seuil}}
-		{{$msg = "**Réussite** "}}
-	{{else if and (gt $d $seuil) (le $d 10)}}
-		{{$msg = "**Echec** "}}
-	{{else if eq $v (toInt 10)}}
-		{{$msg = "**Echec critique** "}}
-	{{end}}
-
-	{{if eq (toFloat 1)  (toFloat (len .CmdArgs))}}
-		{{$embed := cembed
-		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" $msg)
-		"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1  $x " | " $imp  $idb "]"))
-		"color" 0x63AFE1}}
-		{{sendMessage nil $embed}}
-	{{else}}
-		{{$c =  joinStr " " (slice .CmdArgs 1)}}
-		{{if $manuel}}
-			{{$c = reReplace $manuel $c ""}}
-		{{end}}
-		{{if $name}}
-			{{$c = reReplace $name $c ""}}
-			{{$c = reReplace `>` $c ""}}
-			{{$c = reReplace `<:\w+:\d+` $c $emo}}
-		{{end}}
-		{{$c = joinStr " " $c }}
-		{{if eq (toFloat (index .CmdArgs 1)) (toFloat 0)}}
-			{{$embed := cembed
-			"author" (sdict "name" $user "icon_url" $img)
-			"description" (joinStr "" $msg " ▬ " $c )
-			"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $imp " : " $idb "]"))
-			"color" 0x63AFE1}}
-			{{sendMessage nil $embed}}
-
-		{{else if ne (toFloat (index .CmdArgs 1)) (toFloat 0)}}
-			{{$m := (toInt (index .CmdArgs 1)) }}
-			{{$y := $m}}
-			{{if gt $m (toInt 0)}}
-				{{$argm = 1}}
-				{{if eq $m (toInt 1)}}
-					{{$arg2 = "Pénalité "}}
+	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
+	  {{if ne (toInt (index .CmdArgs 0)) (toInt 0)}}
+	    {{$i := (toInt  (index .CmdArgs 0))}}
+			{{$x := $i}}
+			{{if gt (toInt (index .CmdArgs 0)) (toInt 0)}}
+				{{$arg = 1}}
+				{{if eq (toInt (index .CmdArgs 0)) (toInt 1) }}
+					{{$arg1 = "Pénalité"}}
 				{{else}}
-					{{$arg2 = "Pénalités "}}
+					{{$arg1 = "Pénalités"}}
 				{{end}}
 			{{else}}
-				{{$argm = 0}}
-				{{$m = mult $m (toInt -1)}}
-				{{$y = mult $y (toInt -1)}}
-				{{$arg2 = "Bonus "}}
+				{{$i = mult $i (toInt -1)}}
+				{{$x = mult $x (toInt -1)}}
+				{{$arg = 0}}
+				{{$arg1 = "Bonus"}}
 			{{end}}
-
 
 			{{if eq $arg 0}}
-				{{if eq $argm 0}}
-					{{$d = sub $d $m}}
-				{{else}}
-					{{$d = add $m $d}}
-				{{end}}
+				{{$i = add $i $idb}}
+				{{$d = sub $d $i}}
 			{{else}}
-				{{if eq $argm 0}}
-					{{$m = add $m $idb}}
-					{{$mimp = $m}}
-					{{$d = sub $d $m}}
-				{{else}}
-					{{$d = add $m $d}}
-					{{$mimp = $idb}}
-				{{end}}
+				{{$d = add $i $d}}
+				{{$d = sub $d $idb}}
 			{{end}}
+
 			{{if gt $d (toInt 10)}}
 				{{$d = toInt 10}}
 			{{else if lt $d (toInt 0)}}
 				{{$d = (toInt 0)}}
 			{{end}}
-			{{if eq $v (toInt 1)}}
-				{{$msg = "**Réussite critique** "}}
-				{{if ge $mimp (toInt 1)}}			
-					{{$msg ="**Ultra critique** "}}
-				{{end}}
-			{{else if le $d $seuil}}
-				{{$msg = "**Réussite** "}}
-			{{else if and (gt $d $seuil) (le $d 10)}}
-				{{$msg = "**Echec** "}}
-			{{else if eq $v (toInt 10)}}
-				{{$msg = "**Echec critique** "}}
-			{{end}}
-			{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
-				{{$embed := cembed
-					"author" (sdict "name" $user "icon_url" $img)
-					"description" (joinStr "" $msg)
-					"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $x " : " $arg1 " | " $y " : " $arg2 " | " $imp " : " $idb "]"))
-					"color" 0x63AFE1}}
-				{{sendMessage nil $embed}}
-
-				{{else}}
-					{{$c =  joinStr " " (slice .CmdArgs 2)}}
-					{{if $manuel}}
-						{{$c = reReplace $manuel $c ""}}
-					{{end}}
-					{{if $name}}
-						{{$c = reReplace $name $c ""}}
-						{{$c = reReplace `>` $c ""}}
-						{{$c = reReplace `<:\w+:\d+` $c $emo}}
-					{{end}}
-					{{$c = joinStr " " $c }}
-					{{$embed := cembed
-						"author" (sdict "name" $user "icon_url" $img)
-						"description" (joinStr "" $msg " ▬ " $c  )
-						"footer" (sdict "text" (print "[Dé : " $d " (" $v ") | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb "]"))
-						"color" 0x63AFE1}}
-					{{sendMessage nil $embed}}
-				{{end}}
-			{{end}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " (toString $x) " : " $arg1 " | " $imp " : " $idb}}
+  	{{else}}
+			{{$d = sub $d $idb}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " |" $imp " : " $idb }}
 		{{end}}
 	{{else}}
-		{{$d = sub $d $idb}}
-		{{if gt $d (toInt 10)}}
-			{{$d = toInt 10}}
-		{{else if lt $d (toInt 0)}}
-			{{$d = (toInt 0)}}
+		{{if ne (toInt (index .CmdArgs 0)) (toInt 0) }}
+			{{$i = (toInt  (index .CmdArgs 0))}}
+			{{$x := $i}}
+			{{if gt (toInt (index .CmdArgs 0)) (toInt 0)}}
+				{{$arg = 1}}
+				{{if eq (toInt (index .CmdArgs 0)) (toInt 1)}}
+					{{$arg1 = "pénalité"}}
+				{{else}}
+					{{$arg1 = "pénalités"}}
+				{{end}}
+			{{else}}
+				{{$arg = 0}}
+				{{$i = mult $i (toInt -1)}}
+				{{$x = mult $x (toInt -1)}}
+				{{$arg1 = "Bonus"}}
+			{{end}}
+
+			{{if ne (toInt (index .CmdArgs 1)) (toInt 0)}}
+				{{$m := (toInt (index .CmdArgs 1))}}
+				{{$y := $m}}
+				{{if gt $m (toInt 0)}}
+					{{$argm = 1}}
+					{{if eq $m (toInt 1) }}
+						{{$arg2 = "Pénalité"}}
+					{{else}}
+						{{$arg2 = "Pénalités"}}
+					{{end}}
+				{{else}}
+					{{$argm = 0}}
+					{{$m = mult $m (toInt -1)}}
+					{{$y = mult $y (toInt -1)}}
+					{{$arg2 = "Bonus"}}
+				{{end}}
+
+				{{if eq $arg 0}}
+					{{$i = add $i $idb}}
+					{{$d = sub $d $i}}
+					{{$mimp = $i}}
+					{{if eq $argm 0}}
+						{{$d = sub $d $m}}
+					{{else}}
+						{{$d = add $d $m}}
+					{{end}}
+				{{else}}
+					{{$d = add $d $i}}
+					{{if eq $argm 0}}
+						{{$m = add $m $idb}}
+						{{$d = sub $d $m }}
+						{{$mimp = $m}}
+					{{else}}
+						{{$d = add $d $m}}
+						{{$d = sub $d $idb}}
+						{{$mimp = $d}}
+					{{end}}
+				{{end}}
+				{{if gt $d (toInt 10)}}
+					{{$d = toInt 10}}
+				{{else if lt $d (toInt 0)}}
+					{{$d = (toInt 0)}}
+				{{end}}
+				{{$res = print "Dé : " $d " " $v " | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb}}
+			{{else}}
+				{{if eq $arg 0}}
+					{{$i = add $i $idb}}
+					{{$d = sub $d $i}}
+					{{$mimp = $i}}
+				{{else}}
+					{{$d = add $i $d}}
+					{{$d = sub $d $idb}}
+					{{$mimp = $idb}}
+				{{end}}
+
+				{{if gt $d (toInt 10)}}
+					{{$d = toInt 10}}
+				{{else if lt $d (toInt 0)}}
+					{{$d = (toInt 0)}}
+				{{end}}
+				{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $arg1 " : " (toString $x) " | " $imp " : " $idb}}
+			{{end}}
+		{{else}}
+			{{$d = sub $d $idb}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $imp " : " $idb}}
 		{{end}}
-		{{if eq $v (toInt 1)}}
-		{{$msg = "**Réussite critique** "}}
-		{{if ge $mimp (toInt 1)}}			
-			{{$msg ="**Ultra critique** "}}
-		{{end}}
-		{{else if le $d $seuil}}
-			{{$msg = "**Réussite** "}}
-		{{else if and (gt $d $seuil) (le $d 10)}}
-			{{$msg = "**Echec** "}}
-		{{else if eq $v (toInt 10)}}
-			{{$msg = "**Echec critique** "}}
-		{{end}}
-		{{$embed := cembed
-			"author" (sdict "name" $user "icon_url" $img)
-			"description" (joinStr "" $msg " ▬ " (joinStr " " $c)  )
-			"footer" (sdict "text" (print "[Dé : " $d  " (" $v ") | Seuil : " $seuil  " | " $imp " : " $idb "]"))
-			"color" 0x63AFE1}}
-		{{sendMessage nil $embed}}
 	{{end}}
 
+	{{if lt (toFloat (len .CmdArgs)) (toFloat 2)}}
+		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
+			{{$comm = ""}}
+		{{else}}
+			{{$comm = (joinStr " " " ▬" $c )}}
+		{{end}}
+	{{else}}
+		{{if ne (toInt 0) (toInt (index .CmdArgs 0)) }}
+			{{if ne (toFloat (index .CmdArgs 1)) (toFloat 0)}}
+				{{if eq (toFloat 2) (toFloat (len .CmdArgs))}}
+					{{$comm = ""}}
+				{{else}}
+					{{$comm =  joinStr " " (slice .CmdArgs 2) }}
+					{{if $manuel}}
+						{{$comm = reReplace $manuel $comm ""}}
+					{{end}}
+					{{if $name}}
+						{{$comm = reReplace $name $comm ""}}
+						{{$comm = reReplace `>` $comm ""}}
+            {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
+					{{end}}
+					{{if ne (len $comm) 0}}
+						{{$comm = joinStr " " " ▬" $comm }}
+					{{else}}
+						{{$comm = joinStr " " $comm}}
+					{{end}}
+				{{end}}
+			{{else}}
+				{{$comm =  joinStr " " (slice .CmdArgs 1)}}
+				{{if $manuel}}
+					{{$comm = reReplace $manuel $comm ""}}
+				{{end}}
+				{{if $name}}
+					{{$comm = reReplace $name $comm ""}}
+					{{$comm = reReplace `>` $comm ""}}
+          {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
+				{{end}}
+				{{if ne (len $comm) 0}}
+					{{$comm = joinStr " " " ▬" $comm }}
+				{{else}}
+					{{$comm = joinStr " " $comm}}
+				{{end}}
+			{{end}}
+		{{else}}
+			{{$comm = (joinStr " " " ▬" $c ) }}
+		{{end}}
+	{{end}}
 {{else}}
-	{{if gt $d (toInt 10)}}
-		{{$d = toInt 10}}
-	{{else if lt $d (toInt 0)}}
-		{{$d = (toInt 0)}}
-	{{end}}
+	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
+{{end}}
 
-	{{if eq $v (toInt 1)}}
-		{{$msg = "**Réussite critique** "}}
-		{{if ge $mimp (toInt 1)}}			
-			{{$msg ="**Ultra critique** "}}
-		{{end}}
-	{{else if le $d $seuil}}
-		{{$msg = "**Réussite** "}}
-	{{else if and (gt $d $seuil) (le $d 10)}}
-		{{$msg = "**Echec** "}}
-	{{else if eq $v (toInt 10)}}
-		{{$msg = "**Echec critique** "}}
-	{{end}}
-	{{$embed := cembed
+{{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $msg )
-	"footer" (sdict "text" (print "[Dé : " $d "]"))
+	"description" (joinStr "" "**Ultra critique**" $comm )
+	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x63AFE1}}
-	{{sendMessage nil $embed}}
+
+{{$rc := cembed
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" "**Réussite critique**" $comm)
+	"footer" (sdict "text" (print "[" $res "]") )
+	"color" 0x63AFE1}}
+
+{{$r := cembed
+  "author" (sdict "name" $user "icon_url" $img)
+  "description" (joinStr "" "**Réussite**" $comm)
+  "footer" (sdict "text" (print "[" $res "]") )
+	"color" 0x63AFE1}}
+
+{{$echec := cembed
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" "**Echec...**" $comm)
+	"footer" (sdict "text" (print "[" $res "]") )
+	"color" 0x63AFE1}}
+
+{{$ec := cembed
+	"author" (sdict "name" $user "icon_url" $img)
+	"description" (joinStr "" $comm "**Echec critique...** " $comm)	
+	"footer" (sdict "text" (print "[" $res "]") )
+	"color" 0x63AFE1}}
+
+{{if and (eq $real 1) (le $mimp 0)}}
+	{{sendMessage nil $rc}}
+{{else if and (eq $real 1) (ge $mimp 1)}}
+	{{sendMessage nil $urc}}
+{{else if le $d $seuil}}
+	{{sendMessage nil $r}}
+{{else if and (gt $d $seuil) (ne $d $real) (le $d (toInt 10)) }}
+	{{sendMessage nil $echec}}
+{{else if or (eq $real (toInt 10)) (and (eq $real $d) (eq $d 10))}}
+	{{sendMessage nil $ec}}
 {{end}}
 {{deleteTrigger 1}}
