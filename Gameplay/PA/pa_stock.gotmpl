@@ -58,7 +58,7 @@
   {{sendMessage nil $embed}}
   {{deleteTrigger 1}}
   
-{{else if eq $cmd "$pdmin"}}
+{{else if and (eq $cmd "$pdmin") (hasRoleID 709795313279565906)}}
   {{$grp := sdict}}
   {{with (dbGet .Server.ID "groupe")}}
     {{$grp = sdict .Value}}
@@ -79,3 +79,4 @@
   
   {{print $msg}}
 {{end}}
+{{deleteTrigger 1}}
