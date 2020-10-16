@@ -206,12 +206,11 @@
 				{{else if lt $d (toInt 0)}}
 					{{$d = (toInt 0)}}
 				{{end}}
-
-				{{$res = "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $arg1 " : " (toString $x) " | " $imp " : " $idb}}
+				{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $arg1 " : " (toString $x) " | " $imp " : " $idb}}
 			{{end}}
 		{{else}}
 			{{$d = sub $d $idb}}
-			{{$res = print "Dé : " (toString $d) " " $v " | " $imp " : " $idb}}
+			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $imp " : " $idb}}
 		{{end}}
 	{{end}}
 
@@ -236,7 +235,7 @@
 						{{$comm = reReplace `>` $comm ""}}
             {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
 					{{end}}
-					{{if ne $comm " "}}
+					{{if ne (len $comm) 0}}
 						{{$comm = joinStr " " " ▬" $comm }}
 					{{else}}
 						{{$comm = joinStr " " $comm}}
@@ -252,7 +251,7 @@
 					{{$comm = reReplace `>` $comm ""}}
           {{$comm = reReplace `<:\w+:\d+` $comm $emo}}
 				{{end}}
-				{{if ne $comm " "}}
+				{{if ne (len $comm) 0}}
 					{{$comm = joinStr " " " ▬" $comm }}
 				{{else}}
 					{{$comm = joinStr " " $comm}}
@@ -265,6 +264,7 @@
 {{else}}
 	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 {{end}}
+
 
 {{$img := "https://i.imgur.com/fuHvIUn.png"}}
 
@@ -314,15 +314,15 @@
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257}}
 
-{{if and (eq $v 1) (le $mimp 0)}}
+{{if and (eq $real 1) (le $mimp 0)}}
 	{{sendMessage nil $rc}}
-{{else if and (eq $v 1) (ge $mimp 1)}}
+{{else if and (eq $real 1) (ge $mimp 1)}}
 	{{sendMessage nil $urc}}
 {{else if le $d $seuil}}
 	{{sendMessage nil $r}}
-{{else if and (gt $d $seuil) (le $d (toInt 10)) }}
+{{else if and (gt $d $seuil) (ne $d $real) (le $d (toInt 10)) }}
 	{{sendMessage nil $echec}}
-{{else if eq $v (toInt 10)}}
+{{else if or (eq $real (toInt 10)) (and (eq $real $d) (eq $d 10))}}
 	{{sendMessage nil $ec}}
 {{end}}
 {{deleteTrigger 1}}
