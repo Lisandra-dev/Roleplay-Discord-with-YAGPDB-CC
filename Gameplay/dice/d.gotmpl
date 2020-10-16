@@ -1,3 +1,4 @@
+{{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$emo := reFind `<:\w+:\d+>` .Message.Content}}
 {{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
 {{$name = reReplace `>` $name ""}}
@@ -265,7 +266,6 @@
 	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 {{end}}
 
-{{$img := "https://i.imgur.com/Khq39Um.png"}}
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
 	"description" (joinStr "" "**Ultra critique**" $comm )

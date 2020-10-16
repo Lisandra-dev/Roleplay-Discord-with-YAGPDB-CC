@@ -45,9 +45,10 @@
       {{$chanR = sdict .}}
     {{end}}
     {{dbSet 0 "turn" $turn}}
+    
     {{range $k, $v := $chanR}}
     	{{range $i, $j := $groupe}}
-        {{if ($groupe.Get $k)}}
+        {{if ($chanR.Get $i)}}
       		{{if le $j 0}}
       			{{$j = 4}}
       		{{else if le $j 2}}
@@ -63,7 +64,7 @@
   	{{$pv := 0}}
     {{range $k, $v := $chanR}}
     	{{range $i, $j := $hp}}
-        {{if ($hp.Get $k)}}
+        {{if ($chanR.Get $i)}}
       		{{$pv_dic = sdict $j}}
       		{{$pv = (mult 5 (toInt $pv_dic.regen))}}
       		{{$pv = add (toInt $j.pv_actuel) $pv}}
