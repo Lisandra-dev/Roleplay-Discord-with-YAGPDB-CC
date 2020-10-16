@@ -67,10 +67,10 @@
 			"description" "80% des PA du groupe ont été dépensé !"
 			"color" 0x7cb5c8}}
 		{{$idM := sendMessageRetID 735938256038002818 $pause}}
-		{{if (dbGet "pa_tot_msg")}}
-			{{$idold := dbGet "pa_tot_msg"}}
+		{{if (dbGet 0 "pa_tot_msg")}}
+			{{$idold := toInt (dbGet "pa_tot_msg").Value}}
 			{{deleteMessage 735938256038002818 $idold}}
-			{{dbSet "pa_tot_msg" $idM}}
+			{{dbSet 0 "pa_tot_msg" $idM}}
 		{{end}}
 	{{end}}
 
