@@ -1,6 +1,6 @@
 {{$cat := .Channel.ParentID}}
 {{$bot := .Channel.ID}}
-{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) )}}	
+{{if and (not (reFind `(\x60(.*)\x60)` .Message.Content)) (or (eq $cat 701379688177598495) (eq $cat 720263038879662120) (eq $bot 734052506702970921) (eq $bot 726479311879798902))}}	
 	{{$desc := ""}}
 	{{$col := 16777215}}
 	{{$p := 0}}
@@ -58,7 +58,7 @@
 		{{- end -}}
 	{{end}}
 
-	{{if le $p $next}}
+	{{if and (le $p $next) (ge (len $groupe) 4)}}
 		{{$vn := "Vaisseau Nucleus"}}
 		{{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
 		{{$pause := cembed

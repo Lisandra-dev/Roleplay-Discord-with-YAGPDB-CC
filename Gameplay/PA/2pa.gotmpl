@@ -59,7 +59,7 @@
 		{{- end -}}
 	{{end}}
 
-	{{if le $p $next}}
+	{{if and (le $p $next) (ge (len $groupe) 4)}}
 		{{$vn := "Vaisseau Nucleus"}}
 		{{$icon := (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
 		{{$pause := cembed
