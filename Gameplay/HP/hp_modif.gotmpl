@@ -20,26 +20,29 @@
 
 {{if .CmdArgs}}
   {{if ge (len .CmdArgs) 2}}
-      {{$check = true}}
     {{if gt (len .CmdArgs) 2}}
       {{$la = joinStr " " (slice .CmdArgs 2)}}
-      {{if (reFind `(\>\S+)` $la)}}
-        {{$la = reReplace `>` $la ""}}
-        {{$la = title $la}}
-        {{$idl = toInt ($rr.Get $la)}}
-        {{$idlp := toRune (lower $la)}}
-        {{range $idlp}}
-          {{- $idl = add $idl .}}
-        {{- end}}
-        {{with ($hp.Get (str $idl))}}{{$la = .Personnage}}{{end}}
-      {{else if (reFind `(<@!?\d{17,}>)` $la)}}
-        {{$lau := userArg $la}}
-        {{$idl = $lau.ID}}
-        {{$la = (getMember $id).Nick}}
-        {{if eq (len $la) 0}}
-          {{$la = $lau.Username}}
+      {{if gt (len $la) 0}}
+        {{$check = true}}
+        {{if (reFind `(\>\S+)` $la)}}
+          {{$la = reReplace `>` $la ""}}
+          {{$la = title $la}}
+          {{$idl = toInt ($rr.Get $la)}}
+          {{$idlp := toRune (lower $la)}}
+          {{range $idlp}}
+            {{- $idl = add $idl .}}
+          {{- end}}
+          {{with ($hp.Get (str $idl))}}{{$la = .Personnage}}{{end}}
+        {{else if (reFind `(<@!?\d{17,}>)` $la)}}
+          {{$check = true}}
+          {{$lau := userArg $la}}
+          {{$idl = $lau.ID}}
+          {{$la = (getMember $id).Nick}}
+          {{if eq (len $la) 0}}
+            {{$la = $lau.Username}}
+          {{end}}
+          {{with ($hp.Get (str $idl))}}{{$la = .Personnage}}{{end}}
         {{end}}
-        {{with ($hp.Get (str $idl))}}{{$la = .Personnage}}{{end}}
       {{end}}
     {{end}}
   {{end}}
@@ -108,7 +111,6 @@
     {{$val_pv := toInt ($pv.Get "pv_actuel")}}
     {{$val := toInt (index .CmdArgs 0)}}
     {{if lt $val 0}}
-    hello
       {{$pv.Set "pv_actuel" (add $val_pv $val)}}
       {{if eq ($pv.Get "Ennemi") "n"}}
         {{$msg = print $user " a perdu " $val " " $h "(**" (toInt ($pv.Get "pv_actuel")) "**/" (toInt ($pv.Get "pv_max")) ") en se blessant."}}
