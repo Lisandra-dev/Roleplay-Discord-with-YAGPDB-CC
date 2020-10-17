@@ -65,6 +65,15 @@
 {{dbSet .Server.ID "groupe" $groupe}}
 {{$desc := ""}}
 
+{{$enne := sdict}}
+{{range $i, $j := $hpS}}
+  {{$enne.Set $i $j.Ennemi}}
+{{end}}
+
+{{if eq ($enne.Get (str $id)) "y"}}
+  {{$user = print "💥 " $user}}
+{{end}}
+
 {{if .CmdArgs}}
   {{$posarg := index .CmdArgs 0}}
   {{$item := $user}}
@@ -196,6 +205,8 @@
 {{$r := ""}}
 {{$o := ""}}
 {{$msg := ""}}
+{{$enne := sdict}}
+
 {{$k := sdict}}
 {{range $i, $j := $position}}
   {{range $k, $l := $j}}

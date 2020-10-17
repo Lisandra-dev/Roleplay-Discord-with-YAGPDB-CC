@@ -61,18 +61,31 @@
     {{end}}
     {{$ido := $mdic.Get $ochan}}
     {{$idn := $mdic.Get $nchan}}
-  
+    
+    {{$enne := sdict}}
+    {{range $i, $j := $hpS}}
+      {{$enne.Set $i $j.Ennemi}}
+    {{end}}
+
     {{if and ($mdic.Get $ochan) ($mdic.Get $nchan)}}
       {{$o := ""}}
       {{$n := ""}}
       {{range $i, $j := $ori}}
-      {{$o = print $o "▫️ **" $j "**\n"}}
+        {{if eq ($enne.Get $i) "n"}}
+          {{$o = print $o "▫️" $j "\n"}}
+        {{else}}
+          {{$o = print $o "💥 **" $j "**\n"}}
+        {{end}}
       {{end}}
       {{if eq (len $o) 0}}
         {{$o = "Cette pièce est vide..."}}
       {{end}}
       {{range $i, $j := $nri}}
-        {{$n = print $n "▫️ **" $j "**\n"}}
+        {{if eq ($enne.Get $i) "n"}}
+          {{$n = print $n "▫️" $j "\n"}}
+        {{else}}
+          {{$n = print $n "💥 **" $j "**\n"}}
+        {{end}}
       {{end}}
       {{$oname := title .Channel.Name}}
       {{$oname = reReplace `-` $oname " " }}
