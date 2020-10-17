@@ -30,51 +30,78 @@
   	{{dbDel .Server.ID "groupe"}}
   {{else if not (reFind `-del` (index .CmdArgs 0))}}
     {{$chan = index .CmdArgs 0|reFind `\d{17,}`|getChannel}}
-    {{$turn.Set (str $chan) (add ($turn.Get (str $chan) 1))}}
-  {{else}}
-    {{$chan = index .CmdArgs 1|reFind `\d{17,}`|getChannel}}
-    {{$turn.Set (str $chan) 1}}
-  {{end}}
-{{else}}
-  {{if not ($turn.Get (str $chan))}}
-    {{$turn.Set (str $chan) 1}}
-  {{else}}
+        {{$pv_dic := sdict}}
     {{$turn.Set (str $chan) (add ($turn.Get (str $chan)) 1)}}
+    {{dbSet 0 "turn" $turn}}
     {{$chanR := sdict}}
     {{with ($room.Get (str $chan))}}
       {{$chanR = sdict .}}
     {{end}}
-    {{dbSet 0 "turn" $turn}}
-    
+    {{$j := 0}}
+    {{$pv := 0}}
     {{range $k, $v := $chanR}}
-    	{{range $i, $j := $groupe}}
-        {{if ($chanR.Get $i)}}
-      		{{if le $j 0}}
-      			{{$j = 4}}
-      		{{else if le $j 2}}
-      			{{$j = 4}}
-      		{{else if ge $j 2}}
-      			{{$j = 6}}
-      		{{end}}
-    		  {{$groupe.Set $i $j}}
+      {{if ne (kindOf ($groupe.Get $k)) "invalid"}}
+        {{$j = $groupe.Get $k}}
+        {{if le $j 0}}
+      		{{$groupe.Set $k 4}}
+        {{else if le $j 2}}
+          {{$groupe.Set $k 4}}
+        {{else if ge $j 2}}
+          {{$groupe.Set $k 6}}
         {{end}}
       {{end}}
-  	{{end}}
-  	
-  	{{$pv := 0}}
+      {{if ne (kindOf ($hp.Get $k)) "invalid"}}
+        {{$pv_dic = sdict ($hp.Get $k)}}
+        {{$pv = (mult 5 (toInt $pv_dic.regen))}}
+        {{$pv = add (toInt $pv_dic.pv_actuel) $pv}}
+        {{$pv = add $pv (mult 1 (toInt $pv_dic.mush))}}
+        {{if ge $pv (toInt $pv_dic.pv_max)}}
+          {{$pv = $pv_dic.pv_max}}
+        {{end}}
+        {{$pv_dic.Set "pv_actuel" $pv}}
+        {{$hp.Set $k $pv_dic}}
+      {{end}}
+    {{end}}
+  {{else}}
+    {{$chan = index .CmdArgs 1|reFind `\d{17,}`|getChannel}}
+    {{$turn.Set (str $chan) 1}}
+    {{dbSet 0 "turn" $turn}}
+  {{end}}
+{{else}}
+  {{if not ($turn.Get (str $chan))}}
+    {{$turn.Set (str $chan) 1}}
+    {{dbSet 0 "turn" $turn}}
+  {{else}}
+    {{$pv_dic := sdict}}
+    {{$turn.Set (str $chan) (add ($turn.Get (str $chan)) 1)}}
+    {{dbSet 0 "turn" $turn}}
+    {{$chanR := sdict}}
+    {{with ($room.Get (str $chan))}}
+      {{$chanR = sdict .}}
+    {{end}}
+    {{$j := 0}}
+    {{$pv := 0}}
     {{range $k, $v := $chanR}}
-    	{{range $i, $j := $hp}}
-        {{if ($chanR.Get $i)}}
-      		{{$pv_dic = sdict $j}}
-      		{{$pv = (mult 5 (toInt $pv_dic.regen))}}
-      		{{$pv = add (toInt $j.pv_actuel) $pv}}
-      		{{$pv = add $pv (mult 1 (toInt $pv_dic.Mush))}}
-      		{{if ge $pv (toInt $j.pv_max)}}
-      			{{$pv = $j.pv_max}}
-      		{{end}}
-      		{{$pv_dic.Set "pv_actuel" $pv}}
-      		{{$hp.Set $i $pv_dic}}
-      	{{end}}
+      {{if ne (kindOf ($groupe.Get $k)) "invalid"}}
+        {{$j = $groupe.Get $k}}
+        {{if le $j 0}}
+      		{{$groupe.Set $k 4}}
+        {{else if le $j 2}}
+          {{$groupe.Set $k 4}}
+        {{else if ge $j 2}}
+          {{$groupe.Set $k 6}}
+        {{end}}
+      {{end}}
+      {{if ne (kindOf ($hp.Get $k)) "invalid"}}
+        {{$pv_dic = sdict ($hp.Get $k)}}
+        {{$pv = (mult 5 (toInt $pv_dic.regen))}}
+        {{$pv = add (toInt $pv_dic.pv_actuel) $pv}}
+        {{$pv = add $pv (mult 1 (toInt $pv_dic.mush))}}
+        {{if ge $pv (toInt $pv_dic.pv_max)}}
+          {{$pv = $pv_dic.pv_max}}
+        {{end}}
+        {{$pv_dic.Set "pv_actuel" $pv}}
+        {{$hp.Set $k $pv_dic}}
       {{end}}
     {{end}}
   {{end}}
