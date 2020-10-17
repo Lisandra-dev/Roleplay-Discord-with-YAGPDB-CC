@@ -18,10 +18,7 @@
 {{with (dbGet 0 "room")}}
   {{$room = sdict .Value}}
 {{end}}
-
 {{$chan := .Channel.ID}}
-
-
 {{/* Tour count :Incr each call unless CmdArgs = reset */}}
 {{if .CmdArgs}}
   {{if not (reFind `\d{17,}` .Message.Content)}}
