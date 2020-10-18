@@ -37,6 +37,12 @@
   
   {{$idict := str $id}}
   
+  	{{/* Compétence */}}
+	{{$nameatq := (dbGet $id "cdatq").Value}}
+	{{$namesupp := (dbGet $id "cdsupp").Value}}
+	{{$atq := (toInt (dbGet $id $nameatq).Value)}}
+	{{$supp := (toInt (dbGet $id $namesupp).Value)}}
+  
   {{$bool := false}}
   {{range $i, $j := $groupe}}
   	{{- if eq $idict $i}}
@@ -49,6 +55,14 @@
   {{else}}
   	{{$pa := $groupe.Get (str $id)}}
   	{{$desc = joinStr " " $pa " PA RESTANTS."}}
+    {{if $nameatq}}
+      {{$cd := sub 7 $atq}}
+      {{$desc = print $desc "\n" $cd "PA restant(s) avant réutilisation de " $nameatq "."}}
+    {{end}}
+    {{if $namesupp}}
+      {{$cd := sub 9 $supp}}
+      {{$desc = print $desc "\n" $cd "PA restant(s) avant réutilisation de " $namesupp "."}}
+    {{end}}
   {{end}}
   
   {{$embed := cembed
