@@ -1,0 +1,18 @@
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = reReplace `>` $name ""}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$rr := sdict}}
+	{{with (dbGet 0 "reroll_List")}}
+		{{$rr = sdict .Value}}
+	{{end}}
+	{{$user = title $name}}
+	{{$id = (toInt ($rr.Get $user))}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "Personnage")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
