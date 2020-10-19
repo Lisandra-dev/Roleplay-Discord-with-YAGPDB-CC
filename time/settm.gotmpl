@@ -3,7 +3,7 @@
 {{with (dbGet 0 "time")}}
 	{{$time = sdict .Value}}
 {{end}}
-{{$log := 716988208205791342}}
+{{$log := 767723846220382228}}
 
 {{$amount := toFloat ($time.Get "mgsc")}}
 {{if .CmdArgs}}
@@ -11,11 +11,11 @@
         {{if eq (len .CmdArgs) 2}}
             {{$floatArg := (toFloat (index .CmdArgs 1)) }}
             {{$arg1 := (toFloat (index .CmdArgs 1)) }}
-            {{if ge (toFloat 4) $floatArg }}
+            {{if ge (toFloat 6) $floatArg }}
                 {{$time.Set "cycle" $arg1}}
                 Nous sommes actuellement au cycle  `{{$time.Get "cycle"}}`.
             {{else}}
-              Le nombre est supérieur à 4.
+              Le nombre est supérieur à 6.
             {{end}}
         {{else}}
             **Usage:** cycle <number>

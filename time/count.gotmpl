@@ -1,110 +1,114 @@
 {{/* Channel */}}
-{{$chan:= 716988208205791342}} {{/* Change the channel ID you want send the embed */}}
+{{$chan:= 767723846220382228}} {{/* Change the channel ID you want send the embed */}}
+{{$cat := .Channel.ParentID}}
 
-{{/*Thumbnail*/}}
-{{$aube := "https://i.imgur.com/vvQxj4h.png"}}
-{{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
-{{$midi:="https://i.imgur.com/AFOj90o.png"}}
-{{$aprem := ""}}
-{{$soir:="https://i.imgur.com/xSDYgqD.png"}}
-{{$nuit:="https://i.imgur.com/e04keB7.png"}}
-{{$emo := cslice "🕐" "🕑" "🕒" "🕓" "🕜" "🕛" "🕚" "🕙" "🕘" "🕗" "🕖" "🕕" "🕔" "🕝" "🕞" "🕟" "🕠" "🕡" "🕢" "🕣" "🕤" "🕥" "🕧" "🕦"}}
+{{if eq $cat 764489140972421131 764489022470225961 764488934520127498 764488859299348491 764489250582298654 764489469230841857}}
 
-
-{{/* Time dict */}}
-{{$time := sdict }}
-{{with (dbGet 0 "time")}}
-	{{$time = sdict .Value}}
-{{end}}
-
-{{/*All message database counter*/}}
+	{{/*Thumbnail*/}}
+	{{$aube := "https://i.imgur.com/vvQxj4h.png"}}
+	{{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
+	{{$midi:="https://i.imgur.com/AFOj90o.png"}}
+	{{$aprem := "https://i.imgur.com/42seFn1.png"}}
+	{{$soir:="https://i.imgur.com/xSDYgqD.png"}}
+	{{$nuit:="https://i.imgur.com/e04keB7.png"}}
+	{{$emo := cslice "🕐" "🕑" "🕒" "🕓" "🕜" "🕛" "🕚" "🕙" "🕘" "🕗" "🕖" "🕕" "🕔" "🕝" "🕞" "🕟" "🕠" "🕡" "🕢" "🕣" "🕤" "🕥" "🕧" "🕦"}}
 
 
-{{/* Variable */}}
-{{$msgc := (toFloat ($time.Get "mgsc"))}}
-{{$message := toFloat ($time.Get "message")}}
-{{$number:= ($time.Get "time")}}
-{{$jour := $time.Get "jour"}}
-{{$cycle := $time.Get "cycle"}}
-
-{{if not (dbGet 0 "pause")}}
-
-	{{/*Check if massage sent is in (brackets)*/}}
-	{{ $matches := (index (reFindAllSubmatches `\((.*)\)|(^\$(.*))|(^\!\!(.+))` .Message.Content)) }} {{/* exclude my bot bracket from the count */}}
-
-	{{/*If not*/}}
-	{{if not $matches}}
-		{{$x := (toFloat ($time.Get "count"))}}
-		{{$time.Set "count" (add $x 1)}}
-		{{$time.Set "message" (add $message 1)}}
-
-	{{/*Amount of messages needed for cycle, starts from 0*/}}
-		{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
-			{{$time.Set "cycle" (add $cycle 1)}}
-      {{/* Embed */}}
-      {{$embed := cembed
-  	    "title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
-  	    "description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
-  	    "color" 0xDD99DF
-  	    "thumbnail" (sdict "url" "")
-  	    "timestamp" .Message.Timestamp}}
-      {{$str := structToSdict $embed}}
-      {{ range $k, $v := $str }}
- 	      {{- if eq (kindOf $v true) "struct" }}
- 		      {{- $str.Set $k (structToSdict $v) }}
- 	      {{- end -}}
-      {{ end }}
-      
-
-	{{/*reset count for new cycle*/}}
-		{{$time.Set "count" 0}}
-		{{$time.Set "message" 0}}
-		{{$y := toFloat ($time.Get "cycle")}}
-    {{$emo = shuffle $emo}}
-    {{$time.Set "emoji" ( index $emo 1)}}
-
-	{{/*thumbnail cycle*/}}
-  {{if eq $y (toFloat 1)}}
-    {{$str.Thumbnail.Set "url" $aube}}
-    {{$str.Set "color" 0xEB94C5}}
-    {{sendMessage $chan (cembed $str)}}
-  {{else if eq $y (toFloat 2)}}
-    {{$str.Thumbnail.Set "url" $matin}}
-    {{$str.Set "color" 0xDD99DF}}
-    {{sendMessage $chan (cembed $str)}}
-  {{else if eq $y (toFloat 3)}}
-    {{$str.Thumbnail.Set "url" $midi}}
-    {{$str.Set "color" 0x0xF0B535}}
-    {{sendMessage $chan (cembed $str)}}
-  {{else if eq $y (toFloat 4)}}
-    {{$str.Thumbnail.Set "url" $aprem}}
-    {{$str.Set "color" 0xF6B227}}
-    {{sendMessage $chan (cembed $str)}}
-  {{else if eq $y (toFloat 5)}}
-    {{$str.Thumbnail.Set "url" $soir}}
-    {{$str.Set "color" 0xF67327}}
-    {{sendMessage $chan (cembed $str)}}
-  {{else if eq $y (toFloat 6)}}
-    {{$str.Thumbnail.Set "url" $nuit}}
-    {{$str.Set "color" 0x1B3175}}
-    {{sendMessage $chan (cembed $str)}}
-
-	{{/*you can add cycle with just else if eq $y (toFloat number) */}}
-
-		{{/*Nouveau jour*/}}
-				{{else}}
-					{{$time.Set "count" 0 }}
-					{{$time.Set "cycle" 1}}
-					{{$time.Set "jour" (add $jour 1)}}
-					{{$jour:= $time.Get "jour"}}
-					{{$str.Set "title" (joinStr "" "Début du jour : " $jour)}}
-					{{$str.Set "description" "Nous sommes maintenant au cycle 1"}}
-					{{$str.Set "color" 0x1B3175}}
-					{{$str.Thumbnail.Set "url" $nuit}}
-					{{sendMessage $chan (cembed $str)}}
-				{{end}}
-		{{end}}
-	{{else}}
+	{{/* Time dict */}}
+	{{$time := sdict }}
+	{{with (dbGet 0 "time")}}
+		{{$time = sdict .Value}}
 	{{end}}
-	{{dbSet 0 "time" $time}}
+
+	{{/*All message database counter*/}}
+
+
+	{{/* Variable */}}
+	{{$msgc := (toFloat ($time.Get "mgsc"))}}
+	{{$message := toFloat ($time.Get "message")}}
+	{{$number:= ($time.Get "time")}}
+	{{$jour := $time.Get "jour"}}
+	{{$cycle := $time.Get "cycle"}}
+
+	{{if not (dbGet 0 "pause")}}
+
+		{{/*Check if massage sent is in (brackets)*/}}
+		{{ $matches := (index (reFindAllSubmatches `\((.*)\)|(^\$(.*))|(^\!\!(.+))` .Message.Content)) }} {{/* exclude my bot bracket from the count */}}
+
+		{{/*If not*/}}
+		{{if not $matches}}
+			{{$x := (toFloat ($time.Get "count"))}}
+			{{$time.Set "count" (add $x 1)}}
+			{{$time.Set "message" (add $message 1)}}
+
+		{{/*Amount of messages needed for cycle, starts from 0*/}}
+			{{if eq $x $msgc }} {{/*Change here for the amount of message */}}
+				{{$time.Set "cycle" (add $cycle 1)}}
+				{{/* Embed */}}
+				{{$embed := cembed
+					"title" (joinStr "" "Jour : " ($time.Get "jour") " ▬ Changement de cycle")
+					"description" (joinStr "" "Nous sommes maintenant au cycle" ($time.Get "cycle"))
+					"color" 0xDD99DF
+					"thumbnail" (sdict "url" "")
+					"timestamp" .Message.Timestamp}}
+				{{$str := structToSdict $embed}}
+				{{ range $k, $v := $str }}
+					{{- if eq (kindOf $v true) "struct" }}
+						{{- $str.Set $k (structToSdict $v) }}
+					{{- end -}}
+				{{ end }}
+				
+
+		{{/*reset count for new cycle*/}}
+			{{$time.Set "count" 0}}
+			{{$time.Set "message" 0}}
+			{{$y := toFloat ($time.Get "cycle")}}
+			{{$emo = shuffle $emo}}
+			{{$time.Set "emoji" ( index $emo 1)}}
+
+		{{/*thumbnail cycle*/}}
+		{{if eq $y (toFloat 1)}}
+			{{$str.Thumbnail.Set "url" $aube}}
+			{{$str.Set "color" 0xEB94C5}}
+			{{sendMessage $chan (cembed $str)}}
+		{{else if eq $y (toFloat 2)}}
+			{{$str.Thumbnail.Set "url" $matin}}
+			{{$str.Set "color" 0xDD99DF}}
+			{{sendMessage $chan (cembed $str)}}
+		{{else if eq $y (toFloat 3)}}
+			{{$str.Thumbnail.Set "url" $midi}}
+			{{$str.Set "color" 0xF0B535}}
+			{{sendMessage $chan (cembed $str)}}
+		{{else if eq $y (toFloat 4)}}
+			{{$str.Thumbnail.Set "url" $aprem}}
+			{{$str.Set "color" 0xF6B227}}
+			{{sendMessage $chan (cembed $str)}}
+		{{else if eq $y (toFloat 5)}}
+			{{$str.Thumbnail.Set "url" $soir}}
+			{{$str.Set "color" 0xF67327}}
+			{{sendMessage $chan (cembed $str)}}
+		{{else if eq $y (toFloat 6)}}
+			{{$str.Thumbnail.Set "url" $nuit}}
+			{{$str.Set "color" 0x1B3175}}
+			{{sendMessage $chan (cembed $str)}}
+
+		{{/*you can add cycle with just else if eq $y (toFloat number) */}}
+
+			{{/*Nouveau jour*/}}
+					{{else}}
+						{{$time.Set "count" 0 }}
+						{{$time.Set "cycle" 1}}
+						{{$time.Set "jour" (add $jour 1)}}
+						{{$jour:= $time.Get "jour"}}
+						{{$str.Set "title" (joinStr "" "Début du jour : " $jour)}}
+						{{$str.Set "description" "Nous sommes maintenant au cycle 1"}}
+						{{$str.Set "color" 0x1B3175}}
+						{{$str.Thumbnail.Set "url" $nuit}}
+						{{sendMessage $chan (cembed $str)}}
+					{{end}}
+			{{end}}
+		{{else}}
+		{{end}}
+		{{dbSet 0 "time" $time}}
+	{{end}}
 {{end}}

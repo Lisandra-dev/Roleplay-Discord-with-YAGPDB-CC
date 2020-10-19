@@ -1,29 +1,20 @@
 {{/* Channel */}}
-{{$chan:= 716988208205791342}} {{/* Change the channel ID you want send the embed */}}
+{{$chan:= 767723846220382228}} {{/* Change the channel ID you want send the embed */}}
 
 {{/*Thumbnail*/}}
-{{$nuit:="https://i.imgur.com/e04keB7.png"}}
-{{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
-{{$midi:="https://i.imgur.com/AFOj90o.png"}}
-{{$soir:="https://i.imgur.com/xSDYgqD.png"}}
+	{{$aube := "https://i.imgur.com/vvQxj4h.png"}}
+	{{$matin:="https://i.imgur.com/ZB5yT5s.png"}}
+	{{$midi:="https://i.imgur.com/AFOj90o.png"}}
+	{{$aprem := "https://i.imgur.com/42seFn1.png"}}
+	{{$soir:="https://i.imgur.com/xSDYgqD.png"}}
+	{{$nuit:="https://i.imgur.com/e04keB7.png"}}
+	{{$emo := cslice "🕐" "🕑" "🕒" "🕓" "🕜" "🕛" "🕚" "🕙" "🕘" "🕗" "🕖" "🕕" "🕔" "🕝" "🕞" "🕟" "🕠" "🕡" "🕢" "🕣" "🕤" "🕥" "🕧" "🕦"}}
 
 {{/* Time dict */}}
 {{$time := sdict }}
 {{with (dbGet 0 "time")}}
 	{{$time = sdict .Value}}
 {{end}}
-
-{{/* regen HP based on endurance */}}
-{{$endu := sdict "1" 0 "2" 4 "3" 4 "4" 5 "5" 5 "6" 6 "7" 6 "8" 7 "9" 7 "10" 8}}
-{{$stats := sdict}}
-{{$id := ""}}
-{{$hp := sdict }}
-{{$regen := 0}}
-{{$pv := sdict}}
-{{with (dbGet 0 "HP")}}
-  {{$hp = sdict .Value}}
-{{end}}
-
 
 {{/* Embed */}}
 {{$embed := cembed
@@ -32,6 +23,7 @@
 	"color" 0xDD99DF
 	"thumbnail" (sdict "url" "")
 	"timestamp" .Message.Timestamp}}
+
 {{$str := structToSdict $embed}}
 {{ range $k, $v := $str }}
  	{{- if eq (kindOf $v true) "struct" }}
@@ -50,27 +42,32 @@
 
 {{$time.Set "count" 0}}
 {{$time.Set "message" 0}}
-
 {{$y := toFloat ($time.Get "cycle")}}
-{{if or (eq $y (toFloat 1)) (eq $y (toFloat 2))}}
-  {{$str.Thumbnail.Set "url" $nuit}}
-  {{$str.Set "color" 0x1B3175}}
-  {{sendMessage $chan (cembed $str)}}
 
-{{else if or (eq $y (toFloat 3)) (eq $y (toFloat 4))}}
+{{if eq $y (toFloat 1)}}
+  {{$str.Thumbnail.Set "url" $aube}}
+  {{$str.Set "color" 0xEB94C5}}
+  {{sendMessage $chan (cembed $str)}}
+{{else if eq $y (toFloat 2)}}
   {{$str.Thumbnail.Set "url" $matin}}
   {{$str.Set "color" 0xDD99DF}}
   {{sendMessage $chan (cembed $str)}}
-
-{{else if or (eq $y (toFloat 5)) (eq $y (toFloat 6))}}
+{{else if eq $y (toFloat 3)}}
   {{$str.Thumbnail.Set "url" $midi}}
   {{$str.Set "color" 0xF0B535}}
   {{sendMessage $chan (cembed $str)}}
-{{else if or (eq $y (toFloat 7)) (eq $y (toFloat 8))}}
-  {{$str.Thumbnail.Set "url" $soir}}
-  {{$str.Set "color" 0x9593E8}}
+{{else if eq $y (toFloat 4)}}
+  {{$str.Thumbnail.Set "url" $aprem}}
+  {{$str.Set "color" 0xF6B227}}
   {{sendMessage $chan (cembed $str)}}
-
+{{else if eq $y (toFloat 5)}}
+  {{$str.Thumbnail.Set "url" $soir}}
+  {{$str.Set "color" 0xF67327}}
+  {{sendMessage $chan (cembed $str)}}
+{{else if eq $y (toFloat 6)}}
+  {{$str.Thumbnail.Set "url" $nuit}}
+  {{$str.Set "color" 0x1B3175}}
+  {{sendMessage $chan (cembed $str)}}
 {{else}}
   {{$time.Set "count" 0 }}
   {{$time.Set "cycle" 1}}
