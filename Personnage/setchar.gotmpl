@@ -1,81 +1,89 @@
-{{$user:= .User.ID}}
-{{with (reFind `<@!?\d{17,}>` .Message.Content)}}
-	{{$user = userArg .}}
-	{{$user = $user.ID}}
-{{end}}
 
 {{/* Stats dictionnaire */}}
 
-{{$stats := sdict}}
-{{with (dbGet $user "stats")}}
-	{{$stats = sdict .Value}}
+{{$perso := sdict}}
+{{with (dbGet 0 "Personnage" )}}
+	{{$perso = sdict .Value}}
 {{end}}
+
+{{$user := .User.Nick}}
+{{if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$idR := .User.ID}}
+{{$id := .User.ID}}
 
 {{if .CmdArgs}}
-	{{if and (eq (index .CmdArgs 0) "-all") (lt (toFloat (index .CmdArgs 1)) (toFloat 11))}}
-		{{$stats.Set "force" (toInt (index .CmdArgs 1)) }}
-		{{$stats.Set "i_force" (toInt (index .CmdArgs 2)) }}
-		{{$stats.Set "endurance" (toInt (index .CmdArgs 3))}}
-		{{$stats.Set "i_endu" (toInt (index .CmdArgs 4))}}
-		{{$stats.Set "agi" (toInt (index .CmdArgs 5))}}
-		{{$stats.Set "i_agi" (toInt (index .CmdArgs 6))}}
-		{{$stats.Set "preci" (toInt (index .CmdArgs 7))}}
-		{{$stats.Set "i_preci" (toInt (index .CmdArgs 8))}}
-		{{$stats.Set "intelligence" (toInt (index .CmdArgs 9))}}
-		{{$stats.Set "i_intel" (toInt (index .CmdArgs 10))}}
-		{{$stats.Set "karma" (toInt (index .CmdArgs 11))}}
-		{{dbSet $user "stats" $stats}}
-
-**Statistiques de <@{{$user}}>**
-	:white_small_square: Force : {{$stats.Get "force"}}
-	:white_small_square: Endurance : {{$stats.Get "endurance"}}
-	:white_small_square: Agilité : {{$stats.Get "agi"}}
-	:white_small_square: Précision : {{$stats.Get "preci"}}
-	:white_small_square: Intelligence : {{$stats.Get "intelligence"}}
-	:white_small_square: Karma : {{$stats.Get "karma"}}
-
-**Implant de <@{{$user}}>** :
-	:white_small_square: Force : {{$stats.Get "i_force"}}
-	:white_small_square: Endurance : {{$stats.Get "i_endu"}}
-	:white_small_square: Agilité : {{$stats.Get "i_agi"}}
-	:white_small_square: Précision : {{$stats.Get "i_preci"}}
-	:white_small_square: Intelligence : {{$stats.Get "i_intel"}}
-
-	{{else if and (eq (index .CmdArgs 0) "-stats") (lt (toFloat (index .CmdArgs 1)) (toFloat 11))}}
-		{{$stats.Set "force" (toInt (index .CmdArgs 1)) }}
-		{{$stats.Set "endurance" (toInt (index .CmdArgs 2))}}
-		{{$stats.Set "agi" (toInt (index .CmdArgs 3))}}
-		{{$stats.Set "preci" (toInt (index .CmdArgs 4))}}
-		{{$stats.Set "intelligence" (toInt (index .CmdArgs 5))}}
-		{{$stats.Set "karma" (toInt (index .CmdArgs 6))}}
-		{{dbSet $user "stats" $stats}}
-
-**Statistiques de <@{{$user}}>**
-	:white_small_square: Force : {{$stats.Get "force"}}
-	:white_small_square: Endurance : {{$stats.Get "endurance"}}
-	:white_small_square: Agilité : {{$stats.Get "agi"}}
-	:white_small_square: Précision : {{$stats.Get "preci"}}
-	:white_small_square: Intelligence : {{$stats.Get "intelligence"}}
-	:white_small_square: Karma : {{$stats.Get "karma"}}
-
-	{{else if and (eq (index .CmdArgs 0) "-implant") (lt (toFloat (index .CmdArgs 1)) (toFloat 11))}}
-		{{$stats.Set "i_force" (toInt (index .CmdArgs 1)) }}
-		{{$stats.Set "i_endu" (toInt (index .CmdArgs 2))}}
-		{{$stats.Set "i_agi" (toInt (index .CmdArgs 3))}}
-		{{$stats.Set "i_preci" (toInt (index .CmdArgs 4))}}
-		{{$stats.Set "i_intel" (toInt (index .CmdArgs 5))}}
-		{{dbSet $user "stats" $stats}}
-
-**Implant de <@{{$user}}>** :
-	:white_small_square: Force : {{$stats.Get "i_force"}}
-	:white_small_square: Endurance : {{$stats.Get "i_endu"}}
-	:white_small_square: Agilité : {{$stats.Get "i_agi"}}
-	:white_small_square: Précision : {{$stats.Get "i_preci"}}
-	:white_small_square: Intelligence : {{$stats.Get "i_intel"}}
+	{{if eq (index .CmdArgs 0) "-new"}}
+		{{$user = (index .CmdArgs 1) }}
+		{{if (reFind `(\>\S*)` $user)}}
+			{{$user = (reReplace ">" $user "")}}
+			{{$idp := toRune (lower $user)}}
+			{{with (reFind `<@!?\d{17,}>` .Message.Content)}}
+				{{$id = .}}
+				{{$id = $id.ID}}
+			{{end}}
+			{{$idR = $id}}
+			{{range $idp}}
+				{{- $id = add $id .}}
+			{{- end}}
+		{{else if (reFind `<@!?\d{17,}>` $user)}}
+			{{$user = userArg $user}}
+			{{$id = $user.ID}}
+			{{$idR = $id}}
+			{{$user = (getMember $id).Nick}}
+			{{if eq (len $user) 0}}
+				{{$user = $user.Username}}
+			{{end}}
+		{{end}}
+		{{$user = title $user}}
+		
+		{{$perso.Set $user (sdict "ID" $id "IDR" $idR "shop" "n")}}
+		{{print $user "a bien été rajouté à la base de donnée !"}}
+		{{dbSet 0 "Personnage" $perso}}
+	{{else if eq (index .CmdArgs 0) "-rm"}}
+		{{$user = (index .CmdArgs 1) }}
+		{{if (reFind `(\>\S*)` $user)}}
+			{{$user = title (reReplace ">" $user "")}}
+			{{$idp := toRune (lower $user)}}
+			{{with ($perso.Get $user)}}
+				{{$id = .IDR}}
+			{{end}}
+			{{$id = .}}
+			{{$id = $id.ID}}
+			{{$idR = $id}}
+			{{range $idp}}
+				{{- $id = add $id .}}
+			{{- end}}
+		{{else if (reFind `<@!?\d{17,}>` $user)}}
+			{{$user = userArg $user}}
+			{{$user = (getMember $id).Nick}}
+			{{if eq (len $user) 0}}
+				{{$user = $user.Username}}
+			{{end}}
+			{{$perso.Del $user}}
+			{{print $user " a bien été supprimé de la DB."}}
+			{{dbSet 0 "Personnage" $perso}}
+		{{end}}
+	{{else if eq (index .CmdArgs 0) "-name"}}
+		{{$user = (index .CmdArgs 1) }}
+		{{if (reFind `(\>\S*)` $user)}}
+			{{$user = title (reReplace ">" $user "")}}
+			{{$idp := toRune (lower $user)}}
+			{{with ($perso.Get $user)}}
+				{{$id = .IDR}}
+			{{end}}
+			{{$id = .}}
+			{{$id = $id.ID}}
+			{{$idR = $id}}
+			{{range $idp}}
+				{{- $id = add $id .}}
+			{{- end}}
+			{{dbSet 0 "Personnage" $perso}}
+		{{end}}
 	{{else}}
-	**Usage** : `$set -(all|stats|implant) Force Endurance Agilité Précision Intelligence Karma (@mention)`
+		{{print "Usage : \n `$set (-new|rm) >@cible (@joueur) \n La deuxième mention est à préciser UNIQUEMENT pour les reroll. "}}
 	{{end}}
 {{else}}
-**Usage** : `$set -(all|stats|implant) Force Endurance Agilité Précision Intelligence Karma (@mention)`
+	{{print "Usage : \n `$set (-new|rm) >@cible (@joueur) \n La deuxième mention est à préciser UNIQUEMENT pour les reroll. "}}
 {{end}}
-{{deleteTrigger 1}}
