@@ -70,8 +70,10 @@
   {{$enne.Set $i $j.Ennemi}}
 {{end}}
 
-{{if eq ($enne.Get (str $id)) "y"}}
-  {{$user = print "💥 " $user}}
+{{if ($enne.Get (str $id))}}
+  {{if (eq ($enne.Get (str $id)) "y")}}
+    {{$user = print "💥 " $user}}
+  {{end}}
 {{end}}
 
 {{if .CmdArgs}}
@@ -161,8 +163,8 @@
     {{end}}
     {{$position.Set (str .Channel.ID) $pos}}
   {{else if and (eq $posarg "-admindel") (hasRoleID 709795313279565906)}}
-  {{$chan := ""}}
-  {{$del := "v"}}
+    {{$chan := ""}}
+    {{$del := "v"}}
     {{if ge (len .CmdArgs) 2}}
       {{$item = (index .CmdArgs 1)}}
       {{range $i, $j := $position}}
