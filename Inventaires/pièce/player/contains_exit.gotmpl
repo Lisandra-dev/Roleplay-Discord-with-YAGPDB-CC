@@ -71,27 +71,31 @@
       {{$o := ""}}
       {{$n := ""}}
       {{range $i, $j := $ori}}
+      {{if ($enne.Get $i)}}
         {{if eq ($enne.Get $i) "n"}}
           {{$o = print $o "▫️" $j "\n"}}
         {{else}}
           {{$o = print $o "💥 **" $j "**\n"}}
         {{end}}
       {{end}}
+      {{end}}
       {{if eq (len $o) 0}}
         {{$o = "Cette pièce est vide..."}}
       {{end}}
       {{range $i, $j := $nri}}
-        {{if eq ($enne.Get $i) "n"}}
-          {{$n = print $n "▫️" $j "\n"}}
-        {{else}}
-          {{$n = print $n "💥 **" $j "**\n"}}
+        {{if ($enne.Get $i)}}
+          {{if eq ($enne.Get $i) "n"}}
+            {{$n = print $n "▫️" $j "\n"}}
+          {{else}}
+            {{$n = print $n "💥 **" $j "**\n"}}
+          {{end}}
         {{end}}
       {{end}}
       {{$oname := title .Channel.Name}}
       {{$oname = reReplace `-` $oname " " }}
       {{$oname = title $oname}}
-      {{$idan := $acto.Get (print $na)}}
-      {{$idao := $acto.Get (print $oname)}}
+      {{$idan := toInt ($acto.Get $na)}}
+      {{$idao := toInt ($acto.Get $oname)}}
       {{$na = title $na}}
       
       {{$omsg := cembed 
@@ -118,11 +122,12 @@
           {{$idann := sendMessageRetID 766772063603785728 $nmsg}}
           {{$acto.Set (print (title $na)) $idann}}
         {{else}}
-          {{editMessage 766772063603785728 ($acto.Get (print $oname)) (complexMessageEdit "embed" $nmsg "content" "")}}
+          {{editMessage 766772063603785728 ($acto.Get $oname) (complexMessageEdit "embed" $nmsg "content" "")}}
+          pouet
         {{end}}
       {{else}}
-        {{editMessage 766772063603785728 $idan (complexMessageEdit "embed" $nmsg "content" "")}}
-        {{editMessage 766772063603785728 $idao (complexMessageEdit "embed" $omsg "content" "")}}
+        {{editMessage 766772063603785728 ($acto.Get $na) (complexMessageEdit "embed" $nmsg "content" "")}}
+        {{editMessage 766772063603785728 ($acto.Get $oname) (complexMessageEdit "embed" $omsg "content" "")}}
       {{end}}
     {{end}}
   {{end}}
