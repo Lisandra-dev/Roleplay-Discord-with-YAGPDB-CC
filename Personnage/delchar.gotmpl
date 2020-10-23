@@ -16,9 +16,6 @@
 	{{range $idperso}}
 		{{- $id = (add $id .)}}
 	{{- end}}
-	{{if not (dbGet $id "stats")}}
-		{{print "Le personnage n'était pas dans la base de données !"}}
-	{{else}}
 		{{$groupe := sdict}}
 		{{with (dbGet .Server.ID "groupe")}}
 			{{$groupe = sdict .Value}}
@@ -96,4 +93,3 @@
 			"description" (joinStr "" $user " aka " $id " a bien été supprimé de la base de données")}}
 		{{sendMessage nil $embed}}
 	{{end}}
-{{end}}
