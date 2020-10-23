@@ -52,16 +52,36 @@
   
   {{if eq $bool false}}
   	{{$desc = joinStr "4 PA RESTANTS"}}
-  {{else}}
-  	{{$pa := $groupe.Get (str $id)}}
-  	{{$desc = joinStr " " $pa " PA RESTANTS."}}
-    {{if $nameatq}}
+        {{if $nameatq}}
       {{$cd := sub 7 $atq}}
-      {{$desc = print $desc "\n" $cd "PA restant(s) avant réutilisation de " $nameatq "."}}
+      {{if eq $atq 1}}
+        {{$cd = 6}}
+      {{end}}
+      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $nameatq "."}}
     {{end}}
     {{if $namesupp}}
       {{$cd := sub 9 $supp}}
-      {{$desc = print $desc "\n" $cd "PA restant(s) avant réutilisation de " $namesupp "."}}
+      {{if eq $supp 1}}
+        {{$cd = 8}}
+      {{end}}
+      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
+      {{end}}
+  {{else}}
+  	{{$pa := $groupe.Get (str $id)}}
+  	{{$desc = joinStr " " $pa " PA RESTANT(S)."}}
+    {{if $nameatq}}
+      {{$cd := sub 7 $atq}}
+      {{if eq $atq 1}}
+        {{$cd = 6}}
+      {{end}}
+      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $nameatq "."}}
+    {{end}}
+    {{if $namesupp}}
+      {{$cd := sub 9 $supp}}
+      {{if eq $supp 1}}
+        {{$cd = 8}}
+      {{end}}
+      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
     {{end}}
   {{end}}
   
