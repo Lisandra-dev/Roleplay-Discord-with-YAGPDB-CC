@@ -38,10 +38,20 @@
   {{$idict := str $id}}
   
   	{{/* Compétence */}}
-	{{$nameatq := (dbGet $id "cdatq").Value}}
-	{{$namesupp := (dbGet $id "cdsupp").Value}}
-	{{$atq := (toInt (dbGet $id $nameatq).Value)}}
-	{{$supp := (toInt (dbGet $id $namesupp).Value)}}
+
+      
+  {{$long := sdict}}
+  {{with (dbGet 0 "cd_long")}}
+    {{$long = sdict .Value}}
+  {{end}}
+  
+  {{court := sdict}}
+  {{with (dbget 0 "cd_court")}}
+    {{$court = sdict .Value}}
+  {{end}}
+  
+  {{$pc := sdict ($court.Get (str $id))}}
+  {{$pl := sdict ($long.Get (str $id))}}
   
   {{$bool := false}}
   {{range $i, $j := $groupe}}
@@ -52,38 +62,50 @@
   
   {{if eq $bool false}}
   	{{$desc = joinStr "4 PA RESTANTS"}}
-        {{if $nameatq}}
-      {{$cd := sub 7 $atq}}
-      {{if eq $atq 1}}
-        {{$cd = 6}}
+    {{$v := 0}}
+    {{if $pc}}
+      {{range $n, $cd := $pc}}
+        {{$v = sub 7 $cd}}
+        {{if eq $cd 1}}
+          {{$v = 6}}
+        {{end}}
+        {{$desc = print $desc "\n" $v " PA restant(s) avant réutilisation de " $n "."}}
       {{end}}
-      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $nameatq "."}}
     {{end}}
-    {{if $namesupp}}
-      {{$cd := sub 9 $supp}}
-      {{if eq $supp 1}}
-        {{$cd = 8}}
+    
+    {{if $pl}}
+      {{$v := 0}}
+      {{range $n, $cd := $pl}}
+        {{$v = sub 9 $cd}}
+        {{if eq $cd 1}}
+          {{$v = 8}}
+        {{end}}
+        {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
       {{end}}
-      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
-      {{end}}
+    {{end}}
   {{else}}
   	{{$pa := $groupe.Get (str $id)}}
   	{{$desc = joinStr " " $pa " PA RESTANT(S)."}}
-    {{if $nameatq}}
-      {{$cd := sub 7 $atq}}
-      {{if eq $atq 1}}
-        {{$cd = 6}}
+   {{if $pc}}
+      {{range $n, $cd := $pc}}
+        {{$v = sub 7 $cd}}
+        {{if eq $cd 1}}
+          {{$v = 6}}
+        {{end}}
+        {{$desc = print $desc "\n" $v " PA restant(s) avant réutilisation de " $n "."}}
       {{end}}
-      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $nameatq "."}}
     {{end}}
-    {{if $namesupp}}
-      {{$cd := sub 9 $supp}}
-      {{if eq $supp 1}}
-        {{$cd = 8}}
+    
+    {{if $pl}}
+      {{$v := 0}}
+      {{range $n, $cd := $pl}}
+        {{$v = sub 9 $cd}}
+        {{if eq $cd 1}}
+          {{$v = 8}}
+        {{end}}
+        {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
       {{end}}
-      {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
-    {{end}}
-  {{end}}
+      {{end}}
   
   {{$embed := cembed
   	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")

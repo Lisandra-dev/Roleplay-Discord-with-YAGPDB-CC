@@ -23,16 +23,30 @@
 
 {{$idict := str $id}}
 
+{{$long := sdict}}
+{{with (dbGet 0 "cd_long")}}
+  {{$long = sdict .Value}}
+{{end}}
+
+{{court := sdict}}
+{{with (dbget 0 "cd_court")}}
+  {{$court = sdict .Value}}
+{{end}}
+
 {{if .CmdArgs}}
 	{{if eq (index .CmdArgs 0) "court" "burst" "perforant"}}
+    {{$pc := sdict}}
+    {{with ($court.Get (str $id))}}
+      {{$pc = sdict .}}
+    {{end}}
 		{{if not (index .CmdArgs 1)}}
-			**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque
+			{{print "**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque"}}
 		{{else}}
 			{{$name := (index .CmdArgs 1)}}
-			{{$arg := dbGet $id $name}}
-			{{if not $arg}}
-				{{dbSet $id "cdatq" $name}}
-				{{dbSet $id $name 1}}
+			{{if not ($pc.Get $name)}}
+        {{$pc.Set $name 1}}
+        {{$court.Set (str $id) $pc}}
+        {{dbSet 0 "cd_court" $court}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Début de la recharge de la competence " $name "...\n Please wait...")
@@ -48,14 +62,18 @@
 			{{end}}
 		{{end}}
 	{{else if (index .CmdArgs 0) "long" "support" "soutien" "malus" "altération" "alter" }}
+    {{$pl := sdict}}
+    {{with ($long.Get (str $id))}}
+      {{$pl = sdict .}}
+    {{end}}
 		{{if not (index .CmdArgs 1)}}
-			**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque
+		  {{print "**ERREUR** : N'oubliez pas d'indiquer le nom de l'attaque"}}
 		{{else}}
 			{{$name := (index .CmdArgs 1)}}
-			{{$arg := dbGet $id $name}}
-			{{if not $arg}}
-				{{dbSet $id $name 1}}
-				{{dbSet $id "cdsupp" $name}}
+			{{if not ($pl.Get (str $id))}}
+        {{$pl.Set $name 1}}
+        {{$long.Set (str $id) $pl}}
+        {{dbSet 0 "cd_long" $long}}
 				{{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" $imga)
 					"description" (joinStr "" "Début de la recharge de la competence " $name "...\n Please wait...")
