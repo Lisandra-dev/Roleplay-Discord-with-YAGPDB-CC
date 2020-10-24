@@ -1,0 +1,44 @@
+{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
+
+{{$enne := sdict}}
+{{range $i, $j := $hpS}}
+  {{$enne.Set $i $j.Ennemi}}
+{{end}}
+
+
+{{$position := sdict}}
+{{with (dbGet 0 "position")}}
+  {{$position = sdict .Value}}
+{{end}}
+{{$px := ""}}
+{{$r := ""}}
+{{$o := ""}}
+{{$msg := ""}}
+{{$enne := sdict}}
+
+{{$k := sdict}}
+{{range $i, $j := $position}}
+  {{range $k, $l := $j}}
+    {{range $x, $y := $l}}
+      {{if eq $o $i}}
+        {{if eq $px $k}}
+          {{$msg = print $msg "\n<:tr:724626754282717194><:tr:724626754282717194>:white_small_square: " $x " : " $y}}
+        {{else}}
+          {{$msg = print $msg "\n\n <:tr:724626754282717194>◽ ** Rang " $k "** :\n<:tr:724626754282717194><:tr:724626754282717194>:white_small_square: " $x " : " $y}}
+        {{end}}
+      {{else}}
+        {{$msg = print $msg "\n" "💠<#" $i ">\n <:tr:724626754282717194>◽ ** Rang " $k "** :\n <:tr:724626754282717194><:tr:724626754282717194>:white_small_square: " $x " : " $y}}
+      {{end}}
+    {{$o = $i }}
+    {{$px = $k}}
+    {{end}}
+  {{end}}
+{{end}}
+{{deleteTrigger 1}}
+{{$embed := cembed
+"Title" "Placement & Combat"
+"Description" (print $msg)
+"color" 0xaa6a70
+"thumbnail" (sdict "url" "https://i.imgur.com/zOX8QWV.png")
+"timestamp" currentTime}}
+{{editMessage 736937453788725278 765510996290174987 (complexMessageEdit "embed" $embed "content" "")}}
