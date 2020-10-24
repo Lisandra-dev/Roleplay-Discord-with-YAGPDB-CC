@@ -16,13 +16,11 @@
 	{{range $idperso}}
 		{{- $id = (add $id .)}}
 	{{- end}}
-	{{if not (dbGet $id "stats")}}
-		{{print "Le personnage n'était pas dans la base de données !"}}
-	{{else}}
 		{{$groupe := sdict}}
 		{{with (dbGet .Server.ID "groupe")}}
 			{{$groupe = sdict .Value}}
 		{{end}}
+    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
 		{{$bool := "false"}}
 		{{range $i, $j := $groupe}}
@@ -38,6 +36,34 @@
 		{{dbDel $id $supp}}
 		{{dbDel $id "cdatq"}}
 		{{dbDel $id "cdsupp"}}
+    
+    {{$pos := sdict}}
+    {{with (dbGet 0 "position")}}
+      {{$pos = sdict .Value}}
+    {{end}}
+    
+  {{range $i, $j := $pos}}
+    {{$j = sdict $j}}
+    {{range $k, $v := $j}}
+      {{$v = sdict $v}}
+      {{$v.Del $user }}
+      {{$j.Set $k $v}}
+      {{$pos.Set $i $j}}
+    {{end}}
+  {{end}}
+    {{dbSet 0 "position" $pos}}
+    
+    {{$room := sdict}}
+    {{with (dbGet 0 "room")}}
+      {{$room = sdict .Value}}
+    {{end}}
+    {{range $i, $j := $room}}
+      {{$j = sdict $j}}
+      {{$j.Del (str $id)}}
+      {{$room.Set $i $j}}
+    {{end}}
+    {{dbSet 0 "room" $room}}
+    
 
 		{{if eq $bool "true"}}
 			{{$groupe.Del (str $id)}}
@@ -67,4 +93,3 @@
 			"description" (joinStr "" $user " aka " $id " a bien été supprimé de la base de données")}}
 		{{sendMessage nil $embed}}
 	{{end}}
-{{end}}

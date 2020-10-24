@@ -84,7 +84,6 @@
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
         {{if eq ($pv.Get "mush") 0}}
-          {{$hp.Del (str $id)}}
           {{$msg = print $la " a tué " $user "..."}}
         {{else}}
           {{$msg = print $la " a mis KO " $user "..."}}
@@ -147,7 +146,6 @@
       {{$hp.Set (str $id) $pv}}
       {{if le (toInt ($pv.Get "pv_actuel")) 0}}
         {{if eq ($pv.Get "mush") 0}}
-          {{$hp.Del (str $id)}}
           {{$msg = print $user " s'est tué(e)..."}}
         {{else}}
           {{$msg = print $user " s'est mis(e) KO..."}}

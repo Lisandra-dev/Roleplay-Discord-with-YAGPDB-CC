@@ -23,9 +23,9 @@
 
 	{{/* Get joueur */}}
 
-{{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
-{{$name = reReplace `>` $name ""}}
-{{$name = reReplace `\s` $name ""}}
+  {{$name :=(reFind `((>\S*[^<\:\w+\:\d+)]>\S*)|>\S*)` .Message.Content)}}
+  {{$name = reReplace `>` $name ""}}
+  {{$name = reReplace `\s` $name ""}}
 	{{$user := .Member.Nick}}
 	{{$id:= .User.ID}}
 	{{if $name}}
@@ -38,15 +38,23 @@
 		{{$user = .User.Username}}
 	{{end}}{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
-
 	{{$idict := str $id}}
 
 	{{/* Compétence */}}
-	{{$nameatq := (dbGet $id "cdatq").Value}}
-	{{$namesupp := (dbGet $id "cdsupp").Value}}
-	{{$atq := (toInt (dbGet $id $nameatq).Value)}}
-	{{$supp := (toInt (dbGet $id $namesupp).Value)}}
+  
+{{$long := sdict}}
+{{with (dbGet 0 "cd_long")}}
+  {{$long = sdict .Value}}
+{{end}}
 
+{{court := sdict}}
+{{with (dbget 0 "cd_court")}}
+  {{$court = sdict .Value}}
+{{end}}
+
+{{$pc := sdict ($court.Get (str $id))}}
+{{$pl := sdict ($long.Get (str $id))}}
+  
 	{{/* PA ID search */}}
 	{{$bool := false}}
 	{{$next := len $groupe}}
@@ -77,92 +85,102 @@
 	{{if eq $bool false}}
 		{{$groupe.Set $idict 2}}
 		{{$desc = joinStr " " "2 PA RESTANTS."}}
-		{{if $nameatq}}
-			{{if lt $atq 7}}
-				{{$x:= dbIncr $id $atq 2}}
-			{{else if ge $atq 7}}
-				{{dbDel $id "cdatq"}}
-				{{ $embed := cembed
+		{{if $pc}}
+      {{range $i, $j := $pc}}
+			  {{if lt $j 6}}
+          {{$pc.Set $i (add $j 2)}}
+			  {{else if ge $j 6}}
+				{{$pc.Del $i}}
+				  {{ $embed := cembed
 					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
 					"description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
 					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID $chan $embed }}
-				{{dbDel $id $atq}}
+				  {{ $idM := sendMessageRetID $chan $embed }}
+        {{end}}
 			{{end}}
 		{{end}}
 
-		{{if $namesupp}}
-			{{if lt $supp 9}}
-				{{$x := dbIncr $id $supp 2}}
-			{{else if eq $supp 5}}
-					{{ $embed := cembed
-						"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-						"description" (joinStr "" "Support : " $namesupp " terminé.")
-						"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
-						"color" 0xDFAA58}}
-					{{ $idM := sendMessageRetID $chan $embed }}
-			{{else if ge $supp 9}}
-				{{dbDel $id "cdsupp"}}
-				{{ $embed := cembed
-					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-					"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
-					"color" 0xDFAA58}}
-				{{ $idM := sendMessageRetID $chan $embed }}
-				{{dbDel $id $supp}}
-			{{end}}
+		{{if $pl}}
+      {{range $nom, $cd := $pl}}
+        {{if lt $j 8}}
+          {{$pl.Set $nom (add $cd 2)}}
+          {{if eq $cd 4}}
+      			{{ $embed := cembed
+      				"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+      				"description" (joinStr "" "Effet de " $namesupp " terminé.")
+      				"footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+      				"color" 0xDFAA58}}
+  			    {{ $idM := sendMessageRetID $chan $embed }}
+          {{end}}
+  			{{else if ge $cd 8}}
+  				{{$pl.Del $nom}}
+  				{{ $embed := cembed
+  					"author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+  					"description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
+  					"color" 0xDFAA58}}
+  				{{ $idM := sendMessageRetID $chan $embed }}
+  			{{end}}
+      {{end}}
 		{{end}}
 
 		{{else}}
 			{{$j := $groupe.Get $idict}}
 			{{$j = sub $j 2}}
-			{{if ge $j 0}}
-				{{$desc = joinStr " " $j "PA RESTANT(S)"}}
-				{{if $nameatq}}
-				  {{if lt $atq 7}}
-					  {{$x:= dbIncr $id $nameatq 2}}
-				  {{else if eq $atq 7}}
-					  {{dbDel $id "cdatq"}}
-					  {{ $embed := cembed
-						  "author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
-						  "description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
-						  "color" 0xDFAA58}}
-					  {{ $idM := sendMessageRetID $chan $embed }}
-					  {{dbDel $id $atq}}
-				  {{end}}
-			  {{end}}
-			  {{if $namesupp}}
-				  {{if lt $supp 9}}
-					  {{$x := dbIncr $id $namesupp 2}}
-				  {{else if eq $supp 5}}
-					  {{ $embed := cembed
-						  "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-						  "description" (joinStr "" "Support : " $namesupp " terminé.")
-						  "footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
-						  "color" 0xDFAA58}}
-					  {{ $idM := sendMessageRetID $chan $embed }}
-				  {{else if eq $supp 9}}
-					  {{dbDel $id "cdsupp"}}
-					  {{ $embed := cembed
-						  "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
-						  "description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
-						  "color" 0xDFAA58}}
-					  {{ $idM := sendMessageRetID $chan $embed }}
-					  {{dbDel $id $supp}}
-				  {{end}}
-			  {{end}}
-		  {{else if lt $j 0}}
-			  {{$j = 0}}
-			  {{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION. "}}
-		  {{end}}
-		  {{$groupe.Set $idict $j}}
-	  {{end}}
+				{{if ge $j 0}}
+					{{$desc = joinStr " " $j "PA RESTANT(S)."}}
+		      {{if $pc}}
+            {{range $nom, $cd := $pc}}
+			        {{if lt $cd 6}}
+                {{$pc.Set $nom (add $cd 2)}}
+			        {{else if ge $cd 6}}
+				        {{$pc.Del $nom}}
+				        {{ $embed := cembed
+					        "author" (sdict "name" $user "icon_url" "https://i.imgur.com/zNofnyh.png")
+					        "description" (joinStr "" "Compétence : " $nameatq " de nouveau utilisable")
+					        "color" 0xDFAA58}}
+				        {{ $idM := sendMessageRetID $chan $embed }}
+			        {{end}}
+            {{end}}
+		      {{end}}
 
+		      {{if $pl}}
+            {{range $n, $cd := $pl}}
+              {{if lt $cd 8}}
+                {{$pl.Set $n (add $cd 2)}}
+                {{if eq $cd 4}}
+    			        {{ $embed := cembed
+    				        "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+    				        "description" (joinStr "" "Effet de " $namesupp " terminé.")
+    				        "footer" (sdict "text" "4 PA AVANT RÉUTILISATION")
+    				        "color" 0xDFAA58}}
+			            {{ $idM := sendMessageRetID $chan $embed }}
+                {{end}}
+			        {{else if ge $cd 8}}
+				        {{$pl.Del $n}}
+				        {{ $embed := cembed
+					          "author" (sdict "name" $user "icon_url" "https://i.imgur.com/9iRdtbM.png")
+					          "description" (joinStr "" "Compétence : " $namesupp " de nouveau utilisable")
+					          "color" 0xDFAA58}}
+				        {{ $idM := sendMessageRetID $chan $embed }}
+			        {{end}}
+            {{end}}
+          {{end}}
+				{{else if lt $j 0}}
+				  {{$j = 0}}
+				  {{$desc = joinStr " " "PA INSUFFISANTS POUR RÉALISER L'ACTION."}}
+			  {{end}}
+			{{$groupe.Set $idict $j}}
+		{{end}}
 
 	{{$embed := cembed
 		"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
 		"description" $desc
 		"color" $col}}
-	{{$idPA := sendMessageRetID nil $embed}}
-	{{deleteMessage nil $idPA 30}}
-  {{dbSet .Server.ID "groupe" $groupe}}
+		{{$idPA := sendMessageRetID nil $embed}}
+		{{deleteMessage nil $idPA 30}}
+	{{dbSet .Server.ID "groupe" $groupe}}
+  {{$long.Set (str $id) $pl}}
+  {{$court.Set (str $id) $pc}}
+  {{dbSet 0 "cd_long" $long}}
+  {{dbSet 0 "cd_court" $court}}
 {{end}}

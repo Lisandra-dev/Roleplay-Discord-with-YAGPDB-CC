@@ -25,6 +25,8 @@
     {{$turn.Set (str $chan) 1}}
     {{dbSet 0 "turn" $turn}}
   	{{dbDel .Server.ID "groupe"}}
+    {{dbDel 0 "cd_long"}}
+    {{dbSet 0 "cd_court"}}
   {{else if not (reFind `-del` (index .CmdArgs 0))}}
     {{$chan = index .CmdArgs 0|reFind `\d{17,}`|getChannel}}
         {{$pv_dic := sdict}}
@@ -43,7 +45,7 @@
       		{{$groupe.Set $k 4}}
         {{else if le $j 2}}
           {{$groupe.Set $k 4}}
-        {{else if ge $j 2}}
+        {{else if gt $j 2}}
           {{$groupe.Set $k 6}}
         {{end}}
       {{end}}
