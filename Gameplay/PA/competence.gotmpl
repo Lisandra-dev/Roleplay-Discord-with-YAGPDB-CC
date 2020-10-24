@@ -28,8 +28,8 @@
   {{$long = sdict .Value}}
 {{end}}
 
-{{court := sdict}}
-{{with (dbget 0 "cd_court")}}
+{{$court := sdict}}
+{{with (dbGet 0 "cd_court")}}
   {{$court = sdict .Value}}
 {{end}}
 

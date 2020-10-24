@@ -45,13 +45,19 @@
     {{$long = sdict .Value}}
   {{end}}
   
-  {{court := sdict}}
-  {{with (dbget 0 "cd_court")}}
+  {{$court := sdict}}
+  {{with (dbGet 0 "cd_court")}}
     {{$court = sdict .Value}}
   {{end}}
   
-  {{$pc := sdict ($court.Get (str $id))}}
-  {{$pl := sdict ($long.Get (str $id))}}
+  {{$pc := sdict}}
+  {{with ($court.Get (str $id))}}
+    {{$pc = sdict .}}
+  {{end}}
+  {{$pl := sdict}}
+  {{with ($long.Get (str $id))}}
+    {{$pl = sdict .}}
+  {{end}}
   
   {{$bool := false}}
   {{range $i, $j := $groupe}}
@@ -80,7 +86,7 @@
         {{if eq $cd 1}}
           {{$v = 8}}
         {{end}}
-        {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
+        {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $n "."}}
       {{end}}
     {{end}}
   {{else}}
@@ -103,17 +109,17 @@
         {{if eq $cd 1}}
           {{$v = 8}}
         {{end}}
-        {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $namesupp "."}}
+        {{$desc = print $desc "\n" $cd " PA restant(s) avant réutilisation de " $n "."}}
       {{end}}
       {{end}}
   
-  {{$embed := cembed
-  	"author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
-  	"description" $desc
-  	"color" $col}}
-  {{sendMessage nil $embed}}
-  {{deleteTrigger 1}}
-  
+    {{$embed := cembed
+      "author" (sdict "name" $user "icon_url" "https://i.imgur.com/VvOhTON.png")
+      "description" $desc
+      "color" $col}}
+    {{sendMessage nil $embed}}
+    {{deleteTrigger 1}}
+  {{end}}
 {{else if and (eq $cmd "$pdmin") (hasRoleID 709795313279565906)}}
   {{$grp := sdict}}
   {{with (dbGet .Server.ID "groupe")}}
@@ -132,7 +138,6 @@
       {{$msg = print $msg ":white_small_square:" .Personnage " : " $j " PA" "\n"}}
     {{end}}
   {{end}}
-  
   {{print $msg}}
 {{end}}
 {{deleteTrigger 1}}
