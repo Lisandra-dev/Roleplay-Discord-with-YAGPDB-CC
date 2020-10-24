@@ -266,18 +266,18 @@
 {{end}}
 
 {{$r := ""}}
-
+{{$f := "<:next:723131844643651655>"}}
 {{$soinimg := "https://i.imgur.com/fWnxoZ4.png"}}
 
 {{$urc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Ultra critique** " $comm "*+30 PV + Bonus*.")
+		"description" (joinStr "" "**Ultra critique** " $comm "\n " $f "*+30 PV + Bonus*.")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
 {{$rc := cembed
 		"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite critique** " $comm " *+30 PV.*")
+		"description" (joinStr "" "**Réussite critique** " $comm "\n " $f "*+30 PV.*")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
@@ -287,7 +287,7 @@
 
 {{$r := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
-		"description" (joinStr "" "**Réussite** " $comm " *+" $regen " PV.*")
+		"description" (joinStr "" "**Réussite** " $comm " *+\n" $f $regen " PV.*")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0xEFA3EA }}
 
@@ -299,7 +299,7 @@
 
 {{$ec := cembed
 	"author" (sdict "name" $user "icon_url" $soinimg)
-	"description" (joinStr "" "**Echec critique du soin**" $comm "*Votre cible écope d'une altération*...")
+	"description" (joinStr "" "**Echec critique du soin**" $comm "\n" $f "*Votre cible écope d'une altération*...")
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0xEFA3EA }}
 	

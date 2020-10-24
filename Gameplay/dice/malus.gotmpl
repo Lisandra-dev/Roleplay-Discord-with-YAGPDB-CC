@@ -265,15 +265,17 @@
 	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
 {{end}}
 {{$img := "https://i.imgur.com/fuHvIUn.png"}}
+{{$f := "<:next:723131844643651655>"}}
+
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a une pénalité de +4 à son dé.")
+	"description" (joinStr "" "**Ultra critique**" $comm "\n" $f " Votre cible a une pénalité de +4 à son dé.")
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257 }}
 
 {{$rc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Réussite critique**" $comm "\n Votre cible a une pénalité de +3 à son dé.")
+	"description" (joinStr "" "**Réussite critique**" $comm "\n" $f " Votre cible a une pénalité de +3 à son dé.")
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257 }}
 
@@ -282,19 +284,19 @@
 {{if eq $d (toInt 2)}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a une pénalité de +3 à son dé.")
+		"description" (joinStr "" "**Réussite**" $comm "\n" $f " Votre cible a une pénalité de +3 à son dé.")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0x7E2257 }}
 {{else if and (gt $d (toInt 3)) (le $d (toInt 5))}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a une pénalité de +2 à son dé.")
+		"description" (joinStr "" "**Réussite**" $comm "\n" $f " Votre cible a une pénalité de +2 à son dé.")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0x7E2257 }}
 {{else if and (le $d (toInt 8)) (ge $d (toInt 6))}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a une pénalité de +1 à son dé.")
+		"description" (joinStr "" "**Réussite**" $comm "\n" $f " Votre cible a une pénalité de +1 à son dé.")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0x7E2257 }}
 {{end}}
@@ -307,7 +309,7 @@
 
 {{$ec := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $comm "**Echec critique de l'altération** " $comm " Votre cible a un bonus de -2 à son dé.")	
+	"description" (joinStr "" $comm "**Echec critique de l'altération** " $comm "\n" $f "Votre cible a un bonus de -2 à son dé.")	
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257}}
 

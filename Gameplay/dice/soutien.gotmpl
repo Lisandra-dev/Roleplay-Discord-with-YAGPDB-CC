@@ -4,6 +4,7 @@
 {{$name = reReplace `\s` $name ""}}
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
+{{$f := "<:next:723131844643651655>"}}
 
 {{if $name}}
 	{{$user = title $name}}
@@ -270,13 +271,13 @@
 
 {{$urc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Ultra critique**" $comm "\n Votre cible a un bonus de -4 sur la caractéristique visée.")
+	"description" (joinStr "" "**Ultra critique**" $comm "\n" $f "Votre cible a un bonus de -4 sur la caractéristique visée.")
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257 }}
 
 {{$rc := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" "**Réussite critique**" $comm "\n Votre cible a un bonus de -3 sur la caractéristique visée.")
+	"description" (joinStr "" "**Réussite critique**" $comm "\n" $f "Votre cible a un bonus de -3 sur la caractéristique visée.")
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257 }}
 
@@ -285,19 +286,19 @@
 {{if eq $d (toInt 2)}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un bonus de -3 sur la caractéristique visée.")
+		"description" (joinStr "" "**Réussite**" $comm "\n " $f "Votre cible a un bonus de -3 sur la caractéristique visée.")
 	"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0x7E2257 }}
 {{else if and (le $d (toInt 3)) (ge $d (toInt 5))}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un bonus de -2 sur la caractéristique visée.")
+		"description" (joinStr "" "**Réussite**" $comm "\n " $f "Votre cible a un bonus de -2 sur la caractéristique visée.")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0x7E2257 }}
 {{else if and (le $d (toInt 8)) (ge $d (toInt 6))}}
 	{{$r = cembed
 		"author" (sdict "name" $user "icon_url" $img)
-		"description" (joinStr "" "**Réussite**" $comm "\n Votre cible a un bonus de -1 sur la caractéristique visée..")
+		"description" (joinStr "" "**Réussite**" $comm "\n " $f "Votre cible a un bonus de -1 sur la caractéristique visée..")
 		"footer" (sdict "text" (print "[" $res "]") )
 		"color" 0x7E2257 }}
 {{end}}
@@ -310,7 +311,7 @@
 
 {{$ec := cembed
 	"author" (sdict "name" $user "icon_url" $img)
-	"description" (joinStr "" $comm "**Echec critique de l'altération** " $comm " Votre cible a un malus de +2 sur la caractéristique visée...")
+	"description" (joinStr "" $comm "**Echec critique de l'altération** " $comm "\n " $f " Votre cible a un malus de +2 sur la caractéristique visée...")
 	"footer" (sdict "text" (print "[" $res "]") )
 	"color" 0x7E2257}}
 
