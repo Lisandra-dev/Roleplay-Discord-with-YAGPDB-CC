@@ -126,9 +126,7 @@
     {{else if and (reFind `ennemi` (index .CmdArgs 0)) (hasRoleID 709795313279565906)}}
       {{range $i, $j := $hp}}
         {{- if and ($j.Ennemi) (eq $j.Ennemi "y")}}
-          {{- if lt (toInt $j.pv_actuel) (toInt $j.pv_max)}}
-            {{- $msg = print $msg "**" $j.Personnage "** : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
-          {{- end}}
+          {{- $msg = print $msg "**" $j.Personnage "** : " $j.pv_actuel "/" $j.pv_max " <:pv:712052732873408703>" "\n"}}
         {{- end}}
       {{- end}}
     {{else if (reFind `all` (index .CmdArgs 0))}}
