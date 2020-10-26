@@ -68,45 +68,44 @@
     {{$sconso := $place.Get "s_conso"}}
     {{$mstuff := $place.Get "max_stuff"}}
     {{$mconso := $place.Get "max_conso"}}
-    {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
-    {{$chargeur := reFind `(?i)chargeur` $item}}
-    {{$conso := false}}
-    {{if $chargeur}}
-      {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
-      {{$item = print "[CHARGEUR] " $item}}
-      {{$conso = true}}
+     {{$cver := false}}
+  {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+  {{$chargeur := reFind `(?i)chargeur` $item}}
+  {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
+  {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
+  {{if $chargeur}}
+    {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
+    {{$item = print "[CHARGEUR] " $item}}
+    {{$cver = true}}
+  {{else if $compo}}
+    {{if eq $compo "bc" "BC" "Bc"}}
+      {{$item = "[C] Biocomposant"}}
+    {{else if eq $compo "lc" "LC" "Lc"}}
+      {{$item = "[C] Liquide Cytomorphe"}}
+    {{else if eq $compo "cb" "CB" "Cb"}}
+      {{$item = "[C] Cellule Bionotropique"}}
+    {{else if eq $compo "sf" "SF" "Sf"}}
+      {{$item = "[C] Substrat Ferreux"}}
+    {{else if eq $compo "cu" "CU" "Cu"}}
+      {{$item = "[C] Composant Universel"}}
     {{end}}
-    {{if $compo}}
-      {{if eq $compo "bc" "BC" "Bc"}}
-        {{$item = "[C] Biocomposant"}}
-      {{else if eq $compo "lc" "LC" "Lc"}}
-        {{$item = "[C] Liquide Cytomorphe"}}
-      {{else if eq $compo "cb" "CB" "Cb"}}
-        {{$item = "[C] Cellule Bionotropique"}}
-      {{else if eq $compo "sf" "SF" "Sf"}}
-        {{$item = "[C] Substrat Ferreux"}}
-      {{else if eq $compo "cu" "CU" "Cu"}}
-        {{$item = "[C] Composant Universel"}}
-      {{end}}
-    {{end}}
-    {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
-    {{if $sac}}
+    {{else if $sac}}
       {{$item = print "[E] " (title (lower $sac))}}
-    {{end}}
-    {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
-    {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
+    {{else if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
       {{$item = print "[MODULE] " $mimp}}
     {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
       {{$item = print "[IMPLANT] " $mimp}}
+    {{else if and (reFind `-bdg` .Message.Content) (not $compo) (not $mimp) (ne $cver true) (not $sac) (not (reFind `\[X\]` $item))}}
+      {{$item = print "[BDG]" $item }}
     {{end}}
     {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\])` $item)}}
-    {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
+    {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]") (ne $arme "[chargeur]")}}
       {{$item = print "[A] " $item}}
     {{end}}
 
     {{if and ($equip.Get $item) (le (toInt $amount) (toInt ($equip.Get $item)))}}
-      {{if and (or $arme (reFind `^\[E\]` $item)) (ne $conso true)}}
-        {{if not $sac}}
+      {{if or $arme (reFind `^\[E\]` $item)}}
+        {{if and (not $sac) (ne $cver true)}}
           {{if lt $amount $mstuff}}
             {{$place.Set "s_stuff" (add $sstuff $amount)}}
             {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}
@@ -156,7 +155,7 @@
             {{end}}
           {{end}}
         {{end}}   
-      {{else if or (eq $compo true) (and (not $compo) (not (reFind `\[X\]` $item)))}}
+      {{else if (eq $cver true) (and (not $compo) (not (reFind `\[X\]` $item)))}}
         {{if lt $amount (toInt $mconso)}}
           {{$place.Set "s_conso" (add $amount $sconso)}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}

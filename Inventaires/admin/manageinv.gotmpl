@@ -156,7 +156,7 @@
               {{$msg = joinStr "" $user " a obtenu " $item "."}}
             {{end}}
           {{end}}
-        {{else if or (eq $compo true) (and (not $compo) (not ((reFind `\[X\]` $item))))}}
+        {{else if or (eq $conso true) (and (not $compo) (not ((reFind `\[X\]` $item))))}}
           {{if and (le $amount (toInt $sconso))}}
             {{$place.Set "s_conso" (sub $sconso $amount)}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
