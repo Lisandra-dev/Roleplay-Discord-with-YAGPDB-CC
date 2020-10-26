@@ -51,8 +51,8 @@
       {{end}}
     {{end}}
   {{end}}
-  {{$cver := false}}
   {{$msg = joinStr "" $user " a abandonné " $nb " " $item "."}}
+  {{$cver := false}}
   {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
   {{$chargeur := reFind `(?i)chargeur` $item}}
   {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
