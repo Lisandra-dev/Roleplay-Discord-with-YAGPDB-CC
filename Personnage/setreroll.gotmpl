@@ -40,8 +40,11 @@
 				{{$stats.Set "intelligence" (toInt (index .CmdArgs 9))}}
 				{{$stats.Set "i_intel" (toInt (index .CmdArgs 10))}}
 				{{$stats.Set "karma" (toInt (index .CmdArgs 11))}}
-        {{if and (ge (len .CmdArgs) 14) (reFind `-rn` (index .Message.Content) )}}
-          {{$char = (index .CmdArgs 13)}}
+        {{if and (ge (len .CmdArgs) 14)}}
+					{{if (reFind `-rn` (index .CmdArgs 12))}}
+          	{{$char = (index .CmdArgs 13)}}
+						{{$char}}
+					{{end}}
         {{end}}
         {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}
         {{if not ($hpS.Get (str $user))}}

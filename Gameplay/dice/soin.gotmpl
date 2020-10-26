@@ -118,14 +118,19 @@
 				{{$d = sub $d $idb}}
 			{{end}}
 
-			{{if gt $d (toInt 10)}}
+			{{if ge $d (toInt 10)}}
 				{{$d = toInt 10}}
-			{{else if lt $d (toInt 0)}}
+			{{else if le $d (toInt 0)}}
 				{{$d = (toInt 0)}}
 			{{end}}
 			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " (toString $x) " : " $arg1 " | " $imp " : " $idb}}
   	{{else}}
 			{{$d = sub $d $idb}}
+			{{if ge $d (toInt 10)}}
+				{{$d = toInt 10}}
+			{{else if le $d (toInt 0)}}
+				{{$d = (toInt 0)}}
+			{{end}}
 			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb }}
 		{{end}}
 	{{else}}
@@ -184,9 +189,9 @@
 						{{$mimp = $d}}
 					{{end}}
 				{{end}}
-				{{if gt $d (toInt 10)}}
+				{{if ge $d (toInt 10)}}
 					{{$d = toInt 10}}
-				{{else if lt $d (toInt 0)}}
+				{{else if le $d (toInt 0)}}
 					{{$d = (toInt 0)}}
 				{{end}}
 				{{$res = print "Dé : " $d " " $v " | Seuil : " $seuil " | " $arg1 " : " $x " | " $arg2 " : " $y " | " $imp " : " $idb}}
@@ -201,15 +206,20 @@
 					{{$mimp = $idb}}
 				{{end}}
 
-				{{if gt $d (toInt 10)}}
+				{{if ge $d (toInt 10)}}
 					{{$d = toInt 10}}
-				{{else if lt $d (toInt 0)}}
+				{{else if le $d (toInt 0)}}
 					{{$d = (toInt 0)}}
 				{{end}}
 				{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $arg1 " : " (toString $x) " | " $imp " : " $idb}}
 			{{end}}
 		{{else}}
 			{{$d = sub $d $idb}}
+			{{if ge $d (toInt 10)}}
+				{{$d = toInt 10}}
+			{{else if le $d (toInt 0)}}
+				{{$d = (toInt 0)}}
+			{{end}}
 			{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil  " | " $imp " : " $idb}}
 		{{end}}
 	{{end}}
@@ -262,7 +272,7 @@
 		{{end}}
 	{{end}}
 {{else}}
-	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil " | " $imp " : " $idb}}
+	{{$res = print "Dé : " (toString $d) " " $v " | Seuil : " $seuil }}
 {{end}}
 
 {{$r := ""}}
