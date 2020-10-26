@@ -29,7 +29,6 @@
 {{$u = title $u}}{{$t := ""}}
 {{$uEco := sdict}}{{with (dbGet $id "economy")}}{{$uEco = sdict .Value}}{{end}}
 {{$inv := sdict}}{{with (dbGet $id "équipement")}}{{$inv = sdict .Value}}{{end}}
-
 {{$pl := sdict}}{{with (dbGet $id "place")}}{{$pl = sdict .Value}}{{end}}
 {{if .CmdArgs}}
 	{{$idt := .User.ID }}
