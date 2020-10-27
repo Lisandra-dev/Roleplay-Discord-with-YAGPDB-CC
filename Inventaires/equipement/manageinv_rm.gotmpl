@@ -104,8 +104,8 @@
     {{if and (reFind `-bdg` .Message.Content) (not $compo) (not $mimp) (ne $cver true) (not $sac) (not (reFind `\[X\]` $item))}}
       {{$item = print "[BDG]" $item }}
     {{end}}
-    {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|\[E\])` $item)}}
-    {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]") (ne $arme "[chargeur]")}}
+    {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|^\[E\])` $item)}}
+    {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[A]") (ne $arme "[chargeur]") (ne $arme "[e]")}}
       {{$item = print "[A] " $item}}
     {{end}}
 
@@ -124,7 +124,7 @@
           {{$pc := 0}}
           {{$as := 0}}
           {{$ac := 0}}
-          {{with ($id.Get $item)}}
+          {{with ($sid.Get $item)}}
             {{$ps = .ps}}
             {{$pc = .pc}}
             {{$as = .as}}
@@ -143,7 +143,7 @@
             {{$msg = joinStr "" $amount " " $item " ont été retiré de l'inventaire de " $mention "." }}
           {{end}}
         {{end}}   
-      {{else if and (eq $cver true) (not $compo)}}
+      {{else if or (eq $cver true) (not $compo)}}
         {{if lt $amount (toInt $mconso)}}
           {{$place.Set "s_conso" (add $amount $sconso)}}
           {{$equip.Set $item (sub (toInt ($equip.Get $item)) $amount)}}

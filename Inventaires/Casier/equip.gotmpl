@@ -19,6 +19,7 @@
 {{if (dbGet 0 "mission")}}
 	{{print "Vous n'êtes pas sur le Nucleus, vous ne pouvez donc pas équiper d'objet !"}}
 {{else}}
+  {{$sid := sdict "[E] Sac À Dos" (sdict "ps" 5 "pc" 14 "as" 3 "ac" 9) "[E] Sacoche" (sdict "ps" 4 "pc" 11 "as" 2 "ac" 6) "[E] Sacoche Ceinture" (sdict "ps" 3 "pc" 8 "as" 1 "ac" 3)}}
   {{if .CmdArgs}}
     {{if $name}}
       {{$target = $id}}
@@ -78,26 +79,28 @@
         {{$check = true}}
       {{end}}
       
-      {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+      {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|armure)` $item)}}
       {{if $compo}}
-        {{if eq $compo "bc" "BC" "Bc"}}
+        {{if eq $compo "bc"}}
           {{$item = "[C] Biocomposant"}}
-        {{else if eq $compo "lc" "LC" "Lc"}}
+        {{else if eq $compo "lc"}}
           {{$item = "[C] Liquide Cytomorphe"}}
-        {{else if eq $compo "cb" "CB" "Cb"}}
+        {{else if eq $compo "cb"}}
           {{$item = "[C] Cellule Bionotropique"}}
-        {{else if eq $compo "sf" "SF" "Sf"}}
+        {{else if eq $compo "sf"}}
           {{$item = "[C] Substrat Ferreux"}}
-        {{else if eq $compo "cu" "CU" "Cu"}}
+        {{else if eq $compo "cu"}}
           {{$item = "[C] Composant Universel"}}
+        {{else if eq $compo "armure"}}
+          {{$item = "[X] Armure"}}
         {{end}}
       {{end}}
       {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
       {{if $sac}}
         {{$item = print "[E] " (title (lower $sac))}}
       {{end}}
-      {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\])` $item)}}
-      {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
+      {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|^\[E\])` $item)}}
+      {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]") (ne $arme "[e]")}}
         {{$item = print "[A] " $item}}
       {{end}}
       {{$mimp := (lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item))}}
@@ -118,7 +121,7 @@
           {{$msg = joinStr "" $user " n'a pas assez de " $item " pour faire cela. "}}
         {{else}}
           {{if le (toInt $amount) (toInt $value)}}
-            {{if or $arme (reFind `^\[E\]` $item)}}
+            {{if $arme }}
               {{if and (not $sac) (ne $check true) }}
                 {{if le $amount $sstuff }}
                   {{$place.Set "s_stuff" (sub $sstuff $amount)}}
@@ -135,27 +138,25 @@
                 {{if or ($equip.Get "[E] Sac À Dos" ) ($equip.Get "[E] Sacoche" ) ($equip.Get "[E] Sacoche Ceinture")}}
                   {{$msg = joinStr "" $user " possède déjà un sac. Merci de retirer l'ancien."}}
                 {{else}}
-                  {{if eq $item "[E] Sac À Dos" }}
-                    {{$place.Set "s_stuff" (add $sstuff 3)}}
-                    {{$place.Set "s_conso" (add $sconso 9)}}
-                    {{$place.Set "max_stuff" (add $sstuff 3)}}
-                    {{$place.Set "max_conso" (add $sconso 9)}}
-                  {{else if eq $item "[E] Sacoche" }}
-                    {{$place.Set "s_stuff" (add $sstuff 2)}}
-                    {{$place.Set "s_conso" (add $sconso 6)}}
-                    {{$place.Set "max_stuff" (add $sstuff 2)}}
-                    {{$place.Set "max_conso" (add $sconso 6)}}
-                  {{else if eq $item "[E] Sacoche Ceinture"}}
-                    {{$place.Set "s_stuff" (add $sstuff 1)}}
-                    {{$place.Set "s_conso" (add $sconso 3)}}
-                    {{$place.Set "max_stuff" (add $sstuff 1)}}
-                    {{$place.Set "max_conso" (add $sconso 3)}}
+                  {{$ps := 0}}
+                  {{$pc := 0}}
+                  {{$as := 0}}
+                  {{$ac := 0}}
+                  {{with ($sid.Get $item)}}
+                    {{$ps = .ps}}
+                    {{$pc = .pc}}
+                    {{$as = .as}}
+                    {{$ac = .ac}}
                   {{end}}
+                  {{$place.Set "s_stuff" (add $sstuff $as)}}
+                  {{$place.Set "s_conso" (add $sconso $ac)}}
+                  {{$place.Set "max_stuff" $ps}}
+                  {{$place.Set "max_conso" $pc}}
                   {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
                   {{$equip.Set $item 1}}
-                  {{$msg = joinStr "" $user " a pris " $item "du casier."}}
+                  {{$msg = joinStr "" $user " a sorti " $item "de son casier."}}
                 {{end}}
-              {{else if or (eq $check true) (and (not $compo) (not (reFind `\[X\]` $item)))}}
+              {{else if or (eq $check true) (not $compo)}}
                 {{if and (le $amount (toInt $sconso))}}
                   {{$place.Set "s_conso" (sub $sconso $amount)}}
                   {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -168,10 +169,14 @@
                   {{$msg = joinStr " " $user "n'a pas assez de place dans son inventaire."}}
                 {{end}}
               {{end}}
-            {{else if or $compo (reFind `\[X\]` $item)}}
-              {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
-              {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
-              {{$msg = joinStr "" $user " : vous rangez dans votre inventaire" $amount " " $item ", sans prise de place."}}
+            {{else if $compo}}
+              {{if and (eq $item "[X] Armure") ($equip.Get $item) (gt $amount 1)}}
+                {{$msg = print $user " porte déjà une armure."}}
+              {{else}}
+                {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
+                {{$inv.Set $item (sub (toInt $value) (toInt $amount))}}
+                {{$msg = joinStr "" $user " : vous rangez dans votre inventaire" $amount " " $item ", sans prise de place."}}
+              {{end}}
             {{end}}
             {{if le (toInt ($inv.Get $item)) 0}}
               {{$inv.Del $item}}

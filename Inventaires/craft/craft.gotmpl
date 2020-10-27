@@ -46,8 +46,8 @@
 {{$quanti := reFind `q\d+` .Message.Content}}
 {{$univ := reFind `-cu` .Message.Content}}
 {{$bdg := reFind `-bdg` .Message.Content}}
-{{$balle := reFind `(?i)(chargeur|module|implant|poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content}}
-{{$arme := reFind `(?i)(poigne|épée|masse|projectile|grenade|pistolet|fusil|canon|\[A\])` .Message.Content}}
+{{$balle := lower (reFind `(?i)(chargeur|module|implant|poigne|épée|masse|projectile|grenade|pistolet|fusil|canon)` .Message.Content)}}
+{{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|^\[E\])` $item)}}
 
 {{/* Variable */}}
 
@@ -110,19 +110,19 @@
 	{{if .CmdArgs}}
 		{{$item := title (index .CmdArgs 0)}}
 		{{$reci := $item}}
-		{{if eq $balle "chargeur" "CHARGEUR" "Chargeur"}}
+		{{if eq $balle "chargeur"}}
 			{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
 			{{$reci = print "[CHARGEUR] " (title $weap)}}
 			{{$item = $reci}}
-		{{else if eq $balle "module" "Module" "MODULE"}}
+		{{else if eq $balle "module"}}
 			{{$type := reFind `(?i)(Perforant|burst|soutien|altération|schéma|passif)` $item}}
 			{{$item = print "[MODULE] " (title (lower $type))}}
 			{{$reci = title (lower $type)}}
-		{{else if eq $balle "implant" "Implant" "IMPLANT"}}
+		{{else if eq $balle "implant"}}
 			{{$type := reFind `(?i)(force|résistance|cognition|furtivité|vision)` $item}}
 			{{$reci = title (lower $type)}}
 			{{$item = print "[IMPLANT] " (title (lower $type))}}
-		{{else if and $balle $arme (eq $balle $arme) (ne $arme "[A]")}}
+		{{else if and $balle $arme (eq $balle $arme) (ne $arme "[a]") (ne $arme "[e]") (ne $arme "[chargeur]") (ne $balle "chargeur")}}
 			{{$reci = title (lower $arme)}}
 			{{$item = print "[A] " $item}}
 		{{end}}

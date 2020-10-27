@@ -119,8 +119,8 @@
           {{$item = print "[IMPLANT] " $mimp}}
         {{end}}
           
-        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|\[E\])` $item)}}
-        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
+        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|^\[E\])` $item)}}
+        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]") (ne $arme "[e]")}}
           {{$item = joinStr " " "[A] " $item}}
         {{end}}
       
@@ -143,7 +143,7 @@
               {{$pc := 0}}
               {{$as := 0}}
               {{$ac := 0}}
-              {{with ($id.Get $item)}}
+              {{with ($sid.Get $item)}}
                 {{$ps = .ps}}
                 {{$pc = .pc}}
                 {{$as = .as}}
@@ -157,7 +157,7 @@
               {{$msg = joinStr "" $user " a obtenu " $item "."}}
             {{end}}
           {{end}}
-        {{else if and (eq $conso true) (not $compo)}}
+        {{else if or (eq $conso true) (not $compo)}}
           {{if and (le $amount (toInt $sconso))}}
             {{$place.Set "s_conso" (sub $sconso $amount)}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
@@ -166,13 +166,8 @@
             {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
           {{end}}
         {{else if $compo}}
-          {{if eq $item "[X] Armure"}}
-            {{if ($equip.Get $item)}}
-              {{$msg = print $user " porte déjà une armure."}}
-            {{else}}
-              {{$equip.Set $item 1}}
-              {{$msg = joinStr "" $user " a obtenu une " $amount "."}}
-            {{end}}
+          {{if and (eq $item "[X] Armure") ($equip.Get $item) (gt $amount 1)}}
+            {{$msg = print $user " porte déjà une armure."}}
           {{else}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
             {{$msg = joinStr "" $user " a obtenu " $amount " " $item ", sans perte de place."}}

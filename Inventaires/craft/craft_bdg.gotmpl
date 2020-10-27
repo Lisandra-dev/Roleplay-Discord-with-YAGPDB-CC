@@ -94,9 +94,9 @@
         {{$sf := mult ($i.Get "Substrat Ferreux") $q}}
         {{$lc := mult ($i.Get "Liquide Cytomorphe") $q}}
         {{$cb := mult ($i.Get "Cellule Bionotropique") $q}}
-        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\])` $item)}}
-        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]")}}
-          {{$item = print "[A] " $item}}
+        {{$arme := lower (reFind `(?i)(poigne|épée|masse|pistolet|fusil|canon|couteau|^\[A\]|^\[CHARGEUR\]|^\[E\])` $item)}}
+        {{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]") (ne $arme "[e]")}}
+          {{$item = joinStr " " "[A] " $item}}
         {{end}}
 
         {{if and $arme (not (reFind `(?i)chargeur` $item))}}

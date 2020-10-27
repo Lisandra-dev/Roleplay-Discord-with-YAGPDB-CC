@@ -4,6 +4,7 @@
 {{$invt := sdict }}
 {{$inv := ""}}
 {{$idt := 0}}
+{{$ei := ""}}
 {{$d := "**Usage** :\n- `$give <ci> <valeur>`\n- `$give <nom> (<quantité>)`\n > Note : La quantité est optionnelle."}}
 {{$arr := "<:next:723131844643651655>" }}
 {{$mon := ""}}
@@ -107,10 +108,11 @@
 		{{end}}
 
 	{{else if (eq (toInt $args) 0)}}
+		{{$sid := sdict "[E] Sac À Dos" (sdict "ps" 5 "pc" 14 "as" 3 "ac" 9) "[E] Sacoche" (sdict "ps" 4 "pc" 11 "as" 2 "ac" 6) "[E] Sacoche Ceinture" (sdict "ps" 3 "pc" 8 "as" 1 "ac" 3)}}
 		{{$q := 1}}
 		{{$i := (title (lower $args))}}
 		{{$cha := lower (reFind `(?i)chargeur` $i)}}
-		{{$co := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\])` $i)}}
+		{{$co := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|armure)` $i)}}
 		{{if $co}}
 			{{if eq $co "bc"}}
 				{{$i = "[C] Biocomposant"}}
@@ -122,6 +124,8 @@
 				{{$i = "[C] Substrat Ferreux"}}
 			{{else if eq $co "cu"}}
 				{{$i = "[C] Composant Universel"}}
+			{{else if eq $co "armure"}}
+				{{$item = "[X] Armure"}}
 			{{end}}
 		{{end}}
 		{{$ver := false}}
@@ -141,7 +145,8 @@
 		{{if and (eq $arme "poigne" "épée" "masse" "pistolet" "fusil" "canon" "couteau") (ne $arme "[a]") (ne $arme "[chargeur]") (ne $arme "[e]") (ne $arme "sacoche") (ne $arme "sac à dos") (ne $arme "sacoche ceinture")}}
 			{{$i = print "[A] " $i}}
     {{else if and (eq $arme "Sacoche" "Sac à dos" "Sacoche ceinture") (ne $arme "[e]") (ne $arme "[a]")}}
-      {{$i = print "[E]" (title (lower $arme))}}{{$sac = true}}
+      {{$i = print "[E]" (title (lower $arme))}}
+			{{$sac = true}}
 		{{end}}
     {{if (reFind `-bdg` .Message.Content)}}
 			{{$i = print "[BDG]" $i}}
@@ -190,53 +195,33 @@
 					{{end}}
 				{{else if eq $sac true}}
 					{{$i = print "[E] " (title (lower $sac))}}
-					{{if eq $i "[E] Sac À Dos" }}
-						{{$ss = sub $ss 3}}{{$sconso = sub $sconso 9}}
-						{{if or (lt $ss 0) (lt $sconso 0)}}
-							{{$d = $sai}}
-						{{else}}
-							{{$pl.Set "s_stuff" $ss}}
-							{{$pl.Set "s_conso" $sconso}}
-							{{$pl.Set "max_stuff" 2}}
-							{{$pl.Set "max_conso" 5}}
-							{{$pt.Set "s_stuff" (add $ts 3)}}
-							{{$pt.Set "s_conso" (add $tco 9)}}
-							{{$pt.Set "max_stuff" (add $ts 3)}}
-							{{$pt.Set "max_conso" (add $tco 9)}}
-						{{end}}
-					{{else if eq $i "[E] Sacoche" }}
-						{{$ss = sub $ss 2}}{{$sconso = sub $sconso 6}}
-						{{if or (lt $ss 0) (lt $sconso 0)}}
-							{{$d = $sai}}
-						{{else}}
-							{{$pl.Set "s_stuff" $ss}}
-							{{$pl.Set "s_conso" $sconso}}
-							{{$pl.Set "max_stuff" 2}}
-							{{$pl.Set "max_conso" 5}}
-							{{$pt.Set "s_stuff" (add $ts 2)}}
-							{{$pt.Set "s_conso" (add $tco 6)}}
-							{{$pt.Set "max_stuff" (add $ts 2)}}
-							{{$pt.Set "max_conso" (add $tco 6)}}
-						{{end}}
-					{{else if eq $i "[E] Sacoche Ceinture"}}
-						{{$ss = sub $ss 1}}
-						{{$sconso = sub $sconso 3}}
-						{{if or (lt $ss 0) (lt $sconso 0)}}
-							{{$d = $sai}}
-						{{else}}
-							{{$pl.Set "s_stuff" $ss}}
-							{{$pl.Set "s_conso" $sconso}}
-							{{$pl.Set "max_stuff" 2}}
-							{{$pl.Set "max_conso" 5}}
-							{{$pt.Set "s_stuff" (add $ts 1)}}
-							{{$pt.Set "s_conso" (add $tco 3)}}
-							{{$pt.Set "max_stuff" (add $ts 1)}}
-							{{$pt.Set "max_conso" (add $tco 3)}}
-						{{end}}
+					{{$ps := 0}}
+					{{$pc := 0}}
+					{{$as := 0}}
+					{{$ac := 0}}
+					{{with ($sid.Get $i)}}
+						{{$ps = .ps}}
+						{{$pc = .pc}}
+						{{$as = .as}}
+						{{$ac = .ac}}
 					{{end}}
-					{{$inv.Del $i}}
-					{{$invt.Set $i 1}}
-					{{$d = joinStr "" $q " " $i}}
+					{{$ss = sub $ss $as}}
+					{{$sconso = sub $sconso $ac}}
+					{{if or (lt $ss 0) (lt $sconso 0)}}
+						{{$d = $sai}}
+					{{else}}
+						{{$pl.Set "s_stuff" $ss}}
+						{{$pl.Set "s_conso" $sconso}}
+						{{$pl.Set "max_stuff" $ps}}
+						{{$pl.Set "max_conso" $pc}}
+						{{$pt.Set "s_stuff" (add $ts $as)}}
+						{{$pt.Set "s_conso" (add $tco $ac)}}
+						{{$pt.Set "max_stuff" (add $ts $as)}}
+						{{$pt.Set "max_conso" (add $tco $ac)}}
+						{{$inv.Del $i}}
+						{{$invt.Set $i 1}}
+						{{$d = joinStr "" $q " " $i}}
+					{{end}}
 				{{else if or (eq $ver true) (not $co)}}
 					{{if lt (toInt $q) (toInt $tco) }}
 						{{$pt.Set "s_conso" (sub $tco $q)}}
@@ -255,9 +240,13 @@
 					{{end}}
         {{end}}
 			{{else if $co }}
-				{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
-				{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
-				{{$d = joinStr "" $q " " $i}}
+				{{if and (eq $i "[X] Armure") ($invt.Get $i) (gt $q 1)}}
+					{{$d = print $ci " porte déjà une armure."}}
+				{{else}}
+					{{$inv.Set $i (sub (toInt ($inv.Get $i)) $q)}}
+					{{$invt.Set $i (add (toInt ($inv.Get $i)) $q)}}
+					{{$d = joinStr "" $q " " $i}}
+				{{end}}
 			{{else}}
       	{{if lt (toInt $q) (toInt $tco) }}
 			    {{$pt.Set "s_conso" (sub $tco $q)}}
@@ -273,9 +262,11 @@
 					{{$d = joinStr "" $q " " $i}}
         {{else}}
 					{{$d = $np}}
-      {{end}}
-			{{if le (toInt ($inv.Get $i)) 0}}{{$inv.Del $i}}{{end}}
-			  {{$d = joinStr "" $d "\n\n ▫️" $u " : il reste " ($pl.Get "s_stuff") " places d'équipements et " ($pl.Get "s_conso") " places de consommables. \n ▫️ " $ci " : il reste " ($pt.Get "s_stuff") " places d'équipements et " ($pt.Get "s_conso") " places de consommables. " }}
+      	{{end}}
+				{{if le (toInt ($inv.Get $i)) 0}}
+					{{$inv.Del $i}}
+				{{end}}
+				{{$ei = print "▫️ **Inventaire de " $u " : \n Équipement : [" ($pl.Get "s_stuff") "/ " ($pl.Get "max_stuff") " ]\n Consommable : [" ($pl.Get "s_conso") "/" ($pt.Get "s_conso") "]\n\n ▫️ **Inventaire de " $ci ":\n Équipement : [" ($pt.Get "s_stuff") "/" ($pt.Get "max_stuff") "]\n Consommable : [" ($pt.Get "s_conso") "/" ($pt.Get "max_conso") "]"}}
 			  {{$au = joinStr " " $u "donne"}}
 				{{$fo = joinStr " " "À" $ci }}
 				{{dbSet $id "équipement" $inv}}
@@ -291,5 +282,6 @@
 "description" $d
 "footer" (sdict "text" $fo "icon_url" "https://i.imgur.com/WoypxHH.png")
 "color" $col }}
+{{sendMessage nil (complexMessage "content" $ei "embed" $embed)}}
 {{sendMessage nil $embed}}
 {{deleteTrigger 1}}

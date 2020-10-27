@@ -57,7 +57,7 @@
     {{end}}
   {{end}}
   {{$msg = joinStr "" $user " a utilisé" $number $item "."}}
-  {{$compo := reFind `(?i)(bc|lc|cb|sf|cu)` $item}}
+  {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|armure)` $item)}}
   {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
   {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
     {{$item = print "[MODULE] " (title $mimp)}}
