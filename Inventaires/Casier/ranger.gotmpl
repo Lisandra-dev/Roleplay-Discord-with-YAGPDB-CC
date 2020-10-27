@@ -63,20 +63,24 @@
 
       {{$chargeur := reFind `(?i)chargeur` $item}}
       {{$check := false}}
-      {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|armure)` $item)}}
+      {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|(armure moyenne)|(armure lourde)|(armure légère))` $item)}}
       {{if $compo}}
-        {{if eq $compo "bc" "BC" "Bc"}}
+        {{if eq $compo "bc"}}
           {{$item = "[C] Biocomposant"}}
-        {{else if eq $compo "lc" "LC" "Lc"}}
+        {{else if eq $compo "lc"}}
           {{$item = "[C] Liquide Cytomorphe"}}
-        {{else if eq $compo "cb" "CB" "Cb"}}
+        {{else if eq $compo "cb"}}
           {{$item = "[C] Cellule Bionotropique"}}
-        {{else if eq $compo "sf" "SF" "Sf"}}
+        {{else if eq $compo "sf"}}
           {{$item = "[C] Substrat Ferreux"}}
-        {{else if eq $compo "cu" "CU" "Cu"}}
+        {{else if eq $compo "cu"}}
           {{$item = "[C] Composant Universel"}}
-        {{else if eq $compo "armure"}}
-          {{$item = "[X] Armure"}}
+        {{else if eq $compo "armure moyenne"}}
+          {{$item = "[X] Armure Moyenne"}}
+        {{else if eq $compo "armure lourde"}}
+          {{$item = "[X] Armure Lourde"}}
+        {{else if eq $compo "armure légère"}}
+          {{$item = "[X] Armure Légère"}}
         {{end}}
       {{end}}
       {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
@@ -134,7 +138,7 @@
             {{$sstuff = sub $sstuff $as}}
             {{$sconso = sub $sconso $ac}}
             {{if or (le $sstuff 0) (le $sconso 0)}}
-              {{ $msg = joinStr "" "Le " $item " de " $mention "est rempli ! Videz le avant de le ranger."}}
+              {{ $msg = joinStr "" "Le " $item " de " $user "est rempli ! Videz le avant de le ranger."}}
             {{else}}
               {{$place.Set "s_stuff" $sstuff}}
               {{$place.Set "s_conso" $sconso}}

@@ -54,7 +54,7 @@
   {{end}}
   {{$msg = joinStr "" $user " a abandonné " $nb " " $item "."}}
   {{$cver := false}}
-  {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|armure)` $item)}}
+  {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|(armure moyenne)|(armure lourde)|(armure légère))` $item)}}
   {{$chargeur := reFind `(?i)chargeur` $item}}
   {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
   {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
@@ -62,19 +62,24 @@
     {{$item = reFind `(?i)(fusil|pistolet|canon)` $item}}
     {{$item = print "[CHARGEUR] " $item}}
     {{$cver = true}}
-  {{else if $compo}}
-    {{if eq $compo "bc"}}
-      {{$item = "[C] Biocomposant"}}
-    {{else if eq $compo "lc"}}
-      {{$item = "[C] Liquide Cytomorphe"}}
-    {{else if eq $compo "cb"}}
-      {{$item = "[C] Cellule Bionotropique"}}
-    {{else if eq $compo "sf"}}
-      {{$item = "[C] Substrat Ferreux"}}
-    {{else if eq $compo "cu"}}
-      {{$item = "[C] Composant Universel"}}
-    {{else if eq $compo "armure"}}
-      {{$item = "[X] Armure"}}
+    {{if $compo}}
+      {{if eq $compo "bc"}}
+        {{$item = "[C] Biocomposant"}}
+      {{else if eq $compo "lc"}}
+        {{$item = "[C] Liquide Cytomorphe"}}
+      {{else if eq $compo "cb"}}
+        {{$item = "[C] Cellule Bionotropique"}}
+      {{else if eq $compo "sf"}}
+        {{$item = "[C] Substrat Ferreux"}}
+      {{else if eq $compo "cu"}}
+        {{$item = "[C] Composant Universel"}}
+      {{else if eq $compo "armure moyenne"}}
+        {{$item = "[X] Armure Moyenne"}}
+      {{else if eq $compo "armure lourde"}}
+        {{$item = "[X] Armure Lourde"}}
+      {{else if eq $compo "armure légère"}}
+        {{$item = "[X] Armure Légère"}}
+      {{end}}
     {{end}}
   {{else if $sac}}
     {{$item = print "[E] " (title (lower $sac))}}

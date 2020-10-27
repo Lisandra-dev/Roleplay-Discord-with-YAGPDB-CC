@@ -18,7 +18,7 @@
 {{$fields := cslice}}
 {{$footer := ""}}
 {{$items := sdict}}
-{{if or (eq $store "open") (hasRoleName "Staff") }}
+{{if or (eq $store "open") (hasRoleID 709795313279565906) (hasRoleID 737676601189335043) }}
 	{{if ($serverEco.Get "Items")}}
 		{{$items = sdict ($serverEco.Get "Items")}}
 	{{end}}

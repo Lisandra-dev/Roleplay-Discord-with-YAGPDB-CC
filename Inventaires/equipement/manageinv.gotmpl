@@ -91,7 +91,7 @@
           {{$conso = true}}
         {{end}}
 
-        {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|armure)` $item)}}
+        {{$compo := lower (reFind `(?i)(bc|lc|cb|sf|cu|\[X\]|(armure moyenne)|(armure lourde)|(armure légère))` $item)}}
         {{if $compo}}
           {{if eq $compo "bc"}}
             {{$item = "[C] Biocomposant"}}
@@ -103,8 +103,12 @@
             {{$item = "[C] Substrat Ferreux"}}
           {{else if eq $compo "cu"}}
             {{$item = "[C] Composant Universel"}}
-          {{else if eq $compo "armure"}}
-            {{$item = "[X] Armure"}}
+          {{else if eq $compo "armure moyenne"}}
+            {{$item = "[X] Armure Moyenne"}}
+          {{else if eq $compo "armure lourde"}}
+            {{$item = "[X] Armure Lourde"}}
+          {{else if eq $compo "armure légère"}}
+            {{$item = "[X] Armure Légère"}}
           {{end}}
         {{end}}
         {{$sac := (reFind `(?i)(Sacoche$|Sac à dos|(Sacoche ceinture))` $item)}}
@@ -112,7 +116,7 @@
           {{$item = print "[E] " (title (lower $sac))}}
         {{end}}
           
-        {{$mimp := (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
+        {{$mimp := lower (reFind `(?i)(perforant|burst|soutien|altération|schéma|passif|force|résistance|cognition|furtivité|vision|vitalité|guérison)` $item)}}
         {{if eq $mimp "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
           {{$item = print "[MODULE] " $mimp}}
         {{else if eq $mimp "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
@@ -166,7 +170,7 @@
             {{$msg = joinStr "" $user " n'a pas assez de place dans son inventaire."}}
           {{end}}
         {{else if $compo}}
-          {{if and (eq $item "[X] Armure") ($equip.Get $item) (gt $amount 1)}}
+          {{if and (or (eq $item "[X] Armure Moyenne") (eq $item "[X] Armure Lourde") (eq $item "[X] Armure Légère")) ($equip.Get $item) (gt $amount 1)}}
             {{$msg = print $user " porte déjà une armure."}}
           {{else}}
             {{$equip.Set $item (add ($equip.Get $item) (toInt $amount))}}
