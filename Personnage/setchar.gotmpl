@@ -37,7 +37,6 @@
 			{{end}}
 		{{end}}
 		{{$user = title $user}}
-		
 		{{$perso.Set $user (sdict "Personnage" $user "ID" $id "IDR" $idR "shop" "n")}}
 		{{print $user "a bien été rajouté à la base de donnée !"}}
 		{{dbSet 0 "Personnage" $perso}}
@@ -86,11 +85,10 @@
 		{{with ($perso.Get $user)}}
 			{{$pg = sdict .}}
 		{{end}}
-		{{name = (index .CmdArgs 2)}}
+		{{$name = (index .CmdArgs 2)}}
 		{{$pg.Set "Personnage" $name}}
 		{{$perso.Set $pg}}
 		{{dbSet 0 "Personnage" $perso}}
-		{{end}}
 	{{else}}
 		{{print "Usage : \n `$set (-new|rm|rename) >@cible \n Pour un new avec un reroll, il faut absolument mentionner le joueur du Reroll !! "}}
 	{{end}}
