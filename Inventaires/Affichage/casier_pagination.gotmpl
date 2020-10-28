@@ -1,4 +1,5 @@
 {{/* Databases */}}
+{{$tr := .User.ID}}
 {{ with and (eq .ReactionMessage.Author.ID 204255221017214977) .ReactionMessage.Embeds }} {{/* Checks for validity */}}
 	 {{ $embed := structToSdict (index . 0) }}
 	 {{ range $k, $v := $embed }}
@@ -70,10 +71,21 @@
 				{{$page =1}}
 			{{end}}
 		{{else if eq $action "📱"}}
-			{{range $i, $j := $inv}}
-				{{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+			{{/* Check RR ID */}}
+			{{$idR := $id}}
+			{{$rr := sdict}}
+			{{with (dbGet 0 "reroll_List")}}
+				{{$rr = sdict .Value}}
 			{{end}}
+			{{with ($rr.Get $user)}}
+				{{$idR = toInt .}}
+			{{end}}
+			{{if eq $tr $idR}}
+				{{range $i, $j := $inv}}
+					{{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+				{{end}}
 			{{sendDM (print $dm)}}
+		{{end}}
 		{{else}}
 			{{$del = true}}
 			{{$page = 1}}
