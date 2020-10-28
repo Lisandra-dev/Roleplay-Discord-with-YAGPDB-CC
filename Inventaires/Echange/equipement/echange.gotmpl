@@ -23,13 +23,6 @@
 {{$id := .user.ID }}
 {{if $n}}
 	{{$u = $n}}
-	{{$re := sdict}}
-	{{with (dbGet 0 "reroll_List")}}
-		{{$re = sdict .Value}}
-	{{end}}
-  {{if ($re.Get $u)}}
-	  {{$id = (toInt ($re.Get $u))}}
-  {{end}}
 	{{$idp := (toRune (lower $n))}}
 	{{range $idp}}
 		{{- $id = add $id . }}
@@ -152,7 +145,7 @@
 			{{$i = print "[BDG]" $i}}
 		{{end}}
 		{{$np = joinStr "" $ci " n'a plus de place dans l'inventaire pour " $i "."}}
-		{{if ge (len .CmdArgs) 4}}
+		{{if or (and $n (ge (len .CmdArgs) 4)) (and (not $n) (ge (len .CmdArgs 3)))}}
 			{{$q = toInt (index .CmdArgs 2)}}
 		{{end}}
 		{{with (dbGet $idt "équipement")}}
@@ -283,5 +276,4 @@
 "footer" (sdict "text" $fo "icon_url" "https://i.imgur.com/WoypxHH.png")
 "color" $col }}
 {{sendMessage nil (complexMessage "content" $ei "embed" $embed)}}
-{{sendMessage nil $embed}}
 {{deleteTrigger 1}}
