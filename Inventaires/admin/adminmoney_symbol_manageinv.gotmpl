@@ -8,6 +8,10 @@
 {{if $serverEco.Get "symbol"}}
 	{{$mon = $serverEco.Get "symbol"}}
 {{end}}
+{{$perso := sdict}}
+{{with (dbGet 0 "Personnage" )}}
+	{{$perso = sdict .Value}}
+{{end}}
 
 {{/* Databases */}}
 {{$serverEco := sdict}}
@@ -20,26 +24,22 @@
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
 {{if $name}}
-	{{$rr := sdict}}
-	{{with (dbGet 0 "reroll_List")}}
-		{{$rr = sdict .Value}}
+	{{with ($perso.Get $user)}}
+		{{$id = .IDR}}
 	{{end}}
+	{{$idR = $id}}
 	{{$user = title $name}}
-	{{$id = (toInt ($rr.Get $user))}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
 	{{- end}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}{{$hpS := sdict }}{{with (dbGet 0 "Personnage")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
-
-
+{{end}}
 
 {{/* Command Body */}}
 {{$flag := (reFind `\$(adminmoney|symbol|managecase)` .Message.Content )}}
 {{$mention := ""}}
-
 
 {{ if eq $flag "$adminmoney"}}
 	{{$secondflag := ""}}
@@ -63,6 +63,9 @@
             {{$user = $user.Username}}
 					{{end}}
 				{{end}}
+			{{end}}
+			{{with ($perso.Get $user)}}
+				{{$user = .Personnage}}
 			{{end}}
 			{{if ge (len .) 3}}
 				{{if not (userArg (index . 2))}}
@@ -140,8 +143,7 @@ Vous avez besoin de spécifier une valeur !
 	{{end}}
 	{{$serverEco.Set "symbol" $symbol}}
 	Le symbole de la monnaie est maintenant : `{{or $symbol "none"}}`
-
-{{else if eq $flag "$managecase"}}
+{{else if eq $flag "$manageinv"}}
 	{{$secondflag := ""}}
 	{{$target := ""}}
 	{{$item := ""}}
@@ -165,50 +167,26 @@ Vous avez besoin de spécifier une valeur !
 					{{end}}
 				{{end}}
 			{{end}}
-				{{if ge (len .) 3}}
-					{{$item = title (index . 2)}}
-					{{if ge (len .) 4}}
-            {{if not (userArg (index . 2))}}
-              {{$amount = or (toInt (index . 3)) 1}}
-            {{else}}
-              {{$item = title (index . 3)}}
-            {{end}}
-            {{if ge (len .) 5}}
-              {{$amount = or (toInt (index . 4)) 1}}
-            {{end}}
+			{{with ($perso.Get $user)}}
+				{{$user = .Personnage}}
+			{{end}}
+			{{if ge (len .) 3}}
+				{{$item = title (index . 2)}}
+				{{if ge (len .) 4}}
+					{{if not (userArg (index . 2))}}
+						{{$amount = or (toInt (index . 3)) 1}}
+					{{else}}
+						{{$item = title (index . 3)}}
+					{{end}}
+					{{if ge (len .) 5}}
+						{{$amount = or (toInt (index . 4)) 1}}
 					{{end}}
 				{{end}}
 			{{end}}
 		{{end}}
 	{{end}}
-	{{$typ := reFind `(?i)(chargeur|Sacoche|Sac à dos|Sacoche ceinture|bc|lc|cb|sf|cu|perforant|burst|soutien|altération|schéma|passif|force|résistance|Cognition|furtivité|vision|vitalité|guérison|poigne|épée|masse|pistolet|fusil|canon|\[A\])` $item}}
-	{{$typ = lower $typ}}
-
-	{{if eq $typ "chargeur"}}
-		{{$weap := reFind `(?i)(fusil|pistolet|canon)` $item}}
-		{{$item = print "[CHARGEUR] " (title (lower $weap))}}
-	{{else if eq $typ "sacoche" "Sac à dos" "Sacoche ceinture"}}
-		{{$item = print "[E] " (title $typ)}}
-	{{else if eq $typ "bc"}}
-		{{$item = "[C] Biocomposant"}}
-	{{else if eq $typ "lc" }}
-		{{$item = "[C] Liquide Cytomorphe"}}
-	{{else if eq $typ "cb" }}
-		{{$item = "[C] Cellule Bionotropique"}}
-	{{else if eq $typ "sf" }}
-		{{$item = "[C] Substrat Ferreux"}}
-	{{else if eq $typ "cu"}}
-		{{$item = "[C] Composant Universel"}}
-	{{else if eq $typ "perforant" "burst" "soutien" "altération" "schéma" "passif"}}
-		{{$item = print "[MODULE] " $typ}}
-	{{else if eq $typ "force" "résistance" "cognition" "furtivité" "vision" "vitalité" "guérison"}}
-		{{$item = print "[IMPLANT] " $typ}}
-	{{else if and (ne $typ "chargeur") (eq $typ "fusil" "pistolet" "poigne" "épée" "masse" "canon") (ne $typ "[A]")}}
-		{{$item = print "[A] " (title (lower $item)) }}
-	{{end}}
-	
 	{{if not $secondflag}}
-**Usage** : `$managecase -(add|remove|reset|clean|set) @/>cible item amount`
+		**Usage** : `$managecase -(add|remove|reset|clean|set) @/>cible item amount`
 	{{else}}
 		{{$userEco := sdict}}
 		{{if $target}}
@@ -216,7 +194,7 @@ Vous avez besoin de spécifier une valeur !
 			{{$userEco = sdict .Value}}
 		{{end}}
 	{{else}}
-**Usage** : `$managecase -(add|remove|reset|clean|set) @/>cible item amount`
+		**Usage** : `$managecase -(add|remove|reset|clean|set) @/>cible item amount`
 	{{end}}
 	{{if eq $secondflag "-clean"}}
 		{{if $target}}
@@ -248,7 +226,6 @@ Vous avez besoin de spécifier une valeur !
 	{{end}}
 
 	{{else if eq $secondflag "-add"}}
-
 		{{$items := sdict}}
 		{{with ($serverEco.Get "Items")}}
 			{{$items = sdict .}}
@@ -312,12 +289,9 @@ Vous avez besoin de spécifier une valeur !
 				{{dbSet $target "economy" $userEco}}
 			{{end}}
 		{{end}}
-	{{else}}
-	**Usage** :
-:white_small_square: __Money__ : `$adminmoney -(add|remove|reset|set) @/>cible amount`
-:white_small_square: __Symbol__ : `$symbol <symbol>`
-:white_small_square: __Manage inventory__ : `$managecase -(add|remove|set) @/>cible item amount`
-:white_small_square: __Reset inventory__ : `$managecase -reset @/>cible`
+	{{end}}
+{{else}}
+	{{print	"**Usage** :\n :white_small_square: __Money__ : `$adminmoney -(add|remove|reset|set) @/>cible amount`\n\n:white_small_square: __Symbol__ : `$symbol <symbol>`\n\n:white_small_square: __Manage inventory__ :`$managecase -(add|remove|set) @/>cible item amount`\n\n:white_small_square: __Reset inventory__ : `$managecase -reset @/>cible`"}}
 {{end}}
 
 {{/* Database Updates */}}
