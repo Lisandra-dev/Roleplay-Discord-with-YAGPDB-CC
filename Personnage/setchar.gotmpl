@@ -38,7 +38,7 @@
 		{{end}}
 		{{$user = title $user}}
 		
-		{{$perso.Set $user (sdict "ID" $id "IDR" $idR "shop" "n")}}
+		{{$perso.Set $user (sdict "Personnage" $user "ID" $id "IDR" $idR "shop" "n")}}
 		{{print $user "a bien été rajouté à la base de donnée !"}}
 		{{dbSet 0 "Personnage" $perso}}
 	{{else if eq (index .CmdArgs 0) "-rm"}}
@@ -49,8 +49,6 @@
 			{{with ($perso.Get $user)}}
 				{{$id = .IDR}}
 			{{end}}
-			{{$id = .}}
-			{{$id = $id.ID}}
 			{{$idR = $id}}
 			{{range $idp}}
 				{{- $id = add $id .}}
@@ -65,7 +63,7 @@
 			{{print $user " a bien été supprimé de la DB."}}
 			{{dbSet 0 "Personnage" $perso}}
 		{{end}}
-	{{else if eq (index .CmdArgs 0) "-name"}}
+	{{else if eq (index .CmdArgs 0) "-rename"}}
 		{{$user = (index .CmdArgs 1) }}
 		{{if (reFind `(\>\S*)` $user)}}
 			{{$user = title (reReplace ">" $user "")}}
@@ -73,17 +71,29 @@
 			{{with ($perso.Get $user)}}
 				{{$id = .IDR}}
 			{{end}}
-			{{$id = .}}
-			{{$id = $id.ID}}
 			{{$idR = $id}}
 			{{range $idp}}
 				{{- $id = add $id .}}
 			{{- end}}
-			{{dbSet 0 "Personnage" $perso}}
+		{{else if (reFind `<@!?\d{17,}>` $user)}}
+			{{$user = userArg $user}}
+			{{$user = (getMember $id).Nick}}
+			{{if eq (len $user) 0}}
+				{{$user = $user.Username}}
+			{{end}}
+		{{end}}
+		{{$pg := sdict}}
+		{{with ($perso.Get $user)}}
+			{{$pg = sdict .}}
+		{{end}}
+		{{name = (index .CmdArgs 2)}}
+		{{$pg.Set "Personnage" $name}}
+		{{$perso.Set $pg}}
+		{{dbSet 0 "Personnage" $perso}}
 		{{end}}
 	{{else}}
-		{{print "Usage : \n `$set (-new|rm) >@cible (@joueur) \n La deuxième mention est à préciser UNIQUEMENT pour les reroll. "}}
+		{{print "Usage : \n `$set (-new|rm|rename) >@cible \n Pour un new avec un reroll, il faut absolument mentionner le joueur du Reroll !! "}}
 	{{end}}
 {{else}}
-	{{print "Usage : \n `$set (-new|rm) >@cible (@joueur) \n La deuxième mention est à préciser UNIQUEMENT pour les reroll. "}}
+	{{print "Usage : \n `$set (-new|rm|rename) >@cible \n Pour un new avec un reroll, il faut absolument mentionner le joueur du Reroll !! "}}
 {{end}}
