@@ -1,0 +1,57 @@
+{{$n := (reFind `((\s>\S*[^<\@(\!?)\d+)\s]\s>\S*)|\s>\S*)` .Message.Content)}}
+{{$n = reReplace `>` $n ""}}
+{{$n = reReplace `\s` $n ""}}
+{{$u := .Member.Nick}}
+{{$id := .User.ID}}
+{{$d := ""}}
+{{if $n}}
+	{{$u = $n}}
+	{{$idp := (toRune (lower $n))}}
+	{{range $idp}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $u) 0}}
+	{{$u = .User.Username}}
+{{end}}
+{{$perso := sdict}}
+{{with (dbGet 0 "Personnage")}}
+  {{$perso = sdict .Value}}
+{{end}}
+{{with ($perso.Get $u)}}{{$u = .Personnage}}{{end}}
+{{$userEco := sdict}}
+{{with (dbGet $id "economy")}}
+	{{$userEco = sdict .Value}}
+{{end}}
+{{$serverEco := sdict}}
+{{with (dbGet .Server.ID "economy")}}
+	{{$serverEco = sdict .Value}}
+{{end}}
+{{/* Inventory */}}
+{{$inv := sdict}}
+{{if ($userEco.Get "Inventory")}}
+	{{$inv = sdict ($userEco.Get "Inventory")}}
+{{end}}
+
+{{if .CmdArgs}}
+  {{$i := index .CmdArgs 0}}
+  {{$q := 1}}
+  {{if or (and $n (ge (len .CmdArgs) 3)) (and (not $n) (ge (len .CmdArgs) 2))}}
+    {{$q = (toInt .CmdArgs 1)}}
+  {{end}}
+  {{if not ($inv.Get $i)}}
+    {{$d = "Objet introuvable."}}
+  {{else if le ($inv.Get $i) $q}}
+    {{$d = "La quantité que vous voulez utiliser est trop élevée !"}}
+  {{else}}
+    {{$inv.Set $i (sub ($inv.Get $i) $q)}}
+    {{if le ($inv.Get $i) 0}}
+      {{$inv.Del $i}}
+    {{end}}
+    {{$d = print $u " a utilisé " $q " " $i "."}}
+  {{end}}
+{{end}}
+{{$idM := sendMessageRetID nil $d}}
+{{$cat := .Channel.ParentID}}
+{{if eq $cat 764489140972421131 764489022470225961 764488934520127498 764488859299348491 764489250582298654 764489469230841857}}
+  {{deleteMessage nil $idM 180}}
+{{end}}

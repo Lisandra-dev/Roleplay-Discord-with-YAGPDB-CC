@@ -12,6 +12,8 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
+{{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
+{{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
 
 {{/* Databases */}}
 {{$store := (dbGet .Server.ID "store").Value}}
@@ -31,7 +33,6 @@
 {{end}}
 
 {{/* Command Body */}}
-{{if eq $store "open"}}
 	{{$items := sdict}}
 	{{with ($serverEco.Get "Items")}}
 		{{$items = sdict .}}
@@ -106,11 +107,4 @@
 	{{end}}
 	{{dbSet .Server.ID "economy" $serverEco}}
 	{{dbSet $id "economy" $userEco}}
-{{else}}
-{{$user = joinStr " " "Achat impossible | " (title $user)}}
-	{{sendMessage nil (cembed
-		"author" (sdict "name" $user "icon_url" $img)
-		"description" "La boutique est actuellement indisponible ! Vous ne pouvez rien acheter. "
-		"color" 0x8CBAEF)}}
-{{end}}
 {{deleteTrigger 1}}

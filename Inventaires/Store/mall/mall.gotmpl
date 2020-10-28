@@ -9,8 +9,8 @@
 		{{$symbol = $serverEco.Get "symbol"}}
 	{{end}}
 	{{$desc := ""}}
-	{{$name := "Marchand"}}
-	{{$icon := "https://i.imgur.com/u80Pg6O.png"}}
+	{{$name := "Centre Commercial"}}
+	{{$icon := "https://i.imgur.com/sA08XMv.png"}}
 	{{$thumb := "https://i.imgur.com/ACrlyqV.png"}}
 
 	{{/* Store/Shop */}}
@@ -18,39 +18,32 @@
 	{{$fields := cslice}}
 	{{$footer := ""}}
 	{{$items := sdict}}
-	{{if or (eq $store "open") (hasRoleName "Staff") }}
-		{{if ($serverEco.Get "Items")}}
-			{{$items = sdict ($serverEco.Get "Items")}}
-		{{end}}
-		{{$desc = "La boutique est actuellement vide"}}
-		{{$footer = "Page 1 / 1"}}
-		{{if $items}}
-			{{range $k,$v := $items}}
-				{{$item := $k}}
-				{{$bprice := $v.buyprice}}
-				{{$sprice := $v.sellprice}}
-				{{$stock := $v.stock}}
-				{{$doc := $v.desc}}
-				{{$rare := $v.rare}}
-				{{if ne (str $stock) "♾️"}}
-					{{$stock = $stock}}
-					{{if eq $stock 0}}
-						{{$stock = "**En rupture...**"}}
-					{{end}}
+	{{if ($serverEco.Get "Items")}}
+		{{$items = sdict ($serverEco.Get "Items")}}
+	{{end}}
+	{{$desc = "La boutique est actuellement vide"}}
+	{{$footer = "Page 1 / 1"}}
+	{{if $items}}
+		{{range $k,$v := $items}}
+			{{$item := $k}}
+			{{$bprice := $v.buyprice}}
+			{{$sprice := $v.sellprice}}
+			{{$stock := $v.stock}}
+			{{$doc := $v.desc}}
+			{{$rare := $v.rare}}
+			{{if ne (str $stock) "♾️"}}
+				{{$stock = $stock}}
+				{{if eq $stock 0}}
+					{{$stock = "**En rupture...**"}}
 				{{end}}
-				{{$svente := $symbol }}
-				{{if eq (toString $sprice) "Invendable"}}
-					{{$svente = ""}}
-				{{end}}
-				{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Rareté : " $rare "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
-				{{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
 			{{end}}
+			{{$svente := $symbol }}
+			{{if eq (toString $sprice) "Invendable"}}
+				{{$svente = ""}}
+			{{end}}
+			{{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Rareté : " $rare "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
+			{{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
 		{{end}}
-	{{else}}
-		{{$desc = "Le magasin est actuellement fermé..."}}
-		{{$name = " Fermeture"}}
-		{{$icon = (joinStr "" "https://cdn.discordapp.com/icons/" (toString .Guild.ID) "/" .Guild.Icon ".png")}}
-		{{$thumb = "https://i.imgur.com/FW1ZJDk.png"}}
 	{{end}}
 
 	{{/* hell starts */}}

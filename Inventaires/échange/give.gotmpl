@@ -5,7 +5,12 @@
 {{$id := .user.ID }}
 {{$au := ""}}
 {{$fo := ""}}
-
+{{$t := ""}}
+{{$ci := ""}}
+{{$mon := ""}}
+{{$invt := ""}}
+{{$d := ""}}
+{{$col := 0x5b60b7}}
 {{if $n}}
 	{{$u = $n}}
 	{{$idp := (toRune (lower $n))}}
@@ -19,18 +24,21 @@
 {{with (dbGet 0 "Personnage")}}
   {{$perso = sdict .Value}}
 {{end}}
-{{$userEco := sdict}}
+{{$uEco := sdict}}
 {{with (dbGet $id "economy")}}
-	{{$userEco = sdict .Value}}
+	{{$uEco = sdict .Value}}
 {{end}}
 {{$serverEco := sdict}}
 {{with (dbGet .Server.ID "economy")}}
 	{{$serverEco = sdict .Value}}
 {{end}}
+{{if $serverEco.Get "symbol"}}
+  {{$mon = $serverEco.Get "symbol"}}
+{{end}}
 {{/* Inventory */}}
 {{$inv := sdict}}
-{{if ($userEco.Get "Inventory")}}
-	{{$inv = sdict ($userEco.Get "Inventory")}}
+{{if ($uEco.Get "Inventory")}}
+	{{$inv = sdict ($uEco.Get "Inventory")}}
 {{end}}
 {{if .CmdArgs}}
   {{$idt := .User.ID}}
