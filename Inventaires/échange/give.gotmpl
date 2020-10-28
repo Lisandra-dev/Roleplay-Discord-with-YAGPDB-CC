@@ -1,0 +1,109 @@
+{{$n := (reFind `((\s>\S*[^<\@(\!?)\d+)\s]\s>\S*)|\s>\S*)` .Message.Content)}}
+{{$n = reReplace `>` $n ""}}
+{{$n = reReplace `\s` $n ""}}
+{{$u := .Member.Nick}}
+{{$id := .user.ID }}
+{{$au := ""}}
+{{$fo := ""}}
+
+{{if $n}}
+	{{$u = $n}}
+	{{$idp := (toRune (lower $n))}}
+	{{range $idp}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $u) 0}}
+	{{$u = .User.Username}}
+{{end}}
+{{$perso := sdict}}
+{{with (dbGet 0 "Personnage")}}
+  {{$perso = sdict .Value}}
+{{end}}
+{{$userEco := sdict}}
+{{with (dbGet $id "economy")}}
+	{{$userEco = sdict .Value}}
+{{end}}
+{{$serverEco := sdict}}
+{{with (dbGet .Server.ID "economy")}}
+	{{$serverEco = sdict .Value}}
+{{end}}
+{{/* Inventory */}}
+{{$inv := sdict}}
+{{if ($userEco.Get "Inventory")}}
+	{{$inv = sdict ($userEco.Get "Inventory")}}
+{{end}}
+{{if .CmdArgs}}
+  {{$idt := .User.ID}}
+  {{if (reFind `(#\S*)` (index .CmdArgs 0))}}
+    {{$ci = title (reReplace `#` (index .CmdArgs 0) "")}}
+    {{with ($perso.Get $ci)}}{{$idt = .IDR}}{{end}}
+    {{$idC := (toRune (lower $t))}}
+    {{range $idC}}
+      {{- $idt = add $idt .}}
+    {{- end}}
+  {{else if (userArg (index .CmdArgs 0))}}
+    {{with (userArg (index .CmdArgs 0))}}
+      {{$idt = .ID}}
+      {{$ci = (getMember $idt).Nick}}
+      {{if eq (len $ci) 0}}
+        {{$ci = $t.Username}}
+      {{end}}
+    {{end}}
+  {{end}}
+  {{$tEco := sdict}}
+  {{with (dbGet $idt "economy")}}
+    {{$tEco = sdict .Value}}
+  {{end}}
+  {{$ivt := sdict}}
+  {{with ($tEco.Get "Inventory")}}
+    {{$ivt = sdict .}}
+  {{end}}
+  {{with ($perso.Get $ci)}}{{$ci = .Personnage}}{{end}}
+  {{with ($perso.Get $u)}}{{$u = .Personnage}}{{end}}
+  {{$au = joinStr " " $u "donne"}}
+  {{$fo = joinStr " " "A" $ci }}
+
+  {{$args := index .CmdArgs 1}}
+  {{if ne (toInt $args) 0}}
+    {{$value := toInt $args}}
+    {{$bal := toInt ($uEco.Get "balance")}}
+    {{if gt $value $bal}}
+      {{$d = "Tu ne peux pas donner autant !"}}
+    {{else}}
+      {{$newbal := add $value (toInt ($tEco.Get "balance"))}}
+      {{$oldbal := sub $bal $value }}
+      {{$d = joinStr " " $value $mon "\n\n" $ci "a maintenant" $newbal $mon "sur son compte et"  $u $oldbal $mon}}
+      {{$uEco.Set "balance" $oldbal}}
+      {{$tEco.Set "balance" $newbal}}
+      {{dbSet $idt "economy" $tEco}}
+      {{dbSet $id "economy" $uEco}}
+      {{$au = joinStr " " $u "donne"}}
+      {{$fo = joinStr " " "À" $ci }}
+    {{end}}
+  {{else if (eq (toInt $args) 0)}}
+    {{$q := 1}}
+    {{$i = title (lower $args)}}
+    {{if or (and $n (ge (len .CmdArgs) 4)) (and (not $n) (ge (len .CmdArgs 3)))}}
+      {{$q = toInt (index .CmdArgs 2)}}
+    {{end}}
+    {{if not ($inv.Get $i)}}
+      {{$d = "Objet introuvable."}}
+    {{else if gt $q ($inv.Get $i)}}
+      {{$d = print "Vous ne pouvez pas donner autant de " $i "."}}
+    {{else}}
+      {{$invt.Set $i (add ($invt.Get $i) $q)}}
+      {{$inv.Set $i (sub ($inv.Get $i) $q)}}
+      {{if le ($inv.Get $i) 0}}
+        {{$inv.Del $i}}
+      {{end}}
+      {{$d = print $q " " $i}}
+    {{end}}
+  {{end}}
+{{end}}
+{{$embed := cembed
+"author" (sdict "name" $au "icon_url" "https://i.imgur.com/DwoqSFH.png")
+"description" $d
+"footer" (sdict "text" $fo "icon_url" "https://i.imgur.com/WoypxHH.png")
+"color" $col }}
+{{sendMessage nil (complexMessage "content" "" "embed" $embed)}}
+{{deleteTrigger 1}}
