@@ -1,39 +1,38 @@
 {{/* Databases */}}
 {{$name := reFind `(\>\S*)` .Message.Content}}
 {{$name = reReplace `>` $name ""}}
+
 {{$user := .Member.Nick}}
 {{$id := .User.ID }}
-{{$perso := sdict}}
-{{with (dbGet 0 "Personnage" )}}
-	{{$perso = sdict .Value}}
-{{end}}
 {{if $name}}
-	{{$user = title $name}}
+	{{$user = $name}}
 	{{$idperso := (toRune (lower $name))}}
 	{{range $idperso}}
 		{{- $id = add $id . }}
 	{{- end}}
+	{{dbSetExpire $id "rerollName" $name 3600}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}
-{{with ($perso.Get $user)}}{{$user= .Personnage}}{{end}}
+{{end}}{{$hpS := sdict }}{{with (dbGet 0 "Personnage")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get $user)}}{{$user = .Personnage}}{{end}}
 
 
 {{$userEco := sdict}}
 {{with (dbGet $id "economy")}}
 	{{$userEco = sdict .Value}}
 {{end}}
+
 {{$serverEco := sdict}}
 {{with (dbGet .Server.ID "economy")}}
 	{{$serverEco = sdict .Value}}
 {{end}}
+
 {{/* Inventory */}}
 {{$inv := sdict}}
 {{if ($userEco.Get "Inventory")}}
 	{{$inv = sdict ($userEco.Get "Inventory")}}
 {{end}}
 
-{{$desc := "Ton Inventaire est vide ! Si le shop est ouvert, tu peux aller acheter des trucs !"}}
+{{$desc := "Ton inventaire est vide..."}}
 {{$footer := print "Page: 1 / 1 | #" $id }}
 {{$end :=""}}
 {{$cslice := cslice}}
@@ -51,7 +50,7 @@
 		{{$page = or (toInt (index .CmdArgs $index)) 1}}
 		{{$page = toString $page}}
 	{{end}}
-		{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+	{{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
 	{{$footer = print "Page: " $page " / " $end " | #" $id }}
 	{{$start := (mult 10 (sub $page 1))}}
 	{{$stop := (mult $page 10)}}
@@ -65,19 +64,16 @@
 				{{$data = (print $data "\n" (index $cslice .))}}
 			{{else}}
 				{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+				{{$footer = print "Page: " $page " / " $end " | #" $id }}	
 			{{end}}
 		{{else}}
 			{{$data = "Il n'y a rien ici..."}}
-{{$footer = print "Page: " $page " / " $end " | #" $id }}
+			{{$footer = print "Page: " $page " / " $end " | #" $id }}
 		{{end}}
-			{{$desc = print "" $data ""}}
+		{{$desc = print "" $data ""}}
 	{{end}}
-
-{{/* hell ends */}}
 {{end}}
-{{$author := (joinStr " " "Inventaire de :" (title $user))}}
-
+{{$author := (joinStr " " "Inventaire de :" $user)}}
 {{$id := sendMessageRetID nil (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
-{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
+{{addMessageReactions nil $id "◀️" "▶️" "🗑️" "📱"}}
 {{deleteTrigger 1}}
