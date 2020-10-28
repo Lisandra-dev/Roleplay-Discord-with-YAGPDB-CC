@@ -28,7 +28,7 @@
 	{{$id := reFind `(\#\S*)` $embed.Footer.Text}}
 	{{$id = (toInt (joinStr "" (split $id "#")))}}
 	{{$user := ""}}
-	{{if eq (toInt (dbGet (toInt $id) "rerollName").Value) (toInt $id)}}
+	{{if (dbGet (toInt $id) "rerollName")}}
 		{{$user = (dbGet (toInt $id) "rerollName").Value}}
 	{{else}}
 		{{$user = (getMember $id).Nick}}
