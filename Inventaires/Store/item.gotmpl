@@ -23,7 +23,7 @@
 			{{$name = print "[CHARGEUR] " $name}}
 		{{end}}
 		{{if ge (len .) 3}}
-			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rbuy|rsell|rename)` (index . 2))}}
+			{{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rename)` (index . 2))}}
 		{{end}}
 	{{end}}
 {{end}}
@@ -180,13 +180,13 @@
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-sii"}}
 				{{$sii := (index .CmdArgs 3)}}
-				{{$items.Set $name $i}}
 				{{$i.Set "sii" $sii}}
+				{{$items.Set $name $i}}
 				{{$serverEco.Set "Items" $items}}
 			{{else if eq $flag2 "-desc"}}
 				{{$desc := (index .CmdArgs 3)}}
-				{{$items.Set $name $i}}
 				{{$i.Set "desc" $desc}}
+				{{$items.Set $name $i}}
 				{{$serverEco.Set "Items" $items}}
 `			{{else if eq $flag2 "-rare"}}
 				{{$rare := "⭐"}}
