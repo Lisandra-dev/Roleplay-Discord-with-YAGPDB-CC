@@ -1,0 +1,53 @@
+{{$vend := 771465088196542465}}
+{{if .CmdArgs}}
+  {{$arg = index .CmdArgs 1}}
+  {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
+  {{$name = joinStr "" (split $name ">")}}
+  {{$user := .Member.Nick}}
+  {{$id := .User.ID }}
+  {{if $name}}
+    {{$user = $name}}
+    {{$idperso := (toRune (lower $name))}}
+    {{range $idperso}}
+      {{- $id = add $id . }}
+    {{- end}}
+  {{else if (userArg (index .CmdArgs 0))}}
+    {{with (userArg (index .CmdArgs 0))}}
+      {{$id = .ID}}
+      {{$user = (getMember $id).Nick}}
+      {{if eq (len $user) 0}}
+        {{$user = .Username}}
+      {{end}}
+    {{end}}
+  {{end}}
+  {{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
+  {{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
+
+  {{if eq $arg "-add"}}
+    {{if not (dbGet $id "Vendeur")}}
+      {{dbSet $id "Vendeur" (print "Boutique de " $user)}}
+      {{print $user " peut maintenant ouvrir et gérer sa boutique avec la commande `$`"}}
+    {{else}}
+      {{print $user " est déjà un vendeur !"}}
+    {{end}}
+  {{else if eq $arg "-rm" "-remove"}}
+    {{if (dbGet $id "Vendeur")}}
+      {{dbDel $id "Vendeur"}}
+      {{print $user " n'est plus un vendeur !"}}
+    {{else}}
+      {{print $user " n'est pas un vendeur."}}
+    {{end}}
+  {{end}}
+  {{else if eq $arg "-rm item" "-remove item" "-delete"}}
+    {{$item = title (index .CmdArgs 2)}}
+    {{$store := sdict}}
+    {{with (dbGet $id "market")}}
+      {{$store = sdict .Value}}
+    {{end}}
+    {{if ($store.Get $item)}}
+      {{$store.Del $item}}
+    {{end}}
+    {{print $user "," .User.Mention " a retiré " $item " de ta boutique."}}
+  {{else}}
+    {{print "Usage : \n `$adminmarket @>cible -(add|rm|delete) (item) \n\t - Le delete permet de supprimer un objet de la boutique de la cible ! Vous devez donc indiquer après les autres commandes.\n\t - Le `-add` permet de rajouter une clé d'identifiant dans la base de donnée de YAGPD ! \n\t - `-rm` permet de retirer le droit de vendre à un joueur, tout simplement.   "}}
+{{end}}
