@@ -1,0 +1,81 @@
+{{/* User Variable */}}
+{{$icon := "https://i.imgur.com/9HnsF14.png"}}
+{{$name := reFind `(\>\S*)` .Message.Content}}
+{{$name = joinStr "" (split $name ">")}}
+{{$user := .Member.Nick}}
+{{$id := .User.ID }}
+{{if $name}}
+	{{$user = $name}}
+	{{$idperso := (toRune (lower $name))}}
+	{{range $idperso}}
+		{{- $id = add $id . }}
+	{{- end}}
+{{else if eq (len $user) 0}}
+	{{$user = .User.Username}}
+{{end}}
+{{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
+{{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
+{{$store := (dbGet .Server.ID "store").Value}}
+{{$userEco := sdict}}
+{{with (dbGet $id "economy")}}
+	{{$userEco = sdict .Value}}
+{{end}}
+{{$serverEco := sdict}}
+
+{{with (dbGet .Server.ID "economy")}}
+	{{$serverEco = sdict .Value}}
+{{end}}
+
+{{$symbol := ""}}
+{{if $serverEco.Get "symbol"}}
+	{{$symbol = $serverEco.Get "symbol"}}
+{{end}}
+{{if .CmdArgs}}
+  {{$t := .User.ID}}
+  {{$ut := .User.Username}}
+  {{$rt := reFind `(\#\S*)` (index .CmdArgs 0) }}
+  {{$rt = joinStr "" (split $name "#")}}
+  {{if $rt}}
+    {{$ut = $rt}}
+    {{$idt := (toRune (lower $rt))}}
+    {{with ($perso.Get $user)}}
+      {{$t = .IDR}}
+    {{end}}
+    {{range $idt}}
+      {{- $t = add $t . }}
+    {{- end}}
+    {{$ut = title $ut}}
+  {{else if (userArg (index .CmdArgs 0))}}
+    {{with (userArg (index .CmdArgs 0))}}
+      {{$t = .ID}}
+      {{ut = (getMember $t).Nick}}
+      {{if eq (len $ut) 0}}
+        {{$ut = .Username}}
+      {{end}}
+    {{end}}
+  {{end}}
+  {{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
+  {{$store := sdict}}
+  {{with (dbGet $id "market")}}
+    {{$store = sdict .Value}}
+  {{end}}
+  {{$bal := (toInt ($userEco.Get "balance"))}}
+  {{if le $bal (toInt 0)}}
+    {{$bal = 0}}
+  {{end}}
+  {{$inv := sdict}}
+  {{with ($userEco.Get "Inventory")}}
+    {{$inv = sdict .}}
+  {{end}}
+  {{$q := 1}}
+  {{if or (and (not $rt) (ge (len .CmdArgs) 2)) (and $rt (ge (len .CmdArgs 3)))}}
+    {{$item = index .CmdArgs 1}}
+    {{if or (and (not $rt) (ge (len .CmdArgs) 3)) (and $rt (ge (len .CmdArgs 4)))}}
+      {{$q = index .CmdArgs 2}}
+  {{if not $item}}
+    {{print "L'objet n'existe pas !"}}
+  {{else if eq ((dbGet "Etat_Boutique").Value) "closed"}}
+    {{print "La boutique de " $ut " est fermée."}}
+  {{else if not (dbGet $id "Vendeur")}}
+    {{print $ut " n'est pas un vendeur."}}
+  {{else if le $bal (toInt (mult .buyprice $amount))}}

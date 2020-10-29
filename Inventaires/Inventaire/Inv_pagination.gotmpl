@@ -26,42 +26,42 @@
 	{{ end }}
 
 	{{ if and (in $validEmojis $action) $isValid $page }}
-	{{$id := reFind `(\#\S*)` $embed.Footer.Text}}
-	{{$id = (toInt (joinStr "" (split $id "#")))}}
-	{{$user := ""}}
-	{{if (dbGet (toInt $id) "rerollName")}}
-		{{$user = (dbGet (toInt $id) "rerollName").Value}}
-	{{else}}
-		{{$user = (getMember $id).Nick}}
-		{{if eq (len $user) 0}}
-			{{$user = $.User.Username}}
+		{{$id := reFind `(\#\S*)` $embed.Footer.Text}}
+		{{$id = (toInt (joinStr "" (split $id "#")))}}
+		{{$user := ""}}
+		{{if (dbGet (toInt $id) "rerollName")}}
+			{{$user = (dbGet (toInt $id) "rerollName").Value}}
+		{{else}}
+			{{$user = (getMember $id).Nick}}
+			{{if eq (len $user) 0}}
+				{{$user = $.User.Username}}
+			{{end}}
 		{{end}}
-	{{end}}
 
-	{{$userEco := sdict}}
-	{{with (dbGet $id "economy")}}
-		{{$userEco = sdict .Value}}
-	{{end}}
-	{{$serverEco := sdict}}
-	{{with (dbGet $.Server.ID "economy")}}
-		{{$serverEco = sdict .Value}}
-	{{end}}
-	{{/* Inventory */}}
-	{{$inv := sdict}}
-	{{if ($userEco.Get "Inventory")}}
-		{{$inv = sdict ($userEco.Get "Inventory")}}
-	{{end}}
+		{{$userEco := sdict}}
+		{{with (dbGet $id "economy")}}
+			{{$userEco = sdict .Value}}
+		{{end}}
+		{{$serverEco := sdict}}
+		{{with (dbGet $.Server.ID "economy")}}
+			{{$serverEco = sdict .Value}}
+		{{end}}
+		{{/* Inventory */}}
+		{{$inv := sdict}}
+		{{if ($userEco.Get "Inventory")}}
+			{{$inv = sdict ($userEco.Get "Inventory")}}
+		{{end}}
 
-	{{$desc := "Ton inventaire est vide..."}}
-	{{$footer := print "Page: 1 / 1 | #" $id }}
-	{{$dm := ""}}
-	{{$cslice := cslice}}
-	{{range $k,$v := $inv}}
-		{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v** : [%v]" $k $v)}}
-	{{end}}
-	{{$author := (joinStr " " "Inventaire de :" $user)}}
+		{{$desc := "Ton inventaire est vide..."}}
+		{{$footer := print "Page: 1 / 1 | #" $id }}
+		{{$dm := ""}}
+		{{$cslice := cslice}}
+		{{range $k,$v := $inv}}
+			{{$cslice = $cslice.Append (printf " :white_small_square: ** %-10v** : [%v]" $k $v)}}
+		{{end}}
+		{{$author := (joinStr " " "Inventaire de :" $user)}}
 	
-	{{/* Pagination */}}
+		{{/* Pagination */}}
 		{{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
 		{{ if eq $action "▶️" }}
 			{{ $page = add $page 1 }} {{/* Update page according to emoji */}}
@@ -84,8 +84,8 @@
 				{{range $i, $j := $inv}}
 					{{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
 				{{end}}
-			{{sendDM (print $dm)}}
-		{{end}}
+				{{sendDM (print $dm)}}
+			{{end}}
 		{{else}}
 			{{$del = true}}
 			{{$page = 1}}

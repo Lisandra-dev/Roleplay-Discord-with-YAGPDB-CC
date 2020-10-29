@@ -1,0 +1,109 @@
+{{/* Databases */}}
+{{$symbol := ""}}
+{{if $serverEco.Get "symbol"}}
+  {{$symbol = $serverEco.Get "symbol"}}
+{{end}}
+{{$desc := "La boutique n'existe pas."}}
+{{$bn := "Erreur"}}
+{{$icon := "https://i.imgur.com/sA08XMv.png"}}
+{{$thumb := "https://i.imgur.com/ACrlyqV.png"}}
+
+{{if .CmdArgs}}
+  {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
+  {{$name = joinStr "" (split $name ">")}}
+  {{$user := .Member.Nick}}
+  {{$id := .User.ID }}
+  {{if $name}}
+    {{$user = $name}}
+    {{$idperso := (toRune (lower $name))}}
+    {{range $idperso}}
+      {{- $id = add $id . }}
+    {{- end}}
+    {{dbSetExpire $id "rerollShop" $name 3600}}
+  {{else if (userArg (index .CmdArgs 0))}}
+    {{with (userArg (index .CmdArgs 0))}}
+      {{$id = .ID}}
+      {{$user = (getMember $id).Nick}}
+      {{if eq (len $user) 0}}
+        {{$user = .Username}}
+      {{end}}
+    {{end}}
+  {{end}}
+  {{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
+  {{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
+  {{if eq ((dbGet $id "Etat_Boutique").Value) "closed"}}
+    {{$desc = "La boutique est actuellement fermée."}}
+    {{$bn = (dbGet $id "Vendeur").Value}}
+  {{else if eq ((dbGet $id "Etat_Boutique").Value) "open"}}
+    {{$store := sdict}}
+    {{with (dbGet $id "market")}}
+      {{$store = sdict .Value}}
+    {{end}}
+    {{$bn = (dbGet $id "Vendeur").Value}}
+
+    {{/* Store/Shop */}}
+    {{$cslice := cslice}}
+    {{$fields := cslice}}
+    {{$footer := ""}}
+
+    {{$desc = "La boutique est actuellement vide."}}
+    {{$footer = "Page 1 / 1 | #" $id}}
+    {{if $store}}
+      {{range $k,$v := $items}}
+        {{$item := $k}}
+        {{$bprice := $v.buyprice}}
+        {{$sprice := $v.sellprice}}
+        {{$stock := $v.stock}}
+        {{$doc := $v.desc}}
+        {{$rare := $v.rare}}
+        {{if ne (str $stock) "♾️"}}
+          {{$stock = $stock}}
+          {{if le $stock 0}}
+            {{$stock = "**En rupture...**"}}
+          {{end}}
+        {{end}}
+        {{$svente := $symbol }}
+        {{if eq (toString $sprice) "Invendable"}}
+          {{$svente = ""}}
+        {{end}}
+        {{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
+        {{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
+      {{end}}
+    {{end}}
+
+    {{/* hell starts */}}
+    {{$page := ""}}
+    {{$start := ""}}
+    {{$stop := ""}}
+    {{$end := ""}}
+    {{if $cslice}}
+      {{$page = "1"}}{{if .CmdArgs}}{{$page = toInt (index .CmdArgs 0)}}{{$page = toString $page}}{{end}}
+      {{$start = (mult 10 (sub $page 1))}}
+      {{$stop = (mult $page 10)}}
+      {{$end = roundCeil (div (toFloat (len $cslice)) 10)}}
+      {{$data := ""}}
+      {{if ge $stop (len $cslice)}}
+        {{$stop = (len $cslice)}}
+      {{end}}
+      {{if not (eq $page "0")}}
+        {{if and (le $start $stop) (ge (len $cslice) $start) (le $stop (len $cslice))}}
+          {{range (seq $start $stop)}}
+            {{$fields = $fields.Append (index $cslice .)}}
+          {{end}}
+          {{$footer = (print "Page: " $page "/" $end "| #" $id)}}
+        {{else}}
+          {{$desc = "Cette page n'existe pas"}}
+          {{$footer = (print "Page: " $page "/" $end "| #" $id)}}
+        {{end}}
+      {{else}}
+        {{$desc = "Cette page n'existe pas"}}
+        {{$footer = (print "Page: " $page "/" $end "| #" $id)}}
+      {{end}}
+    {{end}}
+    {{/* hell ends */}}
+  {{end}}
+{{end}}
+
+{{$id := sendMessageRetID nil (cembed "author" (sdict "bn" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
+{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
+{{deleteTrigger 1}}

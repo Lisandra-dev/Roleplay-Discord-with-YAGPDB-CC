@@ -1,4 +1,7 @@
-{{$vend := 771465088196542465}}
+{{$perso := sdict}}
+{{with (dbGet 0 "Personnage" )}}
+	{{$perso = sdict .Value}}
+{{end}}
 {{if .CmdArgs}}
   {{$arg = index .CmdArgs 1}}
   {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
@@ -6,6 +9,9 @@
   {{$user := .Member.Nick}}
   {{$id := .User.ID }}
   {{if $name}}
+    {{with ($perso.Get $user)}}
+      {{$id = .IDR}}
+    {{end}}
     {{$user = $name}}
     {{$idperso := (toRune (lower $name))}}
     {{range $idperso}}
@@ -20,7 +26,6 @@
       {{end}}
     {{end}}
   {{end}}
-  {{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
   {{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
 
   {{if eq $arg "-add"}}
