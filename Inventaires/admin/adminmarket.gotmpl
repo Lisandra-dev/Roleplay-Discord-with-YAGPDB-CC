@@ -26,13 +26,15 @@
   {{if eq $arg "-add"}}
     {{if not (dbGet $id "Vendeur")}}
       {{dbSet $id "Vendeur" (print "Boutique de " $user)}}
-      {{print $user " peut maintenant ouvrir et gérer sa boutique avec la commande `$`"}}
+      {{dbSet $id "Etat_Boutique" "closed"}}
+      {{print $user " peut maintenant ouvrir et gérer sa boutique avec la commande `$marchand`"}}
     {{else}}
       {{print $user " est déjà un vendeur !"}}
     {{end}}
   {{else if eq $arg "-rm" "-remove"}}
     {{if (dbGet $id "Vendeur")}}
       {{dbDel $id "Vendeur"}}
+      {{dbDel $id "Etat_Boutique"}}
       {{print $user " n'est plus un vendeur !"}}
     {{else}}
       {{print $user " n'est pas un vendeur."}}

@@ -21,109 +21,143 @@
 {{$flag := ""}}
 {{$flag2 := ""}}
 {{$name := ""}}
-{{if .CmdArgs}}
-  {{if ge (len .CmdArgs) 2}}
-    {{$flag = (reFind `\-(add|edit|delete|name|open|close)` (index .CmdArgs 0))}}
-    {{$item = title (index .CmdArgs 1)}}
-    {{if ge (len .CmdArgs) 3}}
-      {{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rename)` (index .CmdArgs 2))}}
-    {{end}}
-  {{end}}
-  {{if eq $flag "-add"}}
-    {{$bprice := ""}}
-    {{$sprice := ""}}
-    {{$stock := ""}}
-    {{$desc := ""}}
-    {{$sii := true}}
-    {{$rare := "⭐"}}
-    {{with .CmdArgs}}
-    {{if ge (len .) 2}}
-      {{$bprice = toInt (index . 2)}}
-      {{if ge (len .) 3}}
-        {{if eq (index . 3) "none" "0" }}
-          {{$sprice = "Invendable"}}
-        {{else}}
-          {{$smin = toInt (index . 3)}}
-        {{end}}
-        {{if ge (len .) 4}}
-          {{$stock = toInt (index . 4)}}
-          {{if ge $stock 10}}
-            {{$stock = 10}}
-          {{else if le $stock 0}}
-            {{$stock = "En rupture"}}
-          {{if ge (len .) 5}}
-            {{if (reFind `true|false` (index . 5))}}
-              {{$sii = (reFind `true|false` (index . 5))}}
-              {{if eq $sii "true"}}
-                {{$sii = true}}
-              {{else}}
-                {{$sii = false}}
-              {{end}}
-            {{end}}
-            {{if ge (len .) 6}}
-              {{$desc = (index . 6)}}
-            {{end}}
-          {{end}}
-        {{end}}
+{{if (dbGet $id "Vendeur")}}
+  {{if .CmdArgs}}
+    {{if ge (len .CmdArgs) 2}}
+      {{$flag = (reFind `\-(add|edit|delete|name|open|close)` (index .CmdArgs 0))}}
+      {{$item = title (index .CmdArgs 1)}}
+      {{if ge (len .CmdArgs) 3}}
+        {{$flag2 = (reFind `\-(price|sell|stock|sii|desc|rare|rename)` (index .CmdArgs 2))}}
       {{end}}
     {{end}}
-    {{$store.Set $item (sdict "buyprice" $bprice "sellprice" $sprice "stock" $stock "sii" $sii "desc" $desc)}}
-    **Created Item**
-    Nom : `{{$name}}`
-    Prix d'achat : `{{$bprice}}`
-    Prix de vente : `{{$sprice}}`
-    Quantité : `{{$stock}}`
-    SII: `{{$sii}}`
-    Description : `{{$desc}}`
-  {{else if eq $flag "-delete"}}
-    {{if $item}}
-      {{if ($store.Get $item)}}
-        {{$store.Del $item}}
-        {{print "L'objet " $item " a bien été supprimé de votre store " }}
-      {{else}}
-        {{print "L'objet" $item " n'existe pas."}}
-        {{print "Usage : `$item -delete <item>`"}}
-      {{end}}
-    {{end}}
-  {{else if eq $flag "-edit"}}
-    {{if $item}}
-      {{if ($store.Get $item)}}
-        {{$i := sdict ($store.Get $item)}}
-        {{$rename := $item}}
-        {{if eq $flag2 "-price"}}
-          {{$b := toInt (index .CmdArgs 3)}}
-          {{$i.Set "buyprice" $b}}
-          {{$store.Set $item $i}}
-        {{else if eq $flag2 "-sell"}}
-          {{$sprice := $i.Get "sellprice"}}
-          {{$s := toInt (index .CmdArgs 3)}}
-          {{if eq $s 0}}
+    {{if eq $flag "-add"}}
+      {{$bprice := ""}}
+      {{$sprice := ""}}
+      {{$stock := ""}}
+      {{$desc := ""}}
+      {{$sii := true}}
+      {{$rare := "⭐"}}
+      {{with .CmdArgs}}
+      {{if ge (len .) 2}}
+        {{$bprice = toInt (index . 2)}}
+        {{if ge (len .) 3}}
+          {{if eq (index . 3) "none" "0" }}
             {{$sprice = "Invendable"}}
           {{else}}
-            {{$sprice = $s}}
+            {{$smin = toInt (index . 3)}}
           {{end}}
-          {{$i.Set "sellprice" $sprice}}
-          {{$store.Set $item $i}}
-        {{else if eq $flag2 "-stock"}}
-          {{$stock := toInt (index .CmdArgs 3)}}
-          {{if le $stock 0}}
-            {{$stock = "En rupture..."}}
-          {{else if ge $stock 10}}
-            {{$stock = 10}}
+          {{if ge (len .) 4}}
+            {{$stock = toInt (index . 4)}}
+            {{if ge $stock 10}}
+              {{$stock = 10}}
+            {{else if le $stock 0}}
+              {{$stock = "En rupture"}}
+            {{if ge (len .) 5}}
+              {{if (reFind `true|false` (index . 5))}}
+                {{$sii = (reFind `true|false` (index . 5))}}
+                {{if eq $sii "true"}}
+                  {{$sii = true}}
+                {{else}}
+                  {{$sii = false}}
+                {{end}}
+              {{end}}
+              {{if ge (len .) 6}}
+                {{$desc = (index . 6)}}
+              {{end}}
+            {{end}}
           {{end}}
-          {{$i.Set "stock" $stock}}
-          {{$store.Set $item $i}}
-        {{else if eq $flag2 "-sii"}}
-          {{$sii := true}}
-          {{$sii = reFind `(true|false)` (index .CmdArgs 3)}}
-          {{$i.Set "sii" $sii }}
-          {{$store.Set }}
-
-
-          
-
-
-
-
-          
-
+        {{end}}
+      {{end}}
+      {{$store.Set $item (sdict "buyprice" $bprice "sellprice" $sprice "stock" $stock "sii" $sii "desc" $desc)}}
+      **Created Item**
+      Nom : `{{$name}}`
+      Prix d'achat : `{{$bprice}}`
+      Prix de vente : `{{$sprice}}`
+      Quantité : `{{$stock}}`
+      SII: `{{$sii}}`
+      Description : `{{$desc}}`
+    {{else if eq $flag "-delete"}}
+      {{if $item}}
+        {{if ($store.Get $item)}}
+          {{$store.Del $item}}
+          {{print "L'objet " $item " a bien été supprimé de votre store " }}
+        {{else}}
+          {{print "L'objet" $item " n'existe pas."}}
+          {{print "Usage : `$item -delete <item>`"}}
+        {{end}}
+      {{end}}
+    {{else if eq $flag "-edit"}}
+      {{if $item}}
+        {{if ($store.Get $item)}}
+          {{$i := sdict ($store.Get $item)}}
+          {{$rename := $item}}
+          {{if eq $flag2 "-price"}}
+            {{$b := toInt (index .CmdArgs 3)}}
+            {{$i.Set "buyprice" $b}}
+            {{$store.Set $item $i}}
+          {{else if eq $flag2 "-sell"}}
+            {{$sprice := $i.Get "sellprice"}}
+            {{$s := toInt (index .CmdArgs 3)}}
+            {{if eq $s 0}}
+              {{$sprice = "Invendable"}}
+            {{else}}
+              {{$sprice = $s}}
+            {{end}}
+            {{$i.Set "sellprice" $sprice}}
+            {{$store.Set $item $i}}
+          {{else if eq $flag2 "-stock"}}
+            {{$stock := toInt (index .CmdArgs 3)}}
+            {{if le $stock 0}}
+              {{$stock = "En rupture..."}}
+            {{else if ge $stock 10}}
+              {{$stock = 10}}
+            {{end}}
+            {{$i.Set "stock" $stock}}
+            {{$store.Set $item $i}}
+          {{else if eq $flag2 "-sii"}}
+            {{$sii := true}}
+            {{$sii = reFind `(true|false)` (index .CmdArgs 3)}}
+            {{$i.Set "sii" $sii }}
+            {{$store.Set $item $i}}
+          {{else if eq $flag2 "-rename"}}
+            {{$rename = title (index .CmdArgs 3)}}
+            {{$store.Del $item}}
+            {{$i.Set "name" $item}}
+            {{$store.Set $rename $i}}
+          {{else if eq $flag2 "-desc"}}
+            {{$desc := (index .CmdArgs 3)}}
+            {{$i.Set "desc" $desc}}
+            {{$store.Set $item $i}}
+          {{end}}
+          {{with $i}}
+            **Item Info**
+            Nom : `{{ $name}}`
+            Prix d'achat : `{{.buyprice}}`
+            Prix de vente : `{{.sellprice}}`
+            Quantité : `{{.stock}}`
+            SII: `{{.sii}}`
+            Rareté : `{{.rare}}`
+            Description : `{{.desc}}`
+          {{end}}
+        {{else}}
+          {{print "Erreur ! L'objet n'existe pas."}}
+        {{end}}
+      {{end}}
+    {{else if eq $flag "-name"}}
+      {{dbSet $id "Vendeur" $item}}
+      {{print $user " votre boutique a été renommé " $item "."}}
+    {{else if eq $flag "-open"}}
+      {{dbSet $id "Etat_Boutique" "open"}}
+      {{print $user ", votre boutique est maintenant ouverte !"}}
+    {{else if eq $flag "-close"}}
+      {{dbSet $id "Etat_Boutique" "closed"}}
+      {{print $user ", votre boutique est maintenant fermée !"}}
+    {{else}}
+      {{print "Erreur ! \n **Usage** : `$marchand -(add|delete|edit|name|open|close) (option)\n Vous pouvez retrouver les différentes options ici : <https://www.notion.so/Marchand-86f0eaf1baa34d8ba32fdadc415518ea>"}}
+    {{end}}
+  {{else}}
+    {{print "Erreur ! \n **Usage** : `$marchand -(add|delete|edit|name|open|close) (option)\n Vous pouvez retrouver les différentes options ici : <https://www.notion.so/Marchand-86f0eaf1baa34d8ba32fdadc415518ea>"}}
+  {{end}}
+{{else}}
+  {{print "Vous n'êtes pas autorisé à utiliser cette commande."}}
+{{end}}
