@@ -84,7 +84,7 @@
 		{{$bal = add $bal (mult $item.sellprice $amount)}}
 		{{$userEco.Set "balance" $bal}}
 		{{$inv.Set $initem (sub ($inv.Get $initem) $amount)}}
-		{{if eq ($inv.Get $initem) 0}}
+		{{if le ($inv.Get $initem) 0}}
 			{{$inv.Del $initem}}
 		{{end}}
 		{{$userEco.Set "Inventory" $inv}}
