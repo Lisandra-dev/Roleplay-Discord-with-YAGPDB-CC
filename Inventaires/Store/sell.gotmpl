@@ -38,7 +38,7 @@
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{$initem = ( title (index . 0))}}
-		{{if ge (len .) 2}}
+		{{if or (and (not $rt) (ge (len .CmdArgs) 2)) (and $rt (ge (len .CmdArgs 3)))}}
 			{{$amount = or (toInt (index . 1)) 1}}
 		{{end}}
 	{{end}}
