@@ -72,6 +72,8 @@
     {{$item = index .CmdArgs 1}}
     {{if or (and (not $rt) (ge (len .CmdArgs) 3)) (and $rt (ge (len .CmdArgs 4)))}}
       {{$q = index .CmdArgs 2}}
+    {{end}}
+  {{end}}
   {{if not $item}}
     {{print "L'objet n'existe pas !"}}
   {{else if eq ((dbGet "Etat_Boutique").Value) "closed"}}
