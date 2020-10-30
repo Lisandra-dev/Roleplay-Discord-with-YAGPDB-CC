@@ -5,6 +5,7 @@
 {{with (dbGet 0 "Personnage" )}}
 	{{$perso = sdict .Value}}
 {{end}}
+{{$alias := sdict}}{{with (dbGet 0 "alias")}}{{$alias = sdict.Value}}{{end}}
 
 {{$user := .User.Nick}}
 {{if eq (len $user) 0}}
@@ -37,7 +38,9 @@
 			{{end}}
 		{{end}}
 		{{$user = title $user}}
-		{{$perso.Set $user (sdict "Personnage" $user "ID" $id "IDR" $idR "shop" "n")}}
+		{{$perso.Set $user (sdict "Personnage" $user "ID" $id "IDR" $idR)}}
+		{{$alias.Set $id $user}}
+		{{dbSet 0 "Alias" $alias}}
 		{{print $user "a bien été rajouté à la base de donnée !"}}
 		{{dbSet 0 "Personnage" $perso}}
 	{{else if eq (index .CmdArgs 0) "-rm"}}
@@ -59,8 +62,10 @@
 				{{$user = $user.Username}}
 			{{end}}
 			{{$perso.Del $user}}
+			{{$alias.Del $id}}
 			{{print $user " a bien été supprimé de la DB."}}
 			{{dbSet 0 "Personnage" $perso}}
+			{{dbSet 0 "Alias" $alias}}
 		{{end}}
 	{{else if eq (index .CmdArgs 0) "-rename"}}
 		{{$user = (index .CmdArgs 1) }}
@@ -88,7 +93,9 @@
 		{{$name = (index .CmdArgs 2)}}
 		{{$pg.Set "Personnage" $name}}
 		{{$perso.Set $pg}}
+		{{$alias.Set $id $pg}}
 		{{dbSet 0 "Personnage" $perso}}
+		{{dbSet 0 "Alias" $alias}}
 	{{else}}
 		{{print "Usage : \n `$set (-new|rm|rename) >@cible \n Pour un new avec un reroll, il faut absolument mentionner le joueur du Reroll !! "}}
 	{{end}}
