@@ -13,7 +13,8 @@
 	{{dbSetExpire $id "rerollName" $name 3600}}
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
-{{end}}{{$hpS := sdict }}{{with (dbGet 0 "Personnage")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get $user)}}{{$user = .Personnage}}{{end}}
+{{end}}{{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+{{with ($alias.Get $id)}}{{$user = .}}{{end}}
 
 
 {{$userEco := sdict}}

@@ -14,8 +14,8 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
-{{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
+{{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+{{with ($alias.Get $id)}}{{$user = .}}{{end}}
 
 {{/* Databases */}}
 {{$store := (dbGet .Server.ID "store").Value}}
@@ -42,7 +42,7 @@
 	{{$amount := 1}}
 	{{with .CmdArgs}}
 		{{$initem = ( title (index . 0))}}
-		{{if ge (len .) 2}}
+		{{if or (and (not $name) (ge (len .) 2)) (and $name (ge (len .) 3))}}
 			{{$amount = or (toInt (index . 1)) 1}}
 		{{end}}
 	{{end}}
@@ -66,7 +66,7 @@
 		{{$bal = add $bal (mult $item.sellprice $amount)}}
 		{{$userEco.Set "balance" $bal}}
 		{{$inv.Set $initem (sub ($inv.Get $initem) $amount)}}
-		{{if eq ($inv.Get $initem) 0}}
+		{{if le ($inv.Get $initem) 0}}
 			{{$inv.Del $initem}}
 		{{end}}
 		{{$userEco.Set "Inventory" $inv}}

@@ -12,8 +12,8 @@
 {{else if eq (len $user) 0}}
 	{{$user = .User.Username}}
 {{end}}
-{{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
-{{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
+{{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+{{with ($alias.Get $id)}}{{$user = .}}{{end}}
 
 {{/* Databases */}}
 {{$store := (dbGet .Server.ID "store").Value}}
@@ -44,7 +44,7 @@
 
 	{{with .CmdArgs}}
 		{{$initem = (title (index . 0))}}
-		{{if or (and (not $rt) (ge (len .CmdArgs) 2)) (and $rt (ge (len .CmdArgs 3)))}}
+		{{if or (and (not $name) (ge (len .CmdArgs) 2)) (and $name (ge (len .CmdArgs 3)))}}
 	    {{$amount = or (toInt (index . 1)) 1}}
 	  {{end}}
 	{{end}}
@@ -91,10 +91,10 @@
 					{{end}}
 		      {{if not .reply}}
 					{{$user = joinStr " " "Achat | " (title $user)}}
-		        {{sendMessage nil (cembed
-		          "author" (sdict "name" $user "icon_url" $img)
-		          "description" (print "Vous avez acheté " $amount " " $initem " pour " (mult .buyprice $amount) " " $symbol ".")
-		          "color" 0x8CBAEF)}}
+					{{sendMessage nil (cembed
+						"author" (sdict "name" $user "icon_url" $img)
+						"description" (print "Vous avez acheté " $amount " " $initem " pour " (mult .buyprice $amount) " " $symbol ".")
+						"color" 0x8CBAEF)}}
 		      {{end}}
 		      {{$items.Set $initem $item}}
 		      {{$serverEco.Set "Items" $items}}

@@ -64,9 +64,8 @@
 					{{end}}
 				{{end}}
 			{{end}}
-			{{with ($perso.Get $user)}}
-				{{$user = .Personnage}}
-			{{end}}
+			{{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+			{{with ($alias.Get $id)}}{{$user = .}}{{end}}
 			{{if ge (len .) 3}}
 				{{if not (userArg (index . 2))}}
 					{{$amount = toInt (index . 2)}}
@@ -167,9 +166,8 @@ Vous avez besoin de spécifier une valeur !
 					{{end}}
 				{{end}}
 			{{end}}
-			{{with ($perso.Get $user)}}
-				{{$user = .Personnage}}
-			{{end}}
+			{{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+			{{with ($alias.Get $id)}}{{$user = .}}{{end}}
 			{{if ge (len .) 3}}
 				{{$item = title (index . 2)}}
 				{{if ge (len .) 4}}

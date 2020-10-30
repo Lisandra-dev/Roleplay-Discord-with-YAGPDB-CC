@@ -9,6 +9,7 @@
 {{end}}
 {{$desc := "La boutique n'existe pas."}}
 {{$bn := "Erreur"}}
+{{$footer := print "Page 1 / 1 | #" .User.ID}}
 {{$icon := "https://i.imgur.com/sA08XMv.png"}}
 {{$thumb := "https://i.imgur.com/ACrlyqV.png"}}
 {{/* Store/Shop */}}
@@ -22,12 +23,20 @@
 		{{ end }}
     {{$del := false}}
     {{$check := ""}}
+    {{$cslice := cslice}}
     {{ $action := $.Reaction.Emoji.Name }} {{/* The action being ran */}}
     {{ $validEmojis := cslice "▶️" "◀️" "🗑️" "📱" }} {{/* Valid emojis */}}
     {{ $isValid := false }}
     {{ $page := 0 }}
     {{if $embed.Author}}
       {{$check = reFind $bn $embed.Author.Name}}
+    {{end}}
+    {{if $embed.Footer}}
+      {{$id := reFind `(\#\S*)` $embed.Footer.Text}}
+      {{$id = (toInt (joinStr "" (split $id "#")))}}
+      {{if (dbGet $id "Vendeur")}}
+        {{$bn = (dbGet $id "Vendeur").Value}}
+      {{end}}
     {{end}}
     {{ if and (eq $check $bn) $embed.Footer}}
       {{ $page = toInt (reFind `\d+` $embed.Footer.Text) }}
@@ -48,69 +57,127 @@
           {{$user = $.User.Username}}
         {{end}}
       {{end}}
+      {{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+      {{with ($alias.Get $id)}}{{$user = .}}{{end}}
       {{$store := sdict}}
       {{with (dbGet $id "market")}}
         {{$store = sdict .Value}}
       {{end}}
-      {{bn = (dbGet $id "Vendeur").Value}}
-      {{$desc = "La boutique est actuellement vide."}}
-      {{$footer = "Page 1 / 1 | #" $id}}
-      {{if $store}}
-        {{range $k,$v := $items}}
-          {{$item := $k}}
-          {{$bprice := $v.buyprice}}
-          {{$sprice := $v.sellprice}}
-          {{$stock := $v.stock}}
-          {{$doc := $v.desc}}
-          {{$rare := $v.rare}}
-          {{if ne (str $stock) "♾️"}}
-            {{$stock = $stock}}
-            {{if le $stock 0}}
-              {{$stock = "**En rupture...**"}}
+      {{if (dbGet $id "Etat_Boutique")}}
+        {{if eq ((dbGet $id "Etat_Boutique").Value) "closed"}}
+          {{$desc = "La boutique est actuellement fermée"}}
+          {{if eq $action "📱"}}
+            {{$dm := ""}}
+            {{/* Check RR ID */}}
+            {{$idR := $id}}
+            {{$rr := sdict}}
+            {{with (dbGet 0 "Personnage")}}
+              {{$rr = sdict .Value}}
+            {{end}}
+            {{with ($rr.Get $user)}}
+              {{$idR = toInt .IDR}}
+            {{end}}
+            {{range $i, $j := $store}}
+              {{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+            {{end}}
+            {{if le (len $dm) 2000}}
+              {{sendDM (complexMessage "content" "La boutique demandé est bien rempli ! Je vous envoie un document à télécharger." "embed" nil "file" $dm)}}
+            {{else}}
+              {{sendDM (print $dm)}}
+            {{end}}
+          {{else}}
+            {{$del = true}}
+            {{$page = 1}}
+            {{deleteMessage nil $.ReactionMessage.ID 1}}
+          {{ end }}
+        {{else}}
+          {{$desc = "La boutique est actuellement vide."}}
+          {{$footer = print "Page 1 / 1 | #" $id}}
+          {{if $store}}
+            {{range $k,$v := $store}}
+              {{$item := $k}}
+              {{$bprice := $v.buyprice}}
+              {{$sprice := $v.sellprice}}
+              {{$stock := $v.stock}}
+              {{$doc := $v.desc}}
+              {{$rare := $v.rare}}
+              {{if ne (str $stock) "♾️"}}
+                {{$stock = $stock}}
+                {{if le $stock 0}}
+                  {{$stock = "**En rupture...**"}}
+                {{end}}
+              {{end}}
+              {{$svente := $symbol }}
+              {{if eq (toString $sprice) "Invendable"}}
+                {{$svente = ""}}
+              {{end}}
+              {{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
+              {{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
             {{end}}
           {{end}}
-          {{$svente := $symbol }}
-          {{if eq (toString $sprice) "Invendable"}}
-            {{$svente = ""}}
-          {{end}}
-          {{$cslice = $cslice.Append (sdict "name" (title $item) "value" (print ":white_small_square: Achat : " $bprice " " $symbol  "\n :white_small_square: Vente: " $sprice " " $svente "\n :white_small_square: Stock : " $stock "\n > " $doc ) "inline" false)}}
-          {{$desc = "Hey ! Regarde tout ce que tu peux acheter !"}}
-        {{end}}
-      {{end}}
-      {{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
-      {{ if eq $action "▶️" }}
-        {{ $page = add $page 1 }} {{/* Update page according to emoji */}}
-      {{ else if eq $action "◀️"}}
-        {{ $page = sub $page 1 }}
-        {{if le $page 1}}
-          {{$page =1}}
-        {{end}}
-      {{else if eq $action "📱"}}
-        {{/* Check RR ID */}}
-        {{$idR := $id}}
-        {{$rr := sdict}}
-        {{with (dbGet 0 "Personnage")}}
-          {{$rr = sdict .Value}}
-        {{end}}
-        {{with ($rr.Get $user)}}
-          {{$idR = toInt .IDR}}
-        {{end}}
-        {{range $i, $j := $store}}
-          {{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
-        {{end}}
-        {{if le (len $dm) 2000}}
-          {{sendDM (complexMessage "content" "La boutique demandé est bien rempli ! Je vous envoie un document à télécharger." "embed" nil "file" $dm)}}
-        {{else}}
-          {{sendDM (print $dm)}}
+          {{ deleteMessageReaction nil $.ReactionMessage.ID $.User.ID $action }}
+          {{ if eq $action "▶️" }}
+            {{ $page = add $page 1 }} {{/* Update page according to emoji */}}
+          {{ else if eq $action "◀️"}}
+            {{ $page = sub $page 1 }}
+            {{if le $page 1}}
+              {{$page =1}}
+            {{end}}
+          {{else if eq $action "📱"}}
+            {{$dm := ""}}
+            {{/* Check RR ID */}}
+            {{$idR := $id}}
+            {{$rr := sdict}}
+            {{with (dbGet 0 "Personnage")}}
+              {{$rr = sdict .Value}}
+            {{end}}
+            {{with ($rr.Get $user)}}
+              {{$idR = toInt .IDR}}
+            {{end}}
+            {{range $i, $j := $store}}
+              {{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+            {{end}}
+            {{if le (len $dm) 2000}}
+              {{sendDM (complexMessage "content" "La boutique demandé est bien rempli ! Je vous envoie un document à télécharger." "embed" nil "file" $dm)}}
+            {{else}}
+              {{sendDM (print $dm)}}
+            {{end}}
+          {{else}}
+            {{$del = true}}
+            {{$page = 1}}
+            {{deleteMessage nil $.ReactionMessage.ID 1}}
+          {{ end }}
+          {{$start := ""}}
+          {{$stop := ""}}
+          {{$end := ""}}
         {{end}}
       {{else}}
-        {{$del = true}}
-        {{$page = 1}}
-        {{deleteMessage nil $.ReactionMessage.ID 1}}
-      {{ end }}
-      {{$start := ""}}
-      {{$stop := ""}}
-      {{$end := ""}}
+        {{$desc = print $user " n'est pas un vendeur."}}
+        {{if eq $action "📱"}}
+          {{$dm := ""}}
+          {{/* Check RR ID */}}
+          {{$idR := $id}}
+          {{$rr := sdict}}
+          {{with (dbGet 0 "Personnage")}}
+            {{$rr = sdict .Value}}
+          {{end}}
+          {{with ($rr.Get $user)}}
+            {{$idR = toInt .IDR}}
+          {{end}}
+          {{range $i, $j := $store}}
+            {{$dm = print $dm "\n :white_small_square: **" $i "**" " : " $j}}
+          {{end}}
+          {{if le (len $dm) 2000}}
+            {{sendDM (complexMessage "content" "La boutique demandé est bien rempli ! Je vous envoie un document à télécharger." "embed" nil "file" $dm)}}
+          {{else}}
+            {{sendDM (print $dm)}}
+          {{end}}
+        {{else}}
+          {{$del = true}}
+          {{$page = 1}}
+          {{deleteMessage nil $.ReactionMessage.ID 1}}
+        {{ end }}
+      {{end}}
       {{if $cslice}}
         {{$start = (mult 10 (sub $page 1))}}
         {{$stop = (mult $page 10)}}
@@ -136,7 +203,7 @@
         {{$desc = print "" $data ""}}
       {{end}}
     {{if eq $del false}}
-			{{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $author) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
+			{{editMessage nil $.ReactionMessage.ID (cembed "author" (sdict "name" $bn) "thumbnail" (sdict "url" "https://i.imgur.com/cI9yra3.png") "color" 0x8CBAEF "description" $desc "footer" (sdict "text" $footer) )}}
 		{{else}}
 			{{deleteMessage nil $.ReactionMessage.ID 1}}
 			{{dbDel $id "rerollName"}}

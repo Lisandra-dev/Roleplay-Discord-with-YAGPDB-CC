@@ -1,12 +1,18 @@
 {{/* Databases */}}
 {{$symbol := ""}}
+{{$serverEco := sdict}}
+{{with (dbGet .Server.ID "economy")}}
+	{{$serverEco = sdict .Value}}
+{{end}}
 {{if $serverEco.Get "symbol"}}
   {{$symbol = $serverEco.Get "symbol"}}
 {{end}}
 {{$desc := "La boutique n'existe pas."}}
 {{$bn := "Erreur"}}
+{{$footer := print "Page 1 / 1 | #" .User.ID}}
 {{$icon := "https://i.imgur.com/sA08XMv.png"}}
 {{$thumb := "https://i.imgur.com/ACrlyqV.png"}}
+{{$fields := cslice}}
 
 {{if .CmdArgs}}
   {{$name := reFind `(\>\S*)` (index .CmdArgs 0)}}
@@ -29,9 +35,11 @@
       {{end}}
     {{end}}
   {{end}}
-  {{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
-  {{with ($perso.Get $user)}}{{$user = .Personnage}}{{end}}
-  {{if eq ((dbGet $id "Etat_Boutique").Value) "closed"}}
+  {{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+  {{with ($alias.Get $id)}}{{$user = .}}{{end}}
+  {{if not (dbGet $id "Etat_Boutique")}}
+    {{$desc = print $user " n'est pas un vendeur."}}
+  {{else if eq ((dbGet $id "Etat_Boutique").Value) "closed"}}
     {{$desc = "La boutique est actuellement fermée."}}
     {{$bn = (dbGet $id "Vendeur").Value}}
   {{else if eq ((dbGet $id "Etat_Boutique").Value) "open"}}
@@ -43,13 +51,11 @@
 
     {{/* Store/Shop */}}
     {{$cslice := cslice}}
-    {{$fields := cslice}}
-    {{$footer := ""}}
 
     {{$desc = "La boutique est actuellement vide."}}
     {{$footer = "Page 1 / 1 | #" $id}}
     {{if $store}}
-      {{range $k,$v := $items}}
+      {{range $k,$v := $store}}
         {{$item := $k}}
         {{$bprice := $v.buyprice}}
         {{$sprice := $v.sellprice}}
@@ -103,7 +109,6 @@
     {{/* hell ends */}}
   {{end}}
 {{end}}
-
-{{$id := sendMessageRetID nil (cembed "author" (sdict "bn" $name "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
-{{addMessageReactions nil $id "◀️" "▶️" "🗑️"}}
+{{$id := sendMessageRetID nil (cembed "author" (sdict "name" $bn "icon_url" $icon) "thumbnail" (sdict "url" $thumb) "color" 0x8CBAEF "description" $desc "fields" $fields "footer" (sdict "text" $footer))}}
+{{addMessageReactions nil $id "◀️" "▶️" "🗑️" "📱"}}
 {{deleteTrigger 1}}

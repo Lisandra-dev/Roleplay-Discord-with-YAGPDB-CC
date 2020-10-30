@@ -36,7 +36,8 @@
 			{{if eq (len $user) 0}}
 				{{$user = $.User.Username}}
 			{{end}}
-		{{end}}
+		{{end}}{{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+		{{with ($alias.Get $id)}}{{$user = .}}{{end}}
 
 		{{$userEco := sdict}}
 		{{with (dbGet $id "economy")}}

@@ -66,8 +66,9 @@
   {{with ($tEco.Get "Inventory")}}
     {{$ivt = sdict .}}
   {{end}}
-  {{with ($perso.Get $ci)}}{{$ci = .Personnage}}{{end}}
-  {{with ($perso.Get $u)}}{{$u = .Personnage}}{{end}}
+  {{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
+  {{with ($alias.Get $idt)}}{{$ci = .}}{{end}}
+  {{with ($alias.Get $id)}}{{$u = .}}{{end}}
   {{$au = joinStr " " $u "donne"}}
   {{$fo = joinStr " " "A" $ci }}
 

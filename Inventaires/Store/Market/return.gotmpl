@@ -1,5 +1,6 @@
 {{/* User Variable */}}
-{{$img := "https://i.imgur.com/98Qds0B.png"}}
+{{$icon := "https://i.imgur.com/9HnsF14.png"}}
+
 {{$name := reFind `(\>\S*)` .Message.Content}}
 {{$name = joinStr "" (split $name ">")}}
 {{$user := .Member.Nick}}
@@ -16,14 +17,16 @@
 {{$alias := sdict}}{{with (dbGet 0 "Alias")}}{{$alias = sdict .Value}}{{end}}
 {{with ($alias.Get $id)}}{{$user = .}}{{end}}
 {{$perso := sdict}}{{with (dbGet 0 "Personnage")}}{{$perso = sdict .Value}}{{end}}
-
-{{$store := (dbGet .Server.ID "store").Value}}
+{{$open := (dbGet .Server.ID "store").Value}}
 {{$userEco := sdict}}
 {{with (dbGet $id "economy")}}
 	{{$userEco = sdict .Value}}
 {{end}}
 {{$serverEco := sdict}}
-
+{{$inv := sdict}}
+{{with ($userEco.Get "Inventory")}}
+  {{$inv = sdict .}}
+{{end}}
 {{with (dbGet .Server.ID "economy")}}
 	{{$serverEco = sdict .Value}}
 {{end}}
@@ -61,25 +64,14 @@
   {{with (dbGet $id "market")}}
     {{$store = sdict .Value}}
   {{end}}
-  {{$bal := (toInt ($userEco.Get "balance"))}}
-  {{if le $bal (toInt 0)}}
-    {{$bal = 0}}
-  {{end}}
-  {{$inv := sdict}}
-  {{with ($userEco.Get "Inventory")}}
-    {{$inv = sdict .}}
-  {{end}}
-  {{$q := 1}}
-  {{$item := ""}}
-  {{if or (and (not $name) (ge (len .CmdArgs) 2)) (and $name (ge (len .CmdArgs 3)))}}
-    {{$item = index .CmdArgs 1}}
-    {{if or (and (not $name) (ge (len .CmdArgs) 3)) (and $name (ge (len .CmdArgs 4)))}}
-      {{$q = index .CmdArgs 2}}
-    {{end}}
-  {{end}}
+  {{$item = title (index .CmdArgs 1)}}
   {{$di := sdict}}
   {{with ($store.Get $item)}}
     {{$di = sdict .}}
+  {{end}}
+  {{$q := 1}}
+  {{if or (and (not $name) (ge (len .CmdArgs) 2)) (and $name (ge (len .CmdArgs 3)))}}
+    {{$q = index .CmdArgs 2}}
   {{end}}
   {{if not $di}}
     {{print "L'objet n'existe pas !"}}
@@ -89,28 +81,26 @@
     {{print "La boutique de " $ut " est fermée."}}
   {{else}}
     {{with $di}}
-      {{$stock := .stock}}
-      {{if not (ge (toInt $stock) (toInt $q))}}
-        {{print "Navré," $user ", mais il n'y a pas les stock pour acheter ça."}}
-      {{else if le $bal (toInt (mult .buyprice $q))}}
-        {{print $user ", tu n'as pas assez d'argent pour ça."}}
-      {{else}}
-        {{$bal = sub $bal (mult .buyprice $q)}}
-        {{$di.Set "stock" (sub $stock $q)}}
-        {{if .sii}}
-          {{$inv.Set $item (add (toInt ($inv.Get $item)) $q)}}
-          {{$userEco.Set "Inventory" $inv}}
+      {{if eq .sellprice 0}}
+        {{$user = joinStr " " "Vente |" (title $user)}}
+        {{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" $icon) "color" 0x8CBAEF "description" (print $ut " n'achète pas ce genre d'objet...")) }}
+      {{else if ge (toInt ($inv.Get $item)) $q}}
+        {{$bal = add $bal (mult .sellprice $q)}}
+        {{$userEco.Set "balance" $bal}}
+        {{$inv.Set $item (sub ($inv.Get $item) $q)}}
+        {{if le ($inv.Get $item ) 0}}
+          {{$inv.Del $item}}
         {{end}}
-        {{$user = joinStr " " "Achat |" (title $user)}}
-        {{sendMessage nil (cembed
-          "author" (sdict "name" $user "icon_url" $img)
-          "description" (print "Vous avez acheté " $q " " $item " pour " (mult .buyprice $q) " " $symbol " à " $ut ".")
-          "color" 0x8CBAEF)}}
+        {{$userEco.Set "Inventory" $inv}}
+        {{$di.Set "stock" (add .stock $q)}}
+        {{$store.Set $item $di}}
+        {{$user = joinStr " " "Vente |" (title $user)}}
+        {{sendMessage nil (cembed "author" (sdict "name" $user "icon_url" $icon) "color" 0x8CBAEF "description" (print $ut " a repris " $q " " $item " et vous a remboursé " (mult .sellprice $q) " " $symbol " .")) }}
+      {{else}}
+        {{print $user ", vous ne pouvez pas vendre autant !"}}
       {{end}}
-      {{$store.Set $item $di}}
-      {{dbSet $id "market" $store}}
-      {{dbSet $id "economy" $userEco}}
     {{end}}
   {{end}}
 {{end}}
-{{deleteTrigger 1}}
+
+
