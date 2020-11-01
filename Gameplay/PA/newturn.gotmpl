@@ -115,5 +115,5 @@
 	"title" (joinStr " " "TOUR :" (str (toInt $t)))
 	"color" 0x6B54BE
 	"timestamp" currentTime}}
-{{sendMessage nil $embed}}
+{{sendMessageNoEscape nil (complexMessage "content" (print (mentionRoleID 701370767648096326) ", à vous de jouer !") "embed" $embed)}}
 {{deleteTrigger 1}}
