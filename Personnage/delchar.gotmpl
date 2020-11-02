@@ -3,7 +3,6 @@
 {{$id := .User.ID}}
 {{if .CmdArgs}}
 	{{$id = toInt (index .CmdArgs 0)}}
-	{{$user = (userArg $id)}}
 {{end}}
 {{if $name}}
 	{{$user = title $name}}
@@ -16,80 +15,65 @@
 	{{range $idperso}}
 		{{- $id = (add $id .)}}
 	{{- end}}
-		{{$groupe := sdict}}
-		{{with (dbGet .Server.ID "groupe")}}
-			{{$groupe = sdict .Value}}
-		{{end}}
-    {{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
+  {{$rr.Del $user}}
+  {{dbSet 0 "reroll_List" $rr}}
+{{end}}
+{{$hpS := sdict }}{{with (dbGet 0 "HP")}}{{$hpS = sdict .Value}}{{end}}{{with ($hpS.Get (str $id))}}{{$user = .Personnage}}{{end}}
 
-		{{$bool := "false"}}
-		{{range $i, $j := $groupe}}
-			{{- if eq (str $id) $i}}
-				{{- $bool = "true"}}
-			{{- end -}}
-		{{end}}
-		{{dbDel $id "recharge"}}
-		{{dbDel $id "arme"}}
-		{{$atq := (dbGet $id "cdatq").Value}}
-		{{$supp := (dbGet $id "cdsupp").Value}}
-		{{dbDel $id $atq}}
-		{{dbDel $id $supp}}
-		{{dbDel $id "cdatq"}}
-		{{dbDel $id "cdsupp"}}
-    
-    {{$pos := sdict}}
-    {{with (dbGet 0 "position")}}
-      {{$pos = sdict .Value}}
-    {{end}}
-    
-  {{range $i, $j := $pos}}
-    {{$j = sdict $j}}
-    {{range $k, $v := $j}}
+{{$groupe := sdict}}
+{{with (dbGet .Server.ID "groupe")}}
+	{{$groupe = sdict .Value}}
+{{end}}
+{{$bool := "false"}}
+{{range $i, $j := $groupe}}
+  {{- if eq (str $id) $i}}
+    {{- $bool = "true"}}
+  {{- end -}}
+{{end}}
+{{$pos := sdict}}
+{{with (dbGet 0 "position")}}
+  {{$pos = sdict .Value}}
+{{end}}
+
+{{range $i, $j := $pos}}
+  {{$j = sdict $j}}
+  {{range $k, $v := $j}}
       {{$v = sdict $v}}
       {{$v.Del $user }}
       {{$j.Set $k $v}}
       {{$pos.Set $i $j}}
-    {{end}}
   {{end}}
-    {{dbSet 0 "position" $pos}}
-    
-    {{$room := sdict}}
-    {{with (dbGet 0 "room")}}
-      {{$room = sdict .Value}}
-    {{end}}
-    {{range $i, $j := $room}}
-      {{$j = sdict $j}}
-      {{$j.Del (str $id)}}
-      {{$room.Set $i $j}}
-    {{end}}
-    {{dbSet 0 "room" $room}}
-    
+{{end}}
+{{dbSet 0 "position" $pos}}
+{{if eq $bool "true"}}
+  {{$groupe.Del (str $id)}}
+{{end}}
+{{dbSet .Server.ID "groupe" $groupe}}
+{{$heal := sdict}}
+{{with (dbGet 0 "healer")}}
+    {{$heal = sdict .Value}}
+{{end}}
+{{if $heal.Get (str $id)}}
+  {{$heal.Del (str $id)}}
+{{end}}
+{{dbSet 0 "healer" $heal}}
 
-		{{if eq $bool "true"}}
-			{{$groupe.Del (str $id)}}
-		{{end}}
-		{{dbSet .Server.ID "groupe" $groupe}}
-		{{$heal := sdict}}
-		{{with (dbGet 0 "healer")}}
-			{{$heal = sdict .Value}}
-		{{end}}
-		{{if $heal.Get (str $id)}}
-			{{$heal.Del (str $id)}}
-			{{dbSet 0 "healer" $heal}}
-		{{end}}
-		
-		{{$hp := sdict }}
-		{{with (dbGet 0 "HP")}}
-			{{$hp = sdict .Value}}
-		{{end}}
-		{{if $hp.Get (str $id)}}
-      {{$hp.Del (str $id)}}
-			{{dbSet 0 "HP" $hp}}
-		{{end}}
-		{{dbDel $id "stats"}}
-		{{$rr.Del $user}}
-		{{dbSet 0 "reroll_List" $rr}}
-		{{$embed := cembed
-			"description" (joinStr "" $user " aka " $id " a bien été supprimé de la base de données")}}
-		{{sendMessage nil $embed}}
-	{{end}}
+
+{{$room := sdict}}
+{{with (dbGet 0 "room")}}
+  {{$room = sdict .Value}}
+{{end}}
+{{range $i, $j := $room}}
+  {{$j = sdict $j}}
+  {{$j.Del (str $id)}}
+  {{$room.Set $i $j}}
+{{end}}
+{{dbSet 0 "room" $room}}
+
+{{if $hpS.Get (str $id)}}
+  {{$hpS.Del (str $id)}}
+{{end}}
+{{dbSet 0 "HP" $hpS}}
+{{$embed := cembed
+  "description" (joinStr "" $user " aka " $id " a bien été supprimé de la base de données")}}
+{{sendMessage nil $embed}}
